@@ -1,5 +1,5 @@
 const m = [{margin: 0, padding: 0, "min-height": "100%"}]
-const wrapper = {"max-width": 800}
+const wrapper = {"max-width": 800, margin: "0 auto"}
 const rgba = (a,b,c,d) => { return "rgba("+[a,b,c,d].join()+")" }
 const rand_rgba = () => {
 	return "rgba("+[255,255,255].map(x => {
@@ -26,10 +26,10 @@ const _ = {
 				position: "fixed"
 			},
 			header: {
-				height: "100%",
+				_mixins: m,
 				"div.content": {
 					_listeners: [[window, "resize"]],
-					"margin": (s) => { return ((window.innerHeight - s.offsetHeight) / 2) + "px 0"; },
+					"margin": (s) => { return (((window.innerHeight - s.offsetHeight) / 2) - 50) + "px 0"; },
 					"text-align": "center",
 					h1: {
 						"font-size": 120,
@@ -42,16 +42,24 @@ const _ = {
 						"margin-bottom": 15,
 						"font-weight": 200,
 						"font-size": 36
+					},
+					button: {
+						background: "none",
+						border: "1px solid #fff",
+						padding: "10px 15px",
+						color: "#fff",
+						"font-size": 14,
+						"text-transform": "uppercase"
 					}
 				}
 			},
-			button: {
-				background: "none",
-				border: "1px solid #fff",
-				padding: "10px 15px",
-				color: "#fff",
-				"font-size": 14,
-				"text-transform": "uppercase"
+			section: {
+				color: "#333",
+				background: "rgba(255,255,255,0.80)",
+				padding: "25px 0",
+				"> div": {
+					_mixins: wrapper,
+				}
 			}
 		}
 	}
