@@ -101,7 +101,7 @@ class Descartes {
 		elems.map(elem => {
 			let style = ""
 			for (let key in rule) {
-				let computedRule = this.computeRule(rule[key], elem)
+				let computedRule = this.computeRule(rule[key], key, elem)
 				style += key + ": " + computedRule + "; "
 			}
 			style = style.slice(0, -1);
@@ -109,11 +109,12 @@ class Descartes {
 		})
 	}
 
-	computeRule(rule, elem) {
+	computeRule(rule, key, elem) {
 		if (typeof rule === 'function') {
 			rule = rule(elem)
 		}
-		if (Number(rule) === rule) {
+		let except = ['font-weight']
+		if (Number(rule) === rule && except.indexOf(key) < 0) {
 			return rule.toString() + "px"
 		}
 		return rule.toString()

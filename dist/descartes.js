@@ -716,7 +716,7 @@ var Descartes = function () {
 			elems.map(function (elem) {
 				var style = "";
 				for (var key in rule) {
-					var computedRule = _this2.computeRule(rule[key], elem);
+					var computedRule = _this2.computeRule(rule[key], key, elem);
 					style += key + ": " + computedRule + "; ";
 				}
 				style = style.slice(0, -1);
@@ -725,11 +725,12 @@ var Descartes = function () {
 		}
 	}, {
 		key: "computeRule",
-		value: function computeRule(rule, elem) {
+		value: function computeRule(rule, key, elem) {
 			if (typeof rule === 'function') {
 				rule = rule(elem);
 			}
-			if (Number(rule) === rule) {
+			var except = ['font-weight'];
+			if (Number(rule) === rule && except.indexOf(key) < 0) {
 				return rule.toString() + "px";
 			}
 			return rule.toString();
