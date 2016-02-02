@@ -585,6 +585,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 }(window);
 //# sourceMappingURL=sizzle.min.map
 
+/*! Descartes v0.0.1-pre | (c) Jon Chan @jonhmchan | descartes.io/license */
+
 var Descartes = function () {
 	function Descartes(tree) {
 		_classCallCheck(this, Descartes);
