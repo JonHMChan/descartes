@@ -97,6 +97,9 @@ new Descartes({
 							"&:nth-child(1) > div": {
 								width: "50%",
 								float: "right"
+							},
+							"&:last-child": {
+								clear: "both"
 							}
 						}
 					},
