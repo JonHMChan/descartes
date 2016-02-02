@@ -111,6 +111,7 @@ var Descartes = function () {
 		key: 'render',
 		value: function render() {
 			this.flatten();
+			console.log(this.mappings);
 			this.bindListeners();
 			this.applyAll();
 		}

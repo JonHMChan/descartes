@@ -86,6 +86,7 @@ class Descartes {
 
 	render() {
 		this.flatten()
+		console.log(this.mappings)
 		this.bindListeners()
 		this.applyAll()
 	}

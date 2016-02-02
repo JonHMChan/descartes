@@ -22,11 +22,12 @@ new Descartes({
 	"html": {
 		_mixins: m,
 		"font-family": "Source Sans Pro, Helvetica",
-		color: "#fff",
+		color: "#333",
 		"font-size": 16,
 		"font-weight": 300,
 		body: {
 			_mixins: m,
+			_listeners: [[window, "click"]],
 			height: "100%",
 			background: () => {
 				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')'
@@ -44,6 +45,7 @@ new Descartes({
 			header: {
 				_mixins: m,
 				height: "90%",
+				color: "#fff",
 				"div.content": {
 					_listeners: [[window, "scroll"]],
 					_mixins: [verticalAlign, wrapper],
@@ -78,21 +80,46 @@ new Descartes({
 				}
 			},
 			section: {
-				color: "#333",
-				background: "#fff",
 				padding: "25px 0",
-				"> div": {
-					_mixins: wrapper,
-					h3: {
-						_mixins: heading,
-						"font-size": 36,
-						"margin-bottom": 0
-					},
-					h4: {
-						_mixins: heading,
-						"font-size": 24,
-						"margin-bottom": 0
+				"&.plain": {
+					background: "#fff",
+					"> div": {
+						_mixins: wrapper,
 					}
+				},
+				"&.offset": {
+					background: "#fff",
+					position: "relative",
+					"&.left": {
+						"> div": {
+							width: "50%",
+							float: "left",
+							"&:nth-child(1) > div": {
+								width: "50%",
+								float: "right"
+							}
+						}
+					},
+					"&.right": {
+						"> div": {
+							width: "50%",
+							float: "left",
+							"&:nth-child(2) > div": {
+								width: "50%",
+								float: "left"
+							}
+						}
+					}
+				},
+				h3: {
+					_mixins: heading,
+					"font-size": 36,
+					"margin-bottom": 0
+				},
+				h4: {
+					_mixins: heading,
+					"font-size": 24,
+					"margin-bottom": 0
 				}
 			}
 		}
