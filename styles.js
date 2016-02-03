@@ -33,14 +33,18 @@ new Descartes({
 				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')'
 			},
 			pre: {
-				width: "50%",
 				"font-size": 14,
-				padding: 10
+				code: {
+					"font-family": "Anonymous Pro"
+				}
 			},
 			nav: {
 				_mixins: wrapper,
 				"text-align": "center",
 				position: "fixed"
+			},
+			".wrapper": {
+				_mixins: wrapper
 			},
 			header: {
 				_mixins: m,
@@ -69,6 +73,17 @@ new Descartes({
 						"margin-bottom": 15,
 						"font-size": 20
 					},
+					pre: {
+						width: "100%",
+						code: {
+							"text-align": "left",
+							"word-wrap": "pre-wrap",
+							"font-size": 16,
+							"font-family": "Anonymous Pro",
+							padding: 25,
+							background: "rgba(0,0,0,0.75)"
+						}
+					},
 					button: {
 						background: "none",
 						border: "1px solid #fff",
@@ -80,11 +95,15 @@ new Descartes({
 				}
 			},
 			section: {
-				padding: 25,
 				"&.plain": {
 					background: "#fff",
+					pre: {
+						width: "100%",
+						"font-size": 12
+					},
 					"> div": {
 						_mixins: wrapper,
+						padding: 25
 					}
 				},
 				"&.offset": {
@@ -112,6 +131,9 @@ new Descartes({
 					"&.right > div": {
 						width: "50%",
 						float: "left",
+						"&:nth-child(1) > div": {
+							float: "right"
+						},
 						"&:nth-child(2) > div": {
 							width: 400,
 							float: "left"
