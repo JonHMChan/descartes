@@ -83,7 +83,6 @@ var Descartes = function () {
 			for (var selector in tree) {
 				var rules = Object.assign({}, tree[selector]);
 				var _listeners = rules[this.listeners];
-
 				// Add the rules in here
 				for (var rule in rules) {
 					if (!this.isRule(rule)) {
@@ -111,7 +110,6 @@ var Descartes = function () {
 		key: 'render',
 		value: function render() {
 			this.flatten();
-			console.log(this.mappings);
 			this.bindListeners();
 			this.applyAll();
 		}
@@ -171,28 +169,51 @@ var Descartes = function () {
 
 			if (selector === null || rule === null) return;
 			var elems = this.find(selector.toString());
-			if (elems.length === 0) return;
+			if (elems.length === 0 && !this.isPseudo(selector)) return;
 			if (this.findType === 'jquery') {
+				this.applyPsuedo(selector, rule);
 				for (var key in rule) {
 					var computedRule = this.computeRule(rule[key], key, elems);
 					elems.css(key, computedRule);
 				}
 			} else if (this.findType === 'sizzle') {
 				elems.map(function (elem) {
-					var style = "";
-					for (var key in rule) {
-						var computedRule = _this2.computeRule(rule[key], key, elem);
-						style += key + ": " + computedRule + "; ";
-					}
-					style = style.slice(0, -1);
-					elem.setAttribute('style', style);
+					elem.setAttribute('style', _this2.createStyleString(rule, elem));
 				});
 			}
 		}
 	}, {
+		key: 'createStyleString',
+		value: function createStyleString(rules, elem) {
+			var style = "";
+			for (var key in rules) {
+				var computedRule = this.computeRule(rules[key], key, elem);
+				style += key + ": " + computedRule + "; ";
+			}
+			style = style.slice(0, -1);
+			return style;
+		}
+	}, {
+		key: 'applyPsuedo',
+		value: function applyPsuedo(selector, rules) {
+			if (selector.match(/.+::after/) !== null) {
+				var pure = selector.replace('::after', '').replace('::before', '');
+				if (this.findType === 'jquery') {
+					var sheet = '<style type="text/css">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
+					$(sheet).appendTo(pure);
+				}
+				return true;
+			} else if (selector.match(/.+::before/) !== null) {
+				return true;
+			}
+			return false;
+		}
+	}, {
 		key: 'computeRule',
-		value: function computeRule(rule, key, elem) {
-			if (typeof rule === 'function') {
+		value: function computeRule(rule, key) {
+			var elem = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+			if (typeof rule === 'function' && elem !== null) {
 				rule = rule(elem);
 			}
 			var except = ['font-weight', 'opacity'];
@@ -248,6 +269,11 @@ var Descartes = function () {
 			}
 			delete tree[this.mixins];
 			return tree;
+		}
+	}, {
+		key: 'isPseudo',
+		value: function isPseudo(sel) {
+			return sel.match(/.+::after/) !== null || sel.match(/.+::before/) !== null;
 		}
 	}, {
 		key: 'isMeta',

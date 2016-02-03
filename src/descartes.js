@@ -59,7 +59,6 @@ class Descartes {
 		for (let selector in tree) {
 			let rules = Object.assign({}, tree[selector])
 			let _listeners = rules[this.listeners]
-
 			// Add the rules in here
 			for (let rule in rules) {
 				if (!this.isRule(rule)) {
@@ -86,7 +85,6 @@ class Descartes {
 
 	render() {
 		this.flatten()
-		console.log(this.mappings)
 		this.bindListeners()
 		this.applyAll()
 	}
@@ -124,27 +122,46 @@ class Descartes {
 	apply(selector = null, rule = null) {
 		if (selector === null || rule === null) return
 		let elems = this.find(selector.toString())
-		if (elems.length === 0) return
+		if (elems.length === 0 && !this.isPseudo(selector)) return
 		if (this.findType === 'jquery') {
+			this.applyPsuedo(selector, rule)
 			for (let key in rule) {
 				let computedRule = this.computeRule(rule[key], key, elems)
 				elems.css(key, computedRule)
 			}
 		} else if (this.findType === 'sizzle') {
 			elems.map(elem => {
-				let style = ""
-				for (let key in rule) {
-					let computedRule = this.computeRule(rule[key], key, elem)
-					style += key + ": " + computedRule + "; "
-				}
-				style = style.slice(0, -1);
-				elem.setAttribute('style', style)
+				elem.setAttribute('style', this.createStyleString(rule, elem))
 			})
 		}
 	}
 
-	computeRule(rule, key, elem) {
-		if (typeof rule === 'function') {
+	createStyleString(rules, elem) {
+		let style = ""
+		for (let key in rules) {
+			let computedRule = this.computeRule(rules[key], key, elem)
+			style += key + ": " + computedRule + "; "
+		}
+		style = style.slice(0, -1);
+		return style
+	}
+
+	applyPsuedo(selector, rules) {
+		if (selector.match(/.+::after/) !== null) {
+			let pure = selector.replace('::after', '').replace('::before', '')
+			if (this.findType === 'jquery') {
+				let sheet = '<style type="text/css">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
+				$(sheet).appendTo(pure)
+			}
+			return true
+		} else if (selector.match(/.+::before/) !== null) {
+			return true
+		}
+		return false
+	}
+
+	computeRule(rule, key, elem = null) {
+		if (typeof rule === 'function' && elem !== null) {
 			rule = rule(elem)
 		}
 		let except = ['font-weight', 'opacity']
@@ -193,6 +210,10 @@ class Descartes {
 		}
 		delete tree[this.mixins]
 		return tree
+	}
+
+	isPseudo(sel) {
+		return sel.match(/.+::after/) !== null || sel.match(/.+::before/) !== null
 	}
 
 	isMeta(key) {

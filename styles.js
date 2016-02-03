@@ -98,7 +98,9 @@ new Descartes({
 								width: "50%",
 								float: "right"
 							},
-							"&:last-child": {
+							"&:last-child::after": {
+								content: "\'\'",
+								display: "table",
 								clear: "both"
 							}
 						}
