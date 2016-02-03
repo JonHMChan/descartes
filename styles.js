@@ -95,30 +95,26 @@ new Descartes({
 						display: "table",
 						clear: "both"
 					},
-					"&.left": {
-						"> div": {
-							width: "50%",
-							padding: 15,
-							"box-sizing": "border-box",
-							height: "100%",
-							float: "left",
-							"&:nth-child(1) > div": {
-								width: 400,
-								float: "right",
-								"margin-top": (_) => {
-									return (($(_).closest(".offset").height() - $(_).height()) / 2) + "px"
-								}
+					"&.left > div": {
+						width: "50%",
+						padding: 15,
+						"box-sizing": "border-box",
+						height: "100%",
+						float: "left",
+						"&:nth-child(1) > div": {
+							width: 400,
+							float: "right",
+							"margin-top": (_) => {
+								return (($(_).closest(".offset").height() - $(_).height()) / 2) + "px"
 							}
 						}
 					},
-					"&.right": {
-						"> div": {
-							width: "50%",
-							float: "left",
-							"&:nth-child(2) > div": {
-								width: 400,
-								float: "left"
-							}
+					"&.right > div": {
+						width: "50%",
+						float: "left",
+						"&:nth-child(2) > div": {
+							width: 400,
+							float: "left"
 						}
 					}
 				},

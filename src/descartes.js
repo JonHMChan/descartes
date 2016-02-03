@@ -3,6 +3,7 @@ class Descartes {
 	constructor(tree) {
 		this.tree = tree
 		this.mappings = {}
+		this.mappingsPriority = 0
 
 		this.selector = 'selector'
 		this.rule = 'rule'
@@ -22,7 +23,14 @@ class Descartes {
 	findLibrary() {
 		if (typeof $ !== 'undefined') {
 			this.findType = 'jquery'
-			return $
+			const finder = (_) => {
+				let elems = []
+				$(_).each((i, e) => {
+					elems.push(e)
+				})
+				return elems
+			}
+			return finder
 		} else if (typeof Sizzle !== 'undefined') {
 			this.findType = 'sizzle'
 			return Sizzle
@@ -55,7 +63,7 @@ class Descartes {
 	}
 
 	// Expands the computed rules tree into a flat rule mappings object
-	flatten(tree = this.compute(tree), parentSelector = "") {
+	flatten(tree = this.compute(tree), parentSelector = "", priority = this.mappingsPriority) {
 		for (let selector in tree) {
 			let rules = Object.assign({}, tree[selector])
 			let _listeners = rules[this.listeners]
@@ -71,14 +79,16 @@ class Descartes {
 					}
 					delete rules[rule]
 					if (subtree !== null) {
-						this.flatten(subtree, nestedSelector)
+						this.flatten(subtree, nestedSelector, priority + 1)
 					}
 				}
 			}
 			this.mappings[selector] = {
 				rules,
-				_listeners
+				_listeners,
+				priority
 			}
+			if (this.mappingsPriority < priority) this.mappingsPriority = priority
 		}
 		return this.mappings
 	}
@@ -114,26 +124,27 @@ class Descartes {
 	}
 
 	applyAll() {
+		// sort by priority
+		let prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(() => { return [] })
 		for (let key in this.mappings) {
-			this.apply(key, this.mappings[key].rules)
+			let mapping = this.mappings[key]
+			prioritizedList[mapping.priority].push([key, mapping.rules])
 		}
+		prioritizedList.map(set => {
+			set.map(mapping => {
+				this.apply(mapping[0], mapping[1])
+			})
+		})
 	}
 
 	apply(selector = null, rule = null) {
 		if (selector === null || rule === null) return
 		let elems = this.find(selector.toString())
 		if (elems.length === 0 && !this.isPseudo(selector)) return
-		if (this.findType === 'jquery') {
-			this.applyPsuedo(selector, rule)
-			for (let key in rule) {
-				let computedRule = this.computeRule(rule[key], key, elems)
-				elems.css(key, computedRule)
-			}
-		} else if (this.findType === 'sizzle') {
-			elems.map(elem => {
-				elem.setAttribute('style', this.createStyleString(rule, elem))
-			})
-		}
+		elems.map(elem => {
+			elem.setAttribute('style', this.createStyleString(rule, elem))
+		})
+		return true
 	}
 
 	createStyleString(rules, elem) {

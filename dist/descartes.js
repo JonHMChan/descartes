@@ -14,6 +14,7 @@ var Descartes = function () {
 
 		this.tree = tree;
 		this.mappings = {};
+		this.mappingsPriority = 0;
 
 		this.selector = 'selector';
 		this.rule = 'rule';
@@ -35,7 +36,14 @@ var Descartes = function () {
 		value: function findLibrary() {
 			if (typeof $ !== 'undefined') {
 				this.findType = 'jquery';
-				return $;
+				var finder = function finder(_) {
+					var elems = [];
+					$(_).each(function (i, e) {
+						elems.push(e);
+					});
+					return elems;
+				};
+				return finder;
 			} else if (typeof Sizzle !== 'undefined') {
 				this.findType = 'sizzle';
 				return Sizzle;
@@ -79,6 +87,7 @@ var Descartes = function () {
 		value: function flatten() {
 			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.compute(tree) : arguments[0];
 			var parentSelector = arguments.length <= 1 || arguments[1] === undefined ? "" : arguments[1];
+			var priority = arguments.length <= 2 || arguments[2] === undefined ? this.mappingsPriority : arguments[2];
 
 			for (var selector in tree) {
 				var rules = Object.assign({}, tree[selector]);
@@ -95,14 +104,16 @@ var Descartes = function () {
 						}
 						delete rules[rule];
 						if (subtree !== null) {
-							this.flatten(subtree, nestedSelector);
+							this.flatten(subtree, nestedSelector, priority + 1);
 						}
 					}
 				}
 				this.mappings[selector] = {
 					rules: rules,
-					_listeners: _listeners
+					_listeners: _listeners,
+					priority: priority
 				};
+				if (this.mappingsPriority < priority) this.mappingsPriority = priority;
 			}
 			return this.mappings;
 		}
@@ -155,14 +166,26 @@ var Descartes = function () {
 	}, {
 		key: 'applyAll',
 		value: function applyAll() {
+			var _this2 = this;
+
+			// sort by priority
+			var prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(function () {
+				return [];
+			});
 			for (var key in this.mappings) {
-				this.apply(key, this.mappings[key].rules);
+				var mapping = this.mappings[key];
+				prioritizedList[mapping.priority].push([key, mapping.rules]);
 			}
+			prioritizedList.map(function (set) {
+				set.map(function (mapping) {
+					_this2.apply(mapping[0], mapping[1]);
+				});
+			});
 		}
 	}, {
 		key: 'apply',
 		value: function apply() {
-			var _this2 = this;
+			var _this3 = this;
 
 			var selector = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
 			var rule = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
@@ -170,17 +193,10 @@ var Descartes = function () {
 			if (selector === null || rule === null) return;
 			var elems = this.find(selector.toString());
 			if (elems.length === 0 && !this.isPseudo(selector)) return;
-			if (this.findType === 'jquery') {
-				this.applyPsuedo(selector, rule);
-				for (var key in rule) {
-					var computedRule = this.computeRule(rule[key], key, elems);
-					elems.css(key, computedRule);
-				}
-			} else if (this.findType === 'sizzle') {
-				elems.map(function (elem) {
-					elem.setAttribute('style', _this2.createStyleString(rule, elem));
-				});
-			}
+			elems.map(function (elem) {
+				elem.setAttribute('style', _this3.createStyleString(rule, elem));
+			});
+			return true;
 		}
 	}, {
 		key: 'createStyleString',
