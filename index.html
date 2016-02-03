@@ -2,8 +2,9 @@
 <html>
 	<head>
 		<title>Descartes</title>
-		<link rel="stylesheet" href="highlight/styles/monokai-sublime.css">
+		<link rel="stylesheet" href="highlight/styles/rainbow.css">
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,600,700,900' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Anonymous+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 		<nav></nav>
@@ -12,27 +13,37 @@
 				<h1>Descartes</h1>
 				<h2>Styles that think with JavaScript</h2>
 				<p>An experimental library for reactive, computable CSS with DOM access</p>
+<pre><code class="javascript">var reset = {"margin": 0, "padding": 0, "box-sizing": "border-box"};
+var rand_angle = function() { return Math.round(Math.random() * (180) - 90); };
+var rand_rgba = function() {
+  return "rgba("+[255,255,255].map(x => {
+    return Math.round(Math.random() * x);
+  }).join()+", 1)"
+};
+
+new Descartes({
+  "html": {
+    "_mixins": reset, // Reuse CSS rules with mixins
+    "body": { // Nest rules just like in Sass and Less
+      "_mixins": reset, // Look! Reused CSS rules
+      "_listeners": [[window, "click"]], // Bind event listeners to rules...
+      "background": function() {
+        return 'linear-gradient('
+          + rand_angle().toString() + 'deg,'
+          + rand_rgba() + ','
+          + rand_rgba() + ')'
+      } // ...to set dynamic property values when any listened events fire!
+    }
+  }
+})
+</code></pre>
 				<button>Get Started</button>
 				<button>Documentation</button>
 			</div>
 		</header>
-		<section class="plain">
-			<div>
+		<section id="#overview" class="plain">
+			<div class="wrapper">
 				<h3>What is this sorcery?</h3>
-				<ul>
-					<li>Style Tree - JSON as CSS</li>
-					<li>Fast</li>
-					<li>Small</li>
-					<li>Computable, shareable</li>
-
-					<li>Nesting</li>
-					<li>Mixins</li>
-					<li>Bindings</li>
-
-					<li>Functions</li>
-					<li>DOM Access</li>
-				</ul>
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quaerat iste nobis eos esse debitis molestiae, quae nam dolorem dolor veniam quas sed in praesentium molestias culpa nesciunt aliquid saepe assumenda?</p>
 			</div>
 		</section>
 		<section class="offset left">
