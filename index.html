@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>Descartes</title>
-		<script type="text/javascript" src="dist/descartes.js"></script>
+		<link rel="stylesheet" href="highlight/styles/monokai-sublime.css">
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,600,700,900' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
@@ -44,9 +44,44 @@
 				</div>
 			</div>
 			<div>
-				<pre>
-Hello
-				</pre>
+				<strong>CSS</strong>
+<pre><code class="css">html {
+  margin: 0;
+  padding: 0;
+}
+html body {
+  margin: 0;
+  padding: 0;
+}
+html body section {
+  max-width: 800px;
+}</code></pre>
+				<strong>Sass</strong>
+<pre><code class="sass">html {
+  margin: 0;
+  padding: 0;
+  body {
+  margin: 0;
+  padding: 0;
+    section {
+      max-width: 800px;
+    }
+  }
+}</code></pre>
+				<strong>Descartes + JavaScript</strong>
+<pre><code class="javascript">new Descartes({
+  "html" {
+    "margin": 0,
+    "padding": 0,
+    "body" {
+    "margin": 0,
+    "padding": 0,
+      "section" {
+        "max-width": "800px"
+      }
+    }
+  }
+})</code></pre>
 			</div>
 		</section>
 		<section class="offset right">
@@ -94,6 +129,11 @@ Hello
 			</div>
 		</section>
 	</body>
+	<script type="text/javascript" src="dist/descartes.js"></script>
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 	<script type="text/javascript" src="styles.js"></script>
+
+	<script type="text/javascript" src="highlight/highlight.pack.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
 </html>

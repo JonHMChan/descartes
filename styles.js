@@ -32,10 +32,10 @@ new Descartes({
 			background: () => {
 				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')'
 			},
-			"pre": {
-				border: "1px solid #fff",
-				"white-space": "pre-wrap",
-				"text-align": "left"
+			pre: {
+				width: "50%",
+				"font-size": 14,
+				padding: 10
 			},
 			nav: {
 				_mixins: wrapper,
@@ -98,10 +98,16 @@ new Descartes({
 					"&.left": {
 						"> div": {
 							width: "50%",
+							padding: 15,
+							"box-sizing": "border-box",
+							height: "100%",
 							float: "left",
 							"&:nth-child(1) > div": {
 								width: 400,
-								float: "right"
+								float: "right",
+								"margin-top": (_) => {
+									return (($(_).closest(".offset").height() - $(_).height()) / 2) + "px"
+								}
 							}
 						}
 					},
