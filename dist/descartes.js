@@ -196,14 +196,13 @@ var Descartes = function () {
 	}, {
 		key: 'applyPsuedo',
 		value: function applyPsuedo(selector, rules) {
-			if (selector.match(/.+::after/) !== null) {
+			if (this.isPseudo(selector)) {
 				var pure = selector.replace('::after', '').replace('::before', '');
 				if (this.findType === 'jquery') {
-					var sheet = '<style type="text/css">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
-					$(sheet).appendTo(pure);
+					var sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
+					if (selector.match(/.+::after/) !== null) $(sheet).appendTo(pure);
+					if (selector.match(/.+::before/) !== null) $(sheet).prependTo(pure);
 				}
-				return true;
-			} else if (selector.match(/.+::before/) !== null) {
 				return true;
 			}
 			return false;
@@ -219,6 +218,9 @@ var Descartes = function () {
 			var except = ['font-weight', 'opacity'];
 			if (Number(rule) === rule && except.indexOf(key) < 0) {
 				return rule.toString() + "px";
+			}
+			if (key === 'content') {
+				return "'" + rule.toString() + "'";
 			}
 			return rule.toString();
 		}

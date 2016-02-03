@@ -147,14 +147,13 @@ class Descartes {
 	}
 
 	applyPsuedo(selector, rules) {
-		if (selector.match(/.+::after/) !== null) {
+		if (this.isPseudo(selector)) {
 			let pure = selector.replace('::after', '').replace('::before', '')
 			if (this.findType === 'jquery') {
-				let sheet = '<style type="text/css">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
-				$(sheet).appendTo(pure)
+				let sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
+				if (selector.match(/.+::after/) !== null) $(sheet).appendTo(pure)
+				if (selector.match(/.+::before/) !== null) $(sheet).prependTo(pure)
 			}
-			return true
-		} else if (selector.match(/.+::before/) !== null) {
 			return true
 		}
 		return false
@@ -167,6 +166,9 @@ class Descartes {
 		let except = ['font-weight', 'opacity']
 		if (Number(rule) === rule && except.indexOf(key) < 0) {
 			return rule.toString() + "px"
+		}
+		if (key === 'content') {
+			return "'" + rule.toString() + "'"
 		}
 		return rule.toString()
 	}

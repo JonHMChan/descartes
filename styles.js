@@ -90,18 +90,18 @@ new Descartes({
 				"&.offset": {
 					background: "#fff",
 					position: "relative",
+					"&::after": {
+						content: "",
+						display: "table",
+						clear: "both"
+					},
 					"&.left": {
 						"> div": {
 							width: "50%",
 							float: "left",
 							"&:nth-child(1) > div": {
-								width: "50%",
+								width: 400,
 								float: "right"
-							},
-							"&:last-child::after": {
-								content: "\'\'",
-								display: "table",
-								clear: "both"
 							}
 						}
 					},
@@ -110,7 +110,7 @@ new Descartes({
 							width: "50%",
 							float: "left",
 							"&:nth-child(2) > div": {
-								width: "50%",
+								width: 400,
 								float: "left"
 							}
 						}
