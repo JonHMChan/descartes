@@ -191,8 +191,9 @@ var Descartes = function () {
 			var rule = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
 			if (selector === null || rule === null) return;
+			if (this.isPseudo(selector) && this.applyPsuedo(selector, rule)) return;
 			var elems = this.find(selector.toString());
-			if (elems.length === 0 && !this.isPseudo(selector)) return;
+			if (elems.length === 0) return;
 			elems.map(function (elem) {
 				elem.setAttribute('style', _this3.createStyleString(rule, elem));
 			});

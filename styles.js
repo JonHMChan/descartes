@@ -80,7 +80,7 @@ new Descartes({
 				}
 			},
 			section: {
-				padding: "25px 0",
+				padding: 25,
 				"&.plain": {
 					background: "#fff",
 					"> div": {

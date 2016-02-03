@@ -139,8 +139,9 @@ class Descartes {
 
 	apply(selector = null, rule = null) {
 		if (selector === null || rule === null) return
+		if (this.isPseudo(selector) && this.applyPsuedo(selector, rule)) return
 		let elems = this.find(selector.toString())
-		if (elems.length === 0 && !this.isPseudo(selector)) return
+		if (elems.length === 0) return
 		elems.map(elem => {
 			elem.setAttribute('style', this.createStyleString(rule, elem))
 		})
