@@ -1,6 +1,7 @@
-const m = [{margin: 0, padding: 0, "min-height": "100%"}]
+const m = {margin: 0, padding: 0, "height": "100%"}
+const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
 const wrapper = {"max-width": 800, margin: "0 auto"}
-const rgba = (a,b,c,d) => { return "rgba("+[a,b,c,d].join()+")" }
+const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
 const rand_rgba = () => {
 	return "rgba("+[255,255,255].map(x => {
 		return Math.round(Math.random() * x);
@@ -10,16 +11,32 @@ const rand_angle = () => {
 	return Math.round(Math.random() * (180) - 90);
 }
 
-const _ = {
+const prop = (sel, a, b, x, y) => {
+	if (sel <= a) return x
+	if (sel >= b) return y
+	const ratio = (sel-a)/(b-a)
+	return (x + ((y-x) * ratio))
+}
+
+new Descartes({
 	"html": {
 		_mixins: m,
 		"font-family": "Source Sans Pro, Helvetica",
-		color: "#fff",
+		color: "#333",
+		"font-size": 16,
+		"font-weight": 300,
 		body: {
+			_mixins: m,
+			_listeners: [[window, "click"]],
+			height: "100%",
 			background: () => {
 				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')'
 			},
-			_mixins: m,
+			pre: {
+				width: "50%",
+				"font-size": 14,
+				padding: 10
+			},
 			nav: {
 				_mixins: wrapper,
 				"text-align": "center",
@@ -27,21 +44,30 @@ const _ = {
 			},
 			header: {
 				_mixins: m,
+				height: "90%",
+				color: "#fff",
 				"div.content": {
-					_listeners: [[window, "resize"]],
-					"margin": (s) => { return (((window.innerHeight - s.offsetHeight) / 2) - 50) + "px 0"; },
+					_listeners: [[window, "scroll"]],
+					_mixins: [verticalAlign, wrapper],
+					"opacity": () => {
+						return prop($(window).scrollTop(), 150, 350, 1, 0);
+					},
 					"text-align": "center",
 					h1: {
-						"font-size": 120,
-						"font-weight": 200,
+						_mixins: heading,
+						"font-size": 120,  
 						"line-height": 110,
-						margin: 0
+						"margin-bottom": 0
 					},
 					h2: {
-						margin: 0,
-						"margin-bottom": 15,
-						"font-weight": 200,
+						_mixins: heading,
+						"margin-bottom": 0,
 						"font-size": 36
+					},
+					p: {
+						_mixins: heading,
+						"margin-bottom": 15,
+						"font-size": 20
 					},
 					button: {
 						background: "none",
@@ -54,16 +80,55 @@ const _ = {
 				}
 			},
 			section: {
-				color: "#333",
-				background: "rgba(255,255,255,0.80)",
-				padding: "25px 0",
-				"> div": {
-					_mixins: wrapper,
+				padding: 25,
+				"&.plain": {
+					background: "#fff",
+					"> div": {
+						_mixins: wrapper,
+					}
+				},
+				"&.offset": {
+					background: "#fff",
+					position: "relative",
+					"&::after": {
+						content: "",
+						display: "table",
+						clear: "both"
+					},
+					"&.left > div": {
+						width: "50%",
+						padding: 15,
+						"box-sizing": "border-box",
+						height: "100%",
+						float: "left",
+						"&:nth-child(1) > div": {
+							width: 400,
+							float: "right",
+							"margin-top": (_) => {
+								return (($(_).closest(".offset").height() - $(_).height()) / 2) + "px"
+							}
+						}
+					},
+					"&.right > div": {
+						width: "50%",
+						float: "left",
+						"&:nth-child(2) > div": {
+							width: 400,
+							float: "left"
+						}
+					}
+				},
+				h3: {
+					_mixins: heading,
+					"font-size": 36,
+					"margin-bottom": 0
+				},
+				h4: {
+					_mixins: heading,
+					"font-size": 24,
+					"margin-bottom": 0
 				}
 			}
 		}
 	}
-}
-
-d = new Descartes(_)
-d.render()
+})
