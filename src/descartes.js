@@ -175,7 +175,7 @@ class Descartes {
 		if (typeof rule === 'function' && elem !== null) {
 			rule = rule(elem)
 		}
-		let except = ['font-weight', 'opacity']
+		let except = ['font-weight', 'opacity', 'z-index']
 		if (Number(rule) === rule && except.indexOf(key) < 0) {
 			return rule.toString() + "px"
 		}

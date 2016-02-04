@@ -8,8 +8,10 @@ var Plato = function () {
 	function Plato() {
 		_classCallCheck(this, Plato);
 
-		this.wrapper = 800;
+		this.wrapper = 1200;
 		this.columns = 12;
+
+		this.gutter = 1.6;
 	}
 
 	/* Value functions */
@@ -74,25 +76,12 @@ var Plato = function () {
 		key: "clearfix",
 		value: function clearfix() {
 			return {
-				"::after": {
+				"&::after": {
 					"content": "",
 					"display": "table",
 					"clear": "both"
 				}
 			};
-		}
-
-		// Row
-		// ----------
-		// Used to contain elements that are going to be arranged in a grid and
-		// essentially is a combination of `wrapper()` and `clearfix()`
-
-	}, {
-		key: "row",
-		value: function row() {
-			var width = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-
-			return Object.assign(this.wrapper(width), clearfix());
 		}
 
 		// Column
@@ -103,11 +92,20 @@ var Plato = function () {
 		key: "col",
 		value: function col() {
 			var num = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
-			var columns = arguments.length <= 1 || arguments[1] === undefined ? this.columns : arguments[1];
+			var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.columns : arguments[2];
+			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.gutter : arguments[3];
 
+			var calc = function calc(n, c, g) {
+				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
+			};
 			return {
-				"width": (num / float(columns)).toString() + "%",
-				"float": "left"
+				"float": "left",
+				"width": calc(num, columns, gutter).toString() + "%",
+				"margin-left": (offset * calc(1, columns, gutter)).toString() + "%",
+				"margin-right": function marginRight(_) {
+					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+				}
 			};
 		}
 	}]);

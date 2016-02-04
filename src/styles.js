@@ -1,13 +1,15 @@
 const m = {margin: 0, padding: 0, "height": "100%"}
 const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
-const wrapper = {"max-width": 800, margin: "0 auto"}
+const max = 900
+const wrapper = {"max-width": max, margin: "0 auto"}
 const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
 const _button = {background: "none",
 				"border-width": "1px",
 				"border-style": "solid",
 				"border-color": "currentColor",
 				padding: "10px 15px",
-				"font-size": 14,
+				"font-size": 12,
+				"letter-spacing": 1,
 				"text-transform": "uppercase",
 				"cursor": "pointer"}
 const clearfix = {"&::after":
@@ -33,6 +35,8 @@ const prop = (sel, a, b, x, y) => {
 	return (x + ((y-x) * ratio))
 }
 
+const p = new Plato()
+
 new Descartes({
 	"html": {
 		_mixins: m,
@@ -57,10 +61,39 @@ new Descartes({
 					"font-family": "Anonymous Pro"
 				}
 			},
+			".row": { _mixins: p.clearfix() },
+			".col1": { _mixins: p.col(1) },
+			".col2": { _mixins: p.col(2) },
+			".col3": { _mixins: p.col(3) },
+			".col4": { _mixins: p.col(4) },
+			".col5": { _mixins: p.col(5) },
+			".col6": { _mixins: p.col(6) },
+			".col7": { _mixins: p.col(7) },
+			".col8": { _mixins: p.col(8) },
+			".col9": { _mixins: p.col(9) },
+			".col10": { _mixins: p.col(10) },
+			".col11": { _mixins: p.col(11) },
+			".col12": { _mixins: p.col(12) },
 			nav: {
-				_mixins: wrapper,
+				_listeners: [[window, "scroll"]],
 				"text-align": "center",
-				position: "fixed"
+				position: "fixed",
+				width: "100%",
+				"z-index": 9999,
+				color: (_) => {
+					let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
+					return p.rgba(v,v,v,1)
+				},
+				background: (_) => {
+					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.9) )
+				},
+				"box-shadow": (_) => {
+					return "0 0 15px " + p.rgba(100,100,100, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.2) )
+				},
+				"> div": {
+					_mixins: wrapper,
+					padding: 15
+				}
 			},
 			"a.button": {
 				_mixins: _button
@@ -73,7 +106,7 @@ new Descartes({
 			},
 			header: {
 				_mixins: m,
-				height: "95%",
+				height: "90%",
 				color: "#fff",
 				"div.content": {
 					_listeners: [[window, "scroll"]],
@@ -118,12 +151,11 @@ new Descartes({
 			section: {
 				"&.plain": {
 					padding: "25px 0",
-					background: "#fff",
-					pre: {
-						width: "100%"
-					},
+					background: "none",
+					color: "#fff",
+					"text-align": "center",
 					"> div": {
-						_mixins: wrapper
+						_mixins: [wrapper, p.clearfix()]
 					}
 				},
 				"&.offset": {
@@ -140,7 +172,7 @@ new Descartes({
 						display: "table-cell",
 						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
-							width: 400,
+							width: max/2,
 							float: "right"
 						}
 					},
@@ -151,11 +183,11 @@ new Descartes({
 						display: "table-cell",
 						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
-							width: 400,
+							width: max/2,
 							float: "right"
 						},
 						"&:nth-child(2) > div": {
-							width: 400,
+							width: max/2,
 							float: "left"
 						}
 					}
