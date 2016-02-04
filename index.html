@@ -42,17 +42,35 @@ new Descartes({
 				<button>Documentation</button>
 			</div>
 		</header>
-		<section id="#overview" class="plain">
-			<div class="wrapper">
-				<h3>What is this sorcery?</h3>
+		<section class="plain">
+			<div>
+<pre><code class="javascript">&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;script type="text/javascript" src="path/to/descartes.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"&gt;
+      new Descartes({
+      	"h1": {
+          "text-align": "center",
+      	  "font-size": 72,
+      	  "font-family": "Helvetica"
+      	}
+      })
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+	&lt;h1&gt;Hello World!&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
 			</div>
 		</section>
 		<section class="offset left">
 			<div>
 				<div>
-				<h3>Style Tree</h3>
-				<h4>Write your styles in a JSON object</h4>
-				<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. It gives you all the advantages of a typical preprocessor and some. It means you can do real programming to set your styles, get access to the DOM, and even bind listeners.</p>
+					<h3>Style Tree</h3>
+					<h4>Write your styles in a JSON object</h4>
+					<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. It gives you all the advantages of a typical preprocessor and some. It means you can do real programming to set your styles, get access to the DOM, and even bind listeners.</p>
 				</div>
 			</div>
 			<div>
@@ -143,7 +161,7 @@ html body section {
 		</section>
 	</body>
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-	<script type="text/javascript" src="styles.js"></script>
+	<script type="text/javascript" src="dist/styles.js"></script>
 
 	<script type="text/javascript" src="highlight/highlight.pack.js"></script>
 	<script>hljs.initHighlightingOnLoad();</script>

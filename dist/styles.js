@@ -1,22 +1,30 @@
-const m = {margin: 0, padding: 0, "height": "100%"}
-const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
-const wrapper = {"max-width": 800, margin: "0 auto"}
-const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
-const rand_rgba = () => {
-	return "rgba("+[255,255,255].map(x => {
-		return Math.round(Math.random() * x);
-	}).join()+", 1)"
-}
-const rand_angle = () => {
-	return Math.round(Math.random() * (180) - 90);
-}
+"use strict";
 
-const prop = (sel, a, b, x, y) => {
-	if (sel <= a) return x
-	if (sel >= b) return y
-	const ratio = (sel-a)/(b-a)
-	return (x + ((y-x) * ratio))
-}
+var m = { margin: 0, padding: 0, "height": "100%" };
+var heading = { "margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300 };
+var wrapper = { "max-width": 800, margin: "0 auto" };
+var verticalAlign = { position: "relative", top: "50%", "transform": "translateY(-50%)" };
+var clearfix = { "&::after": {
+		content: "",
+		display: "table",
+		clear: "both"
+	}
+};
+var rand_rgba = function rand_rgba() {
+	return "rgba(" + [255, 255, 255].map(function (x) {
+		return Math.round(Math.random() * x);
+	}).join() + ", 1)";
+};
+var rand_angle = function rand_angle() {
+	return Math.round(Math.random() * 180 - 90);
+};
+
+var prop = function prop(sel, a, b, x, y) {
+	if (sel <= a) return x;
+	if (sel >= b) return y;
+	var ratio = (sel - a) / (b - a);
+	return x + (y - x) * ratio;
+};
 
 new Descartes({
 	"html": {
@@ -29,8 +37,8 @@ new Descartes({
 			_mixins: m,
 			_listeners: [[window, "click"]],
 			height: "100%",
-			background: () => {
-				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')'
+			background: function background() {
+				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')';
 			},
 			pre: {
 				"font-size": 14,
@@ -53,13 +61,13 @@ new Descartes({
 				"div.content": {
 					_listeners: [[window, "scroll"]],
 					_mixins: [verticalAlign, wrapper],
-					"opacity": () => {
+					"opacity": function opacity() {
 						return prop($(window).scrollTop(), 150, 350, 1, 0);
 					},
 					"text-align": "center",
 					h1: {
 						_mixins: heading,
-						"font-size": 120,  
+						"font-size": 120,
 						"line-height": 110,
 						"margin-bottom": 0
 					},
@@ -98,8 +106,7 @@ new Descartes({
 				"&.plain": {
 					background: "#fff",
 					pre: {
-						width: "100%",
-						"font-size": 12
+						width: "100%"
 					},
 					"> div": {
 						_mixins: wrapper,
@@ -107,30 +114,28 @@ new Descartes({
 					}
 				},
 				"&.offset": {
+					_mixins: clearfix,
 					background: "#fff",
 					position: "relative",
-					"&::after": {
-						content: "",
-						display: "table",
-						clear: "both"
-					},
+					display: "table",
+					width: "100%",
 					"&.left > div": {
 						width: "50%",
 						padding: 15,
 						"box-sizing": "border-box",
-						height: "100%",
-						float: "left",
+						display: "table-cell",
+						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
 							width: 400,
-							float: "right",
-							"margin-top": (_) => {
-								return (($(_).closest(".offset").height() - $(_).height()) / 2) + "px"
-							}
+							float: "right"
 						}
 					},
 					"&.right > div": {
 						width: "50%",
-						float: "left",
+						padding: 15,
+						"box-sizing": "border-box",
+						display: "table-cell",
+						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
 							float: "right"
 						},
@@ -153,4 +158,4 @@ new Descartes({
 			}
 		}
 	}
-})
+});
