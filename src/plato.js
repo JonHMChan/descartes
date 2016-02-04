@@ -51,6 +51,17 @@ class Plato {
 		}
 	}
 
+	// Row
+	// ----------
+	// Used as part of the grid, applies resets and clearfixes
+	row() {
+		return Object.assign(this.clearfix())
+	}
+
+	tableRow() {
+		return Object.assign(this.clearfix(), {"display": "table"})
+	}
+
 	// Column
 	// ----------
 	// Used in combination with `row()` to create a grid
@@ -62,5 +73,9 @@ class Plato {
 			"margin-left": (offset*calc(1,columns,gutter)).toString() + "%",
 			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
 		}
+	}
+
+	tableCol(num = 1, offset = 0, columns = this.columns, gutter = this.gutter) {
+		return Object.assign(this.col(num, offset, columns, gutter), {"display": "table-cell"})
 	}
 }

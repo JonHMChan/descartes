@@ -86,6 +86,21 @@ var Plato = function () {
 			};
 		}
 
+		// Row
+		// ----------
+		// Used as part of the grid, applies resets and clearfixes
+
+	}, {
+		key: "row",
+		value: function row() {
+			return Object.assign(this.clearfix());
+		}
+	}, {
+		key: "tableRow",
+		value: function tableRow() {
+			return Object.assign(this.clearfix(), { "display": "table" });
+		}
+
 		// Column
 		// ----------
 		// Used in combination with `row()` to create a grid
@@ -109,6 +124,16 @@ var Plato = function () {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
 				}
 			};
+		}
+	}, {
+		key: "tableCol",
+		value: function tableCol() {
+			var num = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
+			var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.columns : arguments[2];
+			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.gutter : arguments[3];
+
+			return Object.assign(this.col(num, offset, columns, gutter), { "display": "table-cell" });
 		}
 	}]);
 

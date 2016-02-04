@@ -3,8 +3,9 @@
 	<head>
 		<title>Descartes</title>
 		<link rel="stylesheet" href="highlight/styles/rainbow.css">
+		<!--
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,600,700,900' rel='stylesheet' type='text/css'>
-		<link href='https://fonts.googleapis.com/css?family=Anonymous+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Anonymous+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>-->
 		<script type="text/javascript" src="dist/descartes.js"></script>
 	</head>
 	<body>
@@ -27,17 +28,17 @@
 				<button>Documentation</button>
 			</div>
 		</header>
-		<section class="offset left">
-			<div>
-				<div>
+		<section class="offset">
+			<div class="row">
+				<div class="col4">
 					<h3>Smart Stylesheets</h3>
 					<h4>Powered by JavaScript</h4>
 					<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. You can get all the advantages of a typical preprocessor and some: complex programming to set styles, access to the DOM, and even basic event listeners!</p>
 					<p><button>Click anywhere to see it in action</button></p>
 				</div>
-			</div>
-			<div>
-				<div>
+				<div class="col8">
+					<div class="container">
+					<div>
 					<strong>index.html</strong>
 <pre><code class="javascript">&lt;!doctype html&gt;
 &lt;html&gt;
@@ -77,6 +78,8 @@ new Descartes({ // Just include descartes.js in the &lt;head&gt; tag
   }
 })
 </code></pre>
+				</div>
+				</div>
 			</div>
 		</section>
 		<section class="plain">

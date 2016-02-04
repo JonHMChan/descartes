@@ -1,4 +1,4 @@
-const m = {margin: 0, padding: 0, "height": "100%"}
+const m = {margin: 0, padding: 0, height: "100%"}
 const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
 const max = 900
 const wrapper = {"max-width": max, margin: "0 auto"}
@@ -61,26 +61,26 @@ new Descartes({
 					"font-family": "Anonymous Pro"
 				}
 			},
-			".row": { _mixins: p.clearfix() },
-			".col1": { _mixins: p.col(1) },
-			".col2": { _mixins: p.col(2) },
-			".col3": { _mixins: p.col(3) },
-			".col4": { _mixins: p.col(4) },
-			".col5": { _mixins: p.col(5) },
-			".col6": { _mixins: p.col(6) },
-			".col7": { _mixins: p.col(7) },
-			".col8": { _mixins: p.col(8) },
-			".col9": { _mixins: p.col(9) },
-			".col10": { _mixins: p.col(10) },
-			".col11": { _mixins: p.col(11) },
-			".col12": { _mixins: p.col(12) },
-			nav: {
+			".row": { _mixins: p.tableRow() },
+			".col1": { _mixins: p.tableCol(1) },
+			".col2": { _mixins: p.tableCol(2) },
+			".col3": { _mixins: p.tableCol(3) },
+			".col4": { _mixins: p.tableCol(4) },
+			".col5": { _mixins: p.tableCol(5) },
+			".col6": { _mixins: p.tableCol(6) },
+			".col7": { _mixins: p.tableCol(7) },
+			".col8": { _mixins: p.tableCol(8) },
+			".col9": { _mixins: p.tableCol(9) },
+			".col10": { _mixins: p.tableCol(10) },
+			".col11": { _mixins: p.tableCol(11) },
+			".col12": { _mixins: p.tableCol(12) },
+			"nav": {
 				_listeners: [[window, "scroll"]],
 				"text-align": "center",
 				position: "fixed",
 				width: "100%",
 				"z-index": 9999,
-				color: (_) => {
+				"a": (_) => {
 					let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
 					return p.rgba(v,v,v,1)
 				},
@@ -159,37 +159,14 @@ new Descartes({
 					}
 				},
 				"&.offset": {
-					_mixins: clearfix,
+					_mixins: m,
+					width: "100%",
 					background: "rgba(255,255,255,0.75)",
 					position: "relative",
-					display: "table",
 					height: "100%",
-					width: "100%",
-					"&.left > div": {
-						width: "50%",
-						padding: 15,
-						"box-sizing": "border-box",
-						display: "table-cell",
-						"vertical-align": "middle",
-						"&:nth-child(1) > div": {
-							width: max/2,
-							float: "right"
-						}
-					},
-					"&.right > div": {
-						width: "50%",
-						padding: 15,
-						"box-sizing": "border-box",
-						display: "table-cell",
-						"vertical-align": "middle",
-						"&:nth-child(1) > div": {
-							width: max/2,
-							float: "right"
-						},
-						"&:nth-child(2) > div": {
-							width: max/2,
-							float: "left"
-						}
+					padding: "25px 0",
+					"> div": {
+						_mixins: [p.tableRow(), wrapper]
 					}
 				},
 				h3: {
