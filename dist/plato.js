@@ -28,7 +28,9 @@ var Plato = function () {
 			var b = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 			var a = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
 
-			return "rgba(" + [r, g, b, a].join(",") + ")";
+			return "rgba(" + [r, g, b].map(function (x) {
+				return Math.round(x);
+			}).join(",") + "," + a + ")";
 		}
 
 		// Scale
