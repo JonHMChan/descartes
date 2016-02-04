@@ -72,9 +72,25 @@ new Descartes({
 			".col11": { _mixins: p.col(11) },
 			".col12": { _mixins: p.col(12) },
 			nav: {
-				_mixins: wrapper,
+				_listeners: [[window, "scroll"]],
 				"text-align": "center",
-				position: "fixed"
+				position: "fixed",
+				width: "100%",
+				"z-index": 9999,
+				color: function color(_) {
+					var v = p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 255, 50);
+					return p.rgba(v, v, v, 1);
+				},
+				background: function background(_) {
+					return p.rgba(255, 255, 255, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.9));
+				},
+				"box-shadow": function boxShadow(_) {
+					return "0 0 15px " + p.rgba(100, 100, 100, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.2));
+				},
+				"> div": {
+					_mixins: wrapper,
+					padding: 15
+				}
 			},
 			"a.button": {
 				_mixins: _button
@@ -132,12 +148,11 @@ new Descartes({
 			section: {
 				"&.plain": {
 					padding: "25px 0",
-					background: "#fff",
-					pre: {
-						width: "100%"
-					},
+					background: "none",
+					color: "#fff",
+					"text-align": "center",
 					"> div": {
-						_mixins: wrapper
+						_mixins: [wrapper, p.clearfix()]
 					}
 				},
 				"&.offset": {
