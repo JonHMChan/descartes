@@ -35,7 +35,7 @@ new Descartes({
 		"font-weight": 300,
 		body: {
 			_mixins: m,
-			_listeners: [[window, "click"]],
+			_listeners: [[window, "click"], [window, "touchstart"]],
 			height: "100%",
 			background: function background() {
 				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')';
