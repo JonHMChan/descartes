@@ -36,8 +36,12 @@ new Descartes({
 			_mixins: m,
 			_listeners: [[window, "click"], [window, "touchstart"]],
 			height: "100%",
-			background: () => {
-				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')'
+			"background": () => {
+				return 'linear-gradient('
+					+ rand_angle().toString() + 'deg,'
+					+ rand_rgba() + ','
+					+ rand_rgba() + ')'
+					+ ' center center fixed no-repeat'
 			},
 			pre: {
 				"font-size": 14,
@@ -55,7 +59,7 @@ new Descartes({
 			},
 			header: {
 				_mixins: m,
-				height: "90%",
+				height: "95%",
 				color: "#fff",
 				"div.content": {
 					_listeners: [[window, "scroll"]],
@@ -103,13 +107,13 @@ new Descartes({
 			},
 			section: {
 				"&.plain": {
+					padding: "25px 0",
 					background: "#fff",
 					pre: {
 						width: "100%"
 					},
 					"> div": {
-						_mixins: wrapper,
-						padding: 25
+						_mixins: wrapper
 					}
 				},
 				"&.offset": {
@@ -136,6 +140,7 @@ new Descartes({
 						display: "table-cell",
 						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
+							width: 400,
 							float: "right"
 						},
 						"&:nth-child(2) > div": {

@@ -14,7 +14,37 @@
 				<h1>Descartes</h1>
 				<h2>Styles that think with JavaScript</h2>
 				<p>An experimental library for reactive, computable CSS with DOM access</p>
-<pre><code class="javascript">var reset = {"margin": 0, "padding": 0, "box-sizing": "border-box"};
+				<button>Get Started</button>
+				<button>Documentation</button>
+			</div>
+		</header>
+		<section class="offset left">
+			<div>
+				<div>
+					<h3>Programmable Styles</h3>
+					<h4>No stylesheets required</h4>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem ipsum voluptates error, excepturi nobis voluptatum. Repellendus possimus assumenda iste tempore sit, atque inventore. Provident facilis rerum saepe, cum eveniet beatae!</p>
+				</div>
+			</div>
+			<div>
+				<div>
+					<strong>index.html</strong>
+<pre><code class="javascript">&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;script type="text/javascript" src="path/to/descartes.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+	&lt;h1&gt;Hello World!&lt;/h1&gt;
+  &lt;script type="text/javascript" src="styles.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+				</div>
+				<div>
+			<strong>styles.js</strong>
+<pre><code class="javascript">
+var reset = {"margin": 0, "padding": 0, "box-sizing": "border-box"};
 var rand_angle = function() { return Math.round(Math.random() * (180) - 90); };
 var rand_rgba = function() {
   return "rgba("+[255,255,255].map(x => {
@@ -22,12 +52,12 @@ var rand_rgba = function() {
   }).join()+", 1)"
 };
 
-new Descartes({
+new Descartes({ // Just include descartes.js in the &lt;head&gt; tag
   "html": {
     "_mixins": reset, // Reuse CSS rules with mixins
-    "body": { // Nest rules just like in Sass and Less
-      "_mixins": reset, // Look! Reused CSS rules
-      "_listeners": [[window, "click"]], // Bind event listeners to rules...
+    "body": { // Nest selectors just like in Sass and Less
+      "_mixins": reset,
+      "_listeners": [[window, "click"],[window, "touchstart"]], // Bind events...
       "background": function() {
         return 'linear-gradient('
           + rand_angle().toString() + 'deg,'
@@ -38,66 +68,11 @@ new Descartes({
   }
 })
 </code></pre>
-				<button>Get Started</button>
-				<button>Documentation</button>
-			</div>
-		</header>
-		<section class="plain">
-			<div>
-<pre><code class="javascript">&lt;!doctype html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;script type="text/javascript" src="path/to/descartes.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript"&gt;
-      new Descartes({
-      	"h1": {
-          "text-align": "center",
-      	  "font-size": 72,
-      	  "font-family": "Helvetica"
-      	}
-      })
-    &lt;/script&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-	&lt;h1&gt;Hello World!&lt;/h1&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
 			</div>
 		</section>
-		<section class="offset left">
+		<section class="offset right">
 			<div>
 				<div>
-					<h3>Style Tree</h3>
-					<h4>Write your styles in a JSON object</h4>
-					<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. It gives you all the advantages of a typical preprocessor and some. It means you can do real programming to set your styles, get access to the DOM, and even bind listeners.</p>
-				</div>
-			</div>
-			<div>
-				<strong>CSS</strong>
-<pre><code class="css">html {
-  margin: 0;
-  padding: 0;
-}
-html body {
-  margin: 0;
-  padding: 0;
-}
-html body section {
-  max-width: 800px;
-}</code></pre>
-				<strong>Sass</strong>
-<pre><code class="sass">html {
-  margin: 0;
-  padding: 0;
-  body {
-  margin: 0;
-  padding: 0;
-    section {
-      max-width: 800px;
-    }
-  }
-}</code></pre>
 				<strong>Descartes + JavaScript</strong>
 <pre><code class="javascript">new Descartes({
   "html" {
@@ -112,8 +87,39 @@ html body section {
     }
   }
 })</code></pre>
+				<strong>Sass or Less Equivalent</strong>
+<pre><code class="sass">html {
+  margin: 0;
+  padding: 0;
+  body {
+  margin: 0;
+  padding: 0;
+    section {
+      max-width: 800px;
+    }
+  }
+}</code></pre>
+				<strong>Plain CSS Equivalent</strong>
+<pre><code class="css">html {
+  margin: 0;
+  padding: 0;
+}
+html body {
+  margin: 0;
+  padding: 0;
+}
+html body section {
+  max-width: 800px;
+}</code></pre>
+				</div>
 			</div>
-			<br style="clear: both; display: table;" />
+			<div>
+				<div>
+					<h3>Style Tree</h3>
+					<h4>Write your styles in a JSON object</h4>
+					<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. It gives you all the advantages of a typical preprocessor and some. You can do complex programming to set your styles, get access to the DOM, and even combine styles like never before.</p>
+				</div>
+			</div>
 		</section>
 		<section class="offset right">
 			<div>&nbsp;</div>
