@@ -38,7 +38,7 @@ var prop = function prop(sel, a, b, x, y) {
 
 var p = new Plato();
 
-new Descartes({
+const d = new Descartes({
 	"html": {
 		_mixins: m,
 		"font-family": "Source Sans Pro, Helvetica",
@@ -56,6 +56,15 @@ new Descartes({
 				"font-size": 14,
 				code: {
 					"font-family": "Anonymous Pro"
+				}
+			},
+			"a": {
+				"text-decoration": "underline",
+				"&:link": {
+					"color": "#fff"
+				},
+				"&:hover": {
+					"color": rand_rgba()
 				}
 			},
 			".row": { _mixins: p.clearfix() },
@@ -203,3 +212,5 @@ new Descartes({
 		}
 	}
 });
+
+console.log(d.tree, d.mappings)
