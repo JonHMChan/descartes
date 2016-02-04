@@ -2,6 +2,13 @@ const m = {margin: 0, padding: 0, "height": "100%"}
 const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
 const wrapper = {"max-width": 800, margin: "0 auto"}
 const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
+const clearfix = {"&::after":
+	{
+		content: "",
+		display: "table",
+		clear: "both"
+	}
+}
 const rand_rgba = () => {
 	return "rgba("+[255,255,255].map(x => {
 		return Math.round(Math.random() * x);
@@ -98,8 +105,7 @@ new Descartes({
 				"&.plain": {
 					background: "#fff",
 					pre: {
-						width: "100%",
-						"font-size": 12
+						width: "100%"
 					},
 					"> div": {
 						_mixins: wrapper,
@@ -107,30 +113,28 @@ new Descartes({
 					}
 				},
 				"&.offset": {
+					_mixins: clearfix,
 					background: "#fff",
 					position: "relative",
-					"&::after": {
-						content: "",
-						display: "table",
-						clear: "both"
-					},
+					display: "table",
+					width: "100%",
 					"&.left > div": {
 						width: "50%",
 						padding: 15,
 						"box-sizing": "border-box",
-						height: "100%",
-						float: "left",
+						display: "table-cell",
+						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
 							width: 400,
-							float: "right",
-							"margin-top": (_) => {
-								return (($(_).closest(".offset").height() - $(_).height()) / 2) + "px"
-							}
+							float: "right"
 						}
 					},
 					"&.right > div": {
 						width: "50%",
-						float: "left",
+						padding: 15,
+						"box-sizing": "border-box",
+						display: "table-cell",
+						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
 							float: "right"
 						},
