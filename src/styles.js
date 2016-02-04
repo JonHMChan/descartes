@@ -2,6 +2,14 @@ const m = {margin: 0, padding: 0, "height": "100%"}
 const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
 const wrapper = {"max-width": 800, margin: "0 auto"}
 const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
+const _button = {background: "none",
+				"border-width": "1px",
+				"border-style": "solid",
+				"border-color": "currentColor",
+				padding: "10px 15px",
+				"font-size": 14,
+				"text-transform": "uppercase",
+				"cursor": "pointer"}
 const clearfix = {"&::after":
 	{
 		content: "",
@@ -54,6 +62,12 @@ new Descartes({
 				"text-align": "center",
 				position: "fixed"
 			},
+			"a.button": {
+				_mixins: _button
+			},
+			button: {
+				_mixins: _button
+			},
 			".wrapper": {
 				_mixins: wrapper
 			},
@@ -96,12 +110,8 @@ new Descartes({
 						}
 					},
 					button: {
-						background: "none",
-						border: "1px solid #fff",
-						padding: "10px 15px",
-						color: "#fff",
-						"font-size": 14,
-						"text-transform": "uppercase"
+						_mixins: _button,
+						color: "#fff"
 					}
 				}
 			},
@@ -118,9 +128,10 @@ new Descartes({
 				},
 				"&.offset": {
 					_mixins: clearfix,
-					background: "#fff",
+					background: "rgba(255,255,255,0.75)",
 					position: "relative",
 					display: "table",
+					height: "100%",
 					width: "100%",
 					"&.left > div": {
 						width: "50%",

@@ -24,6 +24,7 @@
 					<h3>Programmable Styles</h3>
 					<h4>No stylesheets required</h4>
 					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem ipsum voluptates error, excepturi nobis voluptatum. Repellendus possimus assumenda iste tempore sit, atque inventore. Provident facilis rerum saepe, cum eveniet beatae!</p>
+					<p><button>Try it out</button></p>
 				</div>
 			</div>
 			<div>
@@ -43,11 +44,10 @@
 				</div>
 				<div>
 			<strong>styles.js</strong>
-<pre><code class="javascript">
-var reset = {"margin": 0, "padding": 0, "box-sizing": "border-box"};
+<pre><code class="javascript">var reset = {"margin": 0, "padding": 0, "box-sizing": "border-box"};
 var rand_angle = function() { return Math.round(Math.random() * (180) - 90); };
 var rand_rgba = function() {
-  return "rgba("+[255,255,255].map(x => {
+  return "rgba("+[255,255,255].map(function(x) {
     return Math.round(Math.random() * x);
   }).join()+", 1)"
 };
