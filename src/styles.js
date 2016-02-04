@@ -2,6 +2,14 @@ const m = {margin: 0, padding: 0, "height": "100%"}
 const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
 const wrapper = {"max-width": 800, margin: "0 auto"}
 const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
+const _button = {background: "none",
+				"border-width": "1px",
+				"border-style": "solid",
+				"border-color": "currentColor",
+				padding: "10px 15px",
+				"font-size": 14,
+				"text-transform": "uppercase",
+				"cursor": "pointer"}
 const clearfix = {"&::after":
 	{
 		content: "",
@@ -34,10 +42,14 @@ new Descartes({
 		"font-weight": 300,
 		body: {
 			_mixins: m,
-			_listeners: [[window, "click"]],
+			_listeners: [[window, "click"], [window, "touchstart"]],
 			height: "100%",
-			background: () => {
-				return 'linear-gradient(' + rand_angle().toString() + 'deg, ' + rand_rgba() + ', ' + rand_rgba() + ')'
+			"background": () => {
+				return 'linear-gradient('
+					+ rand_angle().toString() + 'deg,'
+					+ rand_rgba() + ','
+					+ rand_rgba() + ')'
+					+ ' center center fixed no-repeat'
 			},
 			pre: {
 				"font-size": 14,
@@ -50,12 +62,18 @@ new Descartes({
 				"text-align": "center",
 				position: "fixed"
 			},
+			"a.button": {
+				_mixins: _button
+			},
+			button: {
+				_mixins: _button
+			},
 			".wrapper": {
 				_mixins: wrapper
 			},
 			header: {
 				_mixins: m,
-				height: "90%",
+				height: "95%",
 				color: "#fff",
 				"div.content": {
 					_listeners: [[window, "scroll"]],
@@ -92,31 +110,28 @@ new Descartes({
 						}
 					},
 					button: {
-						background: "none",
-						border: "1px solid #fff",
-						padding: "10px 15px",
-						color: "#fff",
-						"font-size": 14,
-						"text-transform": "uppercase"
+						_mixins: _button,
+						color: "#fff"
 					}
 				}
 			},
 			section: {
 				"&.plain": {
+					padding: "25px 0",
 					background: "#fff",
 					pre: {
 						width: "100%"
 					},
 					"> div": {
-						_mixins: wrapper,
-						padding: 25
+						_mixins: wrapper
 					}
 				},
 				"&.offset": {
 					_mixins: clearfix,
-					background: "#fff",
+					background: "rgba(255,255,255,0.75)",
 					position: "relative",
 					display: "table",
+					height: "100%",
 					width: "100%",
 					"&.left > div": {
 						width: "50%",
@@ -136,6 +151,7 @@ new Descartes({
 						display: "table-cell",
 						"vertical-align": "middle",
 						"&:nth-child(1) > div": {
+							width: 400,
 							float: "right"
 						},
 						"&:nth-child(2) > div": {
