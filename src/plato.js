@@ -1,7 +1,9 @@
 class Plato {
 	constructor() {
-		this.wrapper = 800
+		this.wrapper = 1200
 		this.columns = 12
+
+		this.gutter = 1.6
 	}
 
 	/* Value functions */
@@ -41,7 +43,7 @@ class Plato {
 	// Standard clearfix implementation using ::after psuedo property
 	clearfix() {
 		return {
-			"::after": {
+			"&::after": {
 				"content": "",
 				"display": "table",
 				"clear": "both"
@@ -49,21 +51,16 @@ class Plato {
 		}
 	}
 
-	// Row
-	// ----------
-	// Used to contain elements that are going to be arranged in a grid and
-	// essentially is a combination of `wrapper()` and `clearfix()`
-	row(width = null) {
-		return Object.assign(this.wrapper(width), clearfix())
-	}
-
 	// Column
 	// ----------
 	// Used in combination with `row()` to create a grid
-	col(num = 1, columns = this.columns) {
+	col(num = 1, offset = 0, columns = this.columns, gutter = this.gutter) {
+		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
-			"width": (num/float(columns)).toString() + "%",
 			"float": "left",
+			"width": calc(num,columns,gutter).toString() + "%",
+			"margin-left": (offset*calc(1,columns,gutter)).toString() + "%",
+			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
 		}
 	}
 }
