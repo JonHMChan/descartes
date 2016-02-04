@@ -90,7 +90,7 @@ new Descartes({
 			},
 			header: {
 				_mixins: m,
-				height: "95%",
+				height: "90%",
 				color: "#fff",
 				"div.content": {
 					_listeners: [[window, "scroll"]],
