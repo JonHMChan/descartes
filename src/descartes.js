@@ -135,6 +135,13 @@ class Descartes {
 				this.apply(mapping[0], mapping[1])
 			})
 		})
+		this.cleanup()
+	}
+
+	cleanup() {
+		if (this.findType === 'jquery') {
+			$("[data-descartes]").removeAttr("data-descartes")
+		}
 	}
 
 	apply(selector = null, rules = null) {
@@ -143,7 +150,12 @@ class Descartes {
 		let elems = this.find(selector.toString())
 		if (elems.length === 0) return false
 		elems.map(elem => {
-			elem.setAttribute('style', this.createStyleString(rules, elem))
+			let style = elem.getAttribute('data-descartes')
+			if (typeof style === 'undefined') return
+			style = (style === null) ? {} : JSON.parse(style)
+			style = Object.assign(style, rules)
+			elem.setAttribute('data-descartes', JSON.stringify(style))
+			elem.setAttribute('style', this.createStyleString(style, elem))
 		})
 		return true
 	}

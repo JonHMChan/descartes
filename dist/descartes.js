@@ -181,6 +181,14 @@ var Descartes = function () {
 					_this2.apply(mapping[0], mapping[1]);
 				});
 			});
+			this.cleanup();
+		}
+	}, {
+		key: 'cleanup',
+		value: function cleanup() {
+			if (this.findType === 'jquery') {
+				$("[data-descartes]").removeAttr("data-descartes");
+			}
 		}
 	}, {
 		key: 'apply',
@@ -195,7 +203,12 @@ var Descartes = function () {
 			var elems = this.find(selector.toString());
 			if (elems.length === 0) return false;
 			elems.map(function (elem) {
-				elem.setAttribute('style', _this3.createStyleString(rules, elem));
+				var style = elem.getAttribute('data-descartes');
+				if (typeof style === 'undefined') return;
+				style = style === null ? {} : JSON.parse(style);
+				style = Object.assign(style, rules);
+				elem.setAttribute('data-descartes', JSON.stringify(style));
+				elem.setAttribute('style', _this3.createStyleString(style, elem));
 			});
 			return true;
 		}
