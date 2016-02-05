@@ -38,7 +38,7 @@ var prop = function prop(sel, a, b, x, y) {
 
 var p = new Plato();
 
-new Descartes({
+var d = new Descartes({
 	"html": {
 		_mixins: m,
 		"font-family": "Source Sans Pro, Helvetica",
@@ -59,25 +59,25 @@ new Descartes({
 				}
 			},
 			".row": { _mixins: p.tableRow() },
-			".col1": { _mixins: p.tableCol(1) },
-			".col2": { _mixins: p.tableCol(2) },
-			".col3": { _mixins: p.tableCol(3) },
-			".col4": { _mixins: p.tableCol(4) },
-			".col5": { _mixins: p.tableCol(5) },
-			".col6": { _mixins: p.tableCol(6) },
-			".col7": { _mixins: p.tableCol(7) },
-			".col8": { _mixins: p.tableCol(8) },
-			".col9": { _mixins: p.tableCol(9) },
-			".col10": { _mixins: p.tableCol(10) },
-			".col11": { _mixins: p.tableCol(11) },
-			".col12": { _mixins: p.tableCol(12) },
+			".col1": { _mixins: p.col(1) },
+			".col2": { _mixins: p.col(2) },
+			".col3": { _mixins: p.col(3) },
+			".col4": { _mixins: p.col(4) },
+			".col5": { _mixins: p.col(5) },
+			".col6": { _mixins: p.col(6) },
+			".col7": { _mixins: p.col(7) },
+			".col8": { _mixins: p.col(8) },
+			".col9": { _mixins: p.col(9) },
+			".col10": { _mixins: p.col(10) },
+			".col11": { _mixins: p.col(11) },
+			".col12": { _mixins: p.col(12) },
 			"nav": {
 				_listeners: [[window, "scroll"]],
 				"text-align": "center",
 				position: "fixed",
 				width: "100%",
 				"z-index": 9999,
-				"a": function a(_) {
+				"color": function color(_) {
 					var v = p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 255, 50);
 					return p.rgba(v, v, v, 1);
 				},
@@ -163,7 +163,15 @@ new Descartes({
 					height: "100%",
 					padding: "25px 0",
 					"> div": {
-						_mixins: [p.tableRow(), wrapper]
+						_mixins: [p.tableRow(), wrapper],
+						".col5": {
+							_mixins: p.tableCol(5),
+							"vertical-align": "middle"
+						},
+						".col7": {
+							_mixins: p.tableCol(7),
+							"vertical-align": "middle"
+						}
 					}
 				},
 				h3: {
@@ -180,3 +188,5 @@ new Descartes({
 		}
 	}
 });
+
+console.log(d.elemMappings);

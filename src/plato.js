@@ -70,12 +70,16 @@ class Plato {
 		return {
 			"float": "left",
 			"width": calc(num,columns,gutter).toString() + "%",
-			"margin-left": (offset*calc(1,columns,gutter)).toString() + "%",
 			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
 		}
 	}
 
 	tableCol(num = 1, offset = 0, columns = this.columns, gutter = this.gutter) {
-		return Object.assign(this.col(num, offset, columns, gutter), {"display": "table-cell"})
+		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
+		return {
+			"display": "table-cell",
+			"width": (calc(num,columns,gutter) + gutter).toString() + "%",
+			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
+		}
 	}
 }

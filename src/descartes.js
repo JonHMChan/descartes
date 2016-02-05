@@ -137,13 +137,13 @@ class Descartes {
 		})
 	}
 
-	apply(selector = null, rule = null) {
-		if (selector === null || rule === null) return
-		if (this.isPseudo(selector) && this.applyPsuedo(selector, rule)) return
+	apply(selector = null, rules = null) {
+		if (selector === null || rules === null) return false
+		if (this.isPseudo(selector) && this.applyPsuedo(selector, rules)) return
 		let elems = this.find(selector.toString())
-		if (elems.length === 0) return
+		if (elems.length === 0) return false
 		elems.map(elem => {
-			elem.setAttribute('style', this.createStyleString(rule, elem))
+			elem.setAttribute('style', this.createStyleString(rules, elem))
 		})
 		return true
 	}
@@ -163,6 +163,8 @@ class Descartes {
 			let pure = selector.replace('::after', '').replace('::before', '')
 			if (this.findType === 'jquery') {
 				let sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
+				$(sheet).appendTo("head")
+				return
 				if (selector.match(/.+::after/) !== null) $(sheet).appendTo(pure)
 				if (selector.match(/.+::before/) !== null) $(sheet).prependTo(pure)
 			}

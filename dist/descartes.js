@@ -188,14 +188,14 @@ var Descartes = function () {
 			var _this3 = this;
 
 			var selector = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-			var rule = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+			var rules = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
-			if (selector === null || rule === null) return;
-			if (this.isPseudo(selector) && this.applyPsuedo(selector, rule)) return;
+			if (selector === null || rules === null) return false;
+			if (this.isPseudo(selector) && this.applyPsuedo(selector, rules)) return;
 			var elems = this.find(selector.toString());
-			if (elems.length === 0) return;
+			if (elems.length === 0) return false;
 			elems.map(function (elem) {
-				elem.setAttribute('style', _this3.createStyleString(rule, elem));
+				elem.setAttribute('style', _this3.createStyleString(rules, elem));
 			});
 			return true;
 		}
@@ -217,6 +217,8 @@ var Descartes = function () {
 				var pure = selector.replace('::after', '').replace('::before', '');
 				if (this.findType === 'jquery') {
 					var sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
+					$(sheet).appendTo("head");
+					return;
 					if (selector.match(/.+::after/) !== null) $(sheet).appendTo(pure);
 					if (selector.match(/.+::before/) !== null) $(sheet).prependTo(pure);
 				}

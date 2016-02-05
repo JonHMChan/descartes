@@ -119,7 +119,6 @@ var Plato = function () {
 			return {
 				"float": "left",
 				"width": calc(num, columns, gutter).toString() + "%",
-				"margin-left": (offset * calc(1, columns, gutter)).toString() + "%",
 				"margin-right": function marginRight(_) {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
 				}
@@ -133,7 +132,16 @@ var Plato = function () {
 			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.columns : arguments[2];
 			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.gutter : arguments[3];
 
-			return Object.assign(this.col(num, offset, columns, gutter), { "display": "table-cell" });
+			var calc = function calc(n, c, g) {
+				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
+			};
+			return {
+				"display": "table-cell",
+				"width": (calc(num, columns, gutter) + gutter).toString() + "%",
+				"margin-right": function marginRight(_) {
+					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+				}
+			};
 		}
 	}]);
 
