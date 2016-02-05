@@ -140,6 +140,13 @@ class Descartes {
 
 	cleanup() {
 		if (this.findType === 'jquery') {
+
+			let all = this.find("*")
+			all.map(x => {
+				let style = x.getAttribute('data-descartes')
+				if (typeof style === 'undefined') return
+				x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
+			})
 			$("[data-descartes]").removeAttr("data-descartes")
 		}
 	}
@@ -155,7 +162,6 @@ class Descartes {
 			style = (style === null) ? {} : JSON.parse(style)
 			style = Object.assign(style, rules)
 			elem.setAttribute('data-descartes', JSON.stringify(style))
-			elem.setAttribute('style', this.createStyleString(style, elem))
 		})
 		return true
 	}
