@@ -40,7 +40,7 @@
 <pre><code class="javascript">&lt;!doctype html&gt;
 &lt;html&gt;
   &lt;head&gt;
-    &lt;script type="text/javascript" src="path/to/descartes.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="descartes.js"&gt;&lt;/script&gt;
   &lt;/head&gt;
   &lt;body&gt;
 	&lt;h1&gt;Hello World!&lt;/h1&gt;
@@ -49,26 +49,33 @@
 &lt;/html&gt;
 </code></pre>
 			<strong>styles.js</strong>
-<pre><code class="javascript">var reset = {"margin": 0, "padding": 0, "box-sizing": "border-box"};
-var rand_angle = function() { return Math.round(Math.random() * (180) - 90); };
+<pre><code class="javascript">var reset = {"margin": 0,
+  "padding": 0,
+  "box-sizing": "border-box"
+};
+var rand_angle = function() {
+  return Math.round(Math.random() * (180) - 90);
+};
 var rand_rgba = function() {
   return "rgba("+[255,255,255].map(function(x) {
     return Math.round(Math.random() * x);
   }).join()+", 1)"
 };
 
-new Descartes({ // Just include descartes.js in the &lt;head&gt; tag
+new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
   "html": {
     "_mixins": reset, // Reuse CSS rules with mixins
     "body": { // Nest selectors just like in Sass and Less
       "_mixins": reset,
-      "_listeners": [[window, "click"],[window, "touchstart"]], // Bind events...
+      "_listeners": [
+        [window, "click"],
+        [window, "touchstart"]], // Bind events...
       "background": function() {
         return 'linear-gradient('
           + rand_angle().toString() + 'deg,'
           + rand_rgba() + ','
           + rand_rgba() + ')'
-      } // ...to set dynamic property values when any listened events fire!
+      } // ...to set dynamic property values when they fire!
     }
   }
 })

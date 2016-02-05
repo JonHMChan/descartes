@@ -135,7 +135,6 @@ const d = new Descartes({
 						width: "100%",
 						code: {
 							"text-align": "left",
-							"word-wrap": "pre-wrap",
 							"font-size": 16,
 							"font-family": "Anonymous Pro",
 							padding: 25,
@@ -170,7 +169,8 @@ const d = new Descartes({
 						"height": "100%",
 						".col5": {
 							_mixins: p.tableCol(5),
-							"vertical-align": "middle"
+							"vertical-align": "middle",
+							"padding": 15
 						},
 						".col7": {
 							_mixins: p.tableCol(7),
