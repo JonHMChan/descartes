@@ -165,8 +165,9 @@ const d = new Descartes({
 					position: "relative",
 					height: "100%",
 					padding: "25px 0",
-					"> div": {
+					"> .row": {
 						_mixins: [p.tableRow(), wrapper],
+						"height": "100%",
 						".col5": {
 							_mixins: p.tableCol(5),
 							"vertical-align": "middle"

@@ -98,7 +98,7 @@ var Plato = function () {
 	}, {
 		key: "tableRow",
 		value: function tableRow() {
-			return Object.assign(this.clearfix(), { "display": "table" });
+			return Object.assign(this.clearfix(), { "display": "table", "box-sizing": "border-box" });
 		}
 
 		// Column
@@ -118,6 +118,7 @@ var Plato = function () {
 			};
 			return {
 				"float": "left",
+				"box-sizing": "border-box",
 				"width": calc(num, columns, gutter).toString() + "%",
 				"margin-right": function marginRight(_) {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
@@ -137,6 +138,7 @@ var Plato = function () {
 			};
 			return {
 				"display": "table-cell",
+				"box-sizing": "border-box",
 				"width": (calc(num, columns, gutter) + gutter).toString() + "%",
 				"margin-right": function marginRight(_) {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";

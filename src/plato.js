@@ -55,11 +55,11 @@ class Plato {
 	// ----------
 	// Used as part of the grid, applies resets and clearfixes
 	row() {
-		return Object.assign(this.clearfix())
+		return Object.assign(this.clearfix(), {"box-sizing", "border-box"})
 	}
 
 	tableRow() {
-		return Object.assign(this.clearfix(), {"display": "table"})
+		return Object.assign(this.clearfix(), {"display": "table", "box-sizing": "border-box"})
 	}
 
 	// Column
@@ -69,6 +69,7 @@ class Plato {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
 			"float": "left",
+			"box-sizing": "border-box",
 			"width": calc(num,columns,gutter).toString() + "%",
 			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
 		}
@@ -78,8 +79,9 @@ class Plato {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
 			"display": "table-cell",
+			"box-sizing": "border-box",
 			"width": (calc(num,columns,gutter) + gutter).toString() + "%",
-			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
+			"border-width": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
 		}
 	}
 }
