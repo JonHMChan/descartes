@@ -109,8 +109,10 @@ const d = new Descartes({
 					display: "block"
 				}
 			},
-			"a.button": {
-				_mixins: _button
+			"a": {
+				".button": {
+					_mixins: _button
+				}
 			},
 			button: {
 				_mixins: _button
@@ -177,14 +179,14 @@ const d = new Descartes({
 					background: "rgba(255,255,255,0.75)",
 					position: "relative",
 					height: "100%",
-					padding: "25px 0",
 					"> .table-row": {
 						_mixins: [p.tableRow(), wrapper],
 						"height": "100%",
+						"padding": "25px 0",
 						".table-col5": {
 							_mixins: p.tableCol(5),
 							"vertical-align": "middle",
-							"padding": 25
+							"padding": "0 25px"
 						},
 						".table-col7": {
 							_mixins: p.tableCol(7),
