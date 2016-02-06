@@ -240,13 +240,10 @@ var Descartes = function () {
 		key: 'applyPsuedo',
 		value: function applyPsuedo(selector, rules) {
 			if (this.isPseudo(selector)) {
-				var pure = selector.replace('::after', '').replace('::before', '');
 				if (this.findType === 'jquery') {
 					var sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
 					$(sheet).appendTo("head");
 					return;
-					if (selector.match(/.+::after/) !== null) $(sheet).appendTo(pure);
-					if (selector.match(/.+::before/) !== null) $(sheet).prependTo(pure);
 				}
 				return true;
 			}

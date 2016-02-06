@@ -93,10 +93,6 @@ const d = new Descartes({
 				position: "fixed",
 				width: "100%",
 				"z-index": 9999,
-				"color": (_) => {
-					let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
-					return p.rgba(v,v,v,1)
-				},
 				background: (_) => {
 					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.9) )
 				},
@@ -106,14 +102,20 @@ const d = new Descartes({
 				"> div": {
 					_mixins: wrapper,
 					padding: 15,
-					display: "block"
+					display: "block",
+					"a": {
+						_listeners: [[window, "scroll"]],
+						"text-decoration": "none",
+						"color": (_) => {
+							let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
+							return p.rgba(v,v,v,1)
+						}
+					}
 				}
 			},
-			"a": {
-				".button": {
-					_mixins: _button
-				}
-			},
+			".button": {
+				_mixins: _button
+			}
 			button: {
 				_mixins: _button
 			},
