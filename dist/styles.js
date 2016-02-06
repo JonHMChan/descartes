@@ -58,7 +58,7 @@ var d = new Descartes({
 					"font-family": "Anonymous Pro"
 				}
 			},
-			".row": { _mixins: p.tableRow() },
+			".row": { _mixins: p.row() },
 			".col1": { _mixins: p.col(1) },
 			".col2": { _mixins: p.col(2) },
 			".col3": { _mixins: p.col(3) },
@@ -71,6 +71,19 @@ var d = new Descartes({
 			".col10": { _mixins: p.col(10) },
 			".col11": { _mixins: p.col(11) },
 			".col12": { _mixins: p.col(12) },
+			".table-row": { _mixins: p.tableRow() },
+			".table-col1": { _mixins: p.tableCol(1) },
+			".table-col2": { _mixins: p.tableCol(2) },
+			".table-col3": { _mixins: p.tableCol(3) },
+			".table-col4": { _mixins: p.tableCol(4) },
+			".table-col5": { _mixins: p.tableCol(5) },
+			".table-col6": { _mixins: p.tableCol(6) },
+			".table-col7": { _mixins: p.tableCol(7) },
+			".table-col8": { _mixins: p.tableCol(8) },
+			".table-col9": { _mixins: p.tableCol(9) },
+			".table-col10": { _mixins: p.tableCol(10) },
+			".table-col11": { _mixins: p.tableCol(11) },
+			".table-col12": { _mixins: p.tableCol(12) },
 			"nav": {
 				_listeners: [[window, "scroll"]],
 				"text-align": "center",
@@ -162,18 +175,16 @@ var d = new Descartes({
 					position: "relative",
 					height: "100%",
 					padding: "25px 0",
-					"> .row": {
+					"> .table-row": {
 						_mixins: [p.tableRow(), wrapper],
 						"height": "100%",
-						".col5": {
+						".table-col5": {
 							_mixins: p.tableCol(5),
-							"float": "none",
 							"vertical-align": "middle",
-							"padding": 15
+							"padding": 25
 						},
-						".col7": {
+						".table-col7": {
 							_mixins: p.tableCol(7),
-							"float": "none",
 							"vertical-align": "middle"
 						}
 					}
