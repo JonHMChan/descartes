@@ -139,22 +139,22 @@ var Descartes = function () {
 						if (_this.findType == 'jquery') {
 							_this.find(l[0]).map(function (x) {
 								x.bind(l[1], function () {
-									_this.apply(selector, rules);
-									_this.cleanup();
+									_this.applyStyles(selector, rules);
+									_this.apply();
 								});
 							});
 						} else if (_this.findType === 'sizzle') {
 							_this.find(l[0]).map(function (x) {
 								x.addEventListener(l[1], function () {
-									_this.apply(selector, rules);
-									_this.cleanup();
+									_this.applyStyles(selector, rules);
+									_this.apply();
 								});
 							});
 						}
 					} else {
 						l[0].addEventListener(l[1], function () {
-							_this.apply(selector, rules);
-							_this.cleanup();
+							_this.applyStyles(selector, rules);
+							_this.apply();
 						});
 					}
 				});
@@ -181,14 +181,14 @@ var Descartes = function () {
 			}
 			prioritizedList.map(function (set) {
 				set.map(function (mapping) {
-					_this2.apply(mapping[0], mapping[1]);
+					_this2.applyStyles(mapping[0], mapping[1]);
 				});
 			});
-			this.cleanup();
+			this.apply();
 		}
 	}, {
-		key: 'cleanup',
-		value: function cleanup() {
+		key: 'apply',
+		value: function apply() {
 			var _this3 = this;
 
 			if (this.findType === 'jquery') {
@@ -202,8 +202,8 @@ var Descartes = function () {
 			}
 		}
 	}, {
-		key: 'apply',
-		value: function apply() {
+		key: 'applyStyles',
+		value: function applyStyles() {
 			var _this4 = this;
 
 			var selector = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
