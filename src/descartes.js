@@ -109,15 +109,24 @@ class Descartes {
 				if (typeof l[0] === 'string') {
 					if (this.findType == 'jquery') {
 						this.find(l[0]).map(x => {
-							x.bind(l[1], () => {this.apply(selector, rules)})
+							x.bind(l[1], () => {
+								this.apply(selector, rules)
+								this.cleanup()
+							})
 						})
 					} else if (this.findType === 'sizzle') {
 						this.find(l[0]).map(x => {
-							x.addEventListener(l[1], () => {this.apply(selector, rules)})
+							x.addEventListener(l[1], () => {
+								this.apply(selector, rules)
+								this.cleanup()
+							})
 						})
 					}
 				} else {
-					l[0].addEventListener(l[1], () => {this.apply(selector, rules)})
+					l[0].addEventListener(l[1], () => {
+						this.apply(selector, rules)
+						this.cleanup()
+					})
 				}
 			})
 		}
@@ -140,14 +149,13 @@ class Descartes {
 
 	cleanup() {
 		if (this.findType === 'jquery') {
-
 			let all = this.find("*")
 			all.map(x => {
 				let style = x.getAttribute('data-descartes')
 				if (typeof style === 'undefined') return
 				x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
 			})
-			$("[data-descartes]").removeAttr("data-descartes")
+			// $("[data-descartes]").removeAttr("data-descartes")
 		}
 	}
 
@@ -160,7 +168,11 @@ class Descartes {
 			let style = elem.getAttribute('data-descartes')
 			if (typeof style === 'undefined') return
 			style = (style === null) ? {} : JSON.parse(style)
-			style = Object.assign(style, rules)
+			let computed = {}
+			for (let key in rules) {
+				computed[key] = this.computeRule(rules[key], key, elem)
+			}
+			style = Object.assign(style, computed)
 			elem.setAttribute('data-descartes', JSON.stringify(style))
 		})
 		return true

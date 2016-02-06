@@ -140,18 +140,21 @@ var Descartes = function () {
 							_this.find(l[0]).map(function (x) {
 								x.bind(l[1], function () {
 									_this.apply(selector, rules);
+									_this.cleanup();
 								});
 							});
 						} else if (_this.findType === 'sizzle') {
 							_this.find(l[0]).map(function (x) {
 								x.addEventListener(l[1], function () {
 									_this.apply(selector, rules);
+									_this.cleanup();
 								});
 							});
 						}
 					} else {
 						l[0].addEventListener(l[1], function () {
 							_this.apply(selector, rules);
+							_this.cleanup();
 						});
 					}
 				});
@@ -189,19 +192,20 @@ var Descartes = function () {
 			var _this3 = this;
 
 			if (this.findType === 'jquery') {
-
 				var all = this.find("*");
 				all.map(function (x) {
 					var style = x.getAttribute('data-descartes');
 					if (typeof style === 'undefined') return;
 					x.setAttribute('style', _this3.createStyleString(JSON.parse(style), x));
 				});
-				$("[data-descartes]").removeAttr("data-descartes");
+				// $("[data-descartes]").removeAttr("data-descartes")
 			}
 		}
 	}, {
 		key: 'apply',
 		value: function apply() {
+			var _this4 = this;
+
 			var selector = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
 			var rules = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
@@ -213,7 +217,11 @@ var Descartes = function () {
 				var style = elem.getAttribute('data-descartes');
 				if (typeof style === 'undefined') return;
 				style = style === null ? {} : JSON.parse(style);
-				style = Object.assign(style, rules);
+				var computed = {};
+				for (var key in rules) {
+					computed[key] = _this4.computeRule(rules[key], key, elem);
+				}
+				style = Object.assign(style, computed);
 				elem.setAttribute('data-descartes', JSON.stringify(style));
 			});
 			return true;

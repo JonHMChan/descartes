@@ -89,7 +89,8 @@ var d = new Descartes({
 				},
 				"> div": {
 					_mixins: wrapper,
-					padding: 15
+					padding: 15,
+					display: "block"
 				}
 			},
 			"a.button": {
@@ -166,11 +167,13 @@ var d = new Descartes({
 						"height": "100%",
 						".col5": {
 							_mixins: p.tableCol(5),
+							"float": "none",
 							"vertical-align": "middle",
 							"padding": 15
 						},
 						".col7": {
 							_mixins: p.tableCol(7),
+							"float": "none",
 							"vertical-align": "middle"
 						}
 					}
