@@ -110,21 +110,21 @@ class Descartes {
 					if (this.findType == 'jquery') {
 						this.find(l[0]).map(x => {
 							x.bind(l[1], () => {
-								this.applyStyles(selector, rules)
+								this.cascade(selector, rules)
 								this.apply()
 							})
 						})
 					} else if (this.findType === 'sizzle') {
 						this.find(l[0]).map(x => {
 							x.addEventListener(l[1], () => {
-								this.applyStyles(selector, rules)
+								this.cascade(selector, rules)
 								this.apply()
 							})
 						})
 					}
 				} else {
 					l[0].addEventListener(l[1], () => {
-						this.applyStyles(selector, rules)
+						this.cascade(selector, rules)
 						this.apply()
 					})
 				}
@@ -141,7 +141,7 @@ class Descartes {
 		}
 		prioritizedList.map(set => {
 			set.map(mapping => {
-				this.applyStyles(mapping[0], mapping[1])
+				this.cascade(mapping[0], mapping[1])
 			})
 		})
 		this.apply()
@@ -155,11 +155,10 @@ class Descartes {
 				if (typeof style === 'undefined') return
 				x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
 			})
-			// $("[data-descartes]").removeAttr("data-descartes")
 		}
 	}
 
-	applyStyles(selector = null, rules = null) {
+	cascade(selector = null, rules = null) {
 		if (selector === null || rules === null) return false
 		if (this.isPseudo(selector) && this.applyPsuedo(selector, rules)) return
 		let elems = this.find(selector.toString())

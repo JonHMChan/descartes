@@ -139,21 +139,21 @@ var Descartes = function () {
 						if (_this.findType == 'jquery') {
 							_this.find(l[0]).map(function (x) {
 								x.bind(l[1], function () {
-									_this.applyStyles(selector, rules);
+									_this.cascade(selector, rules);
 									_this.apply();
 								});
 							});
 						} else if (_this.findType === 'sizzle') {
 							_this.find(l[0]).map(function (x) {
 								x.addEventListener(l[1], function () {
-									_this.applyStyles(selector, rules);
+									_this.cascade(selector, rules);
 									_this.apply();
 								});
 							});
 						}
 					} else {
 						l[0].addEventListener(l[1], function () {
-							_this.applyStyles(selector, rules);
+							_this.cascade(selector, rules);
 							_this.apply();
 						});
 					}
@@ -181,7 +181,7 @@ var Descartes = function () {
 			}
 			prioritizedList.map(function (set) {
 				set.map(function (mapping) {
-					_this2.applyStyles(mapping[0], mapping[1]);
+					_this2.cascade(mapping[0], mapping[1]);
 				});
 			});
 			this.apply();
@@ -198,12 +198,11 @@ var Descartes = function () {
 					if (typeof style === 'undefined') return;
 					x.setAttribute('style', _this3.createStyleString(JSON.parse(style), x));
 				});
-				// $("[data-descartes]").removeAttr("data-descartes")
 			}
 		}
 	}, {
-		key: 'applyStyles',
-		value: function applyStyles() {
+		key: 'cascade',
+		value: function cascade() {
 			var _this4 = this;
 
 			var selector = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
