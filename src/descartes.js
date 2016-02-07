@@ -189,9 +189,12 @@ class Descartes {
 
 	applyPsuedo(selector, rules) {
 		if (this.isPseudo(selector)) {
+			let sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
 			if (this.findType === 'jquery') {
-				let sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
-				$(sheet).appendTo("head")
+				$(sheet).appendTo("body")
+				return
+			} else if (this.findType === 'sizzle') {
+				document.body.appendChild(sheet)
 				return
 			}
 			return true
@@ -255,9 +258,10 @@ class Descartes {
 	}
 
 	isPseudo(sel) {
-		for (let key in this.psuedos) {
-			let pattern = this.psuedos[key]
-			if sel.match(new RegExp('.+' + pattern) > -1) return true
+		for (let key in this.pseudos) {
+			let pattern = this.pseudos[key]
+			let regex = new RegExp('.+' + pattern)
+			if (sel.match(regex) != null) return true
 		}
 		return false
 	}
