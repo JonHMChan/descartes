@@ -1,4 +1,4 @@
-const m = {margin: 0, padding: 0, height: "100%"}
+const m = {margin: 0, padding: 0}
 const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
 const max = 900
 const wrapper = {"max-width": max, margin: "0 auto"}
@@ -8,9 +8,11 @@ const _button = {background: "none",
 				"border-style": "solid",
 				"border-color": "currentColor",
 				padding: "10px 15px",
+				"text-decoration": "none",
 				"font-size": 12,
 				"letter-spacing": 1,
 				"text-transform": "uppercase",
+				"font-weight": "normal",
 				"cursor": "pointer"}
 const clearfix = {"&::after":
 	{
@@ -44,6 +46,7 @@ const d = new Descartes({
 		color: "#333",
 		"font-size": 16,
 		"font-weight": 300,
+		height: "100%",
 		body: {
 			_mixins: m,
 			_listeners: [[window, "click"], [window, "touchstart"]],
@@ -115,7 +118,7 @@ const d = new Descartes({
 			},
 			".button": {
 				_mixins: _button
-			}
+			},
 			button: {
 				_mixins: _button
 			},
@@ -180,10 +183,9 @@ const d = new Descartes({
 					width: "100%",
 					background: "rgba(255,255,255,0.75)",
 					position: "relative",
-					height: "100%",
+					"min-height": "100%",
 					"> .table-row": {
 						_mixins: [p.tableRow(), wrapper],
-						"height": "100%",
 						"padding": "25px 0",
 						".table-col5": {
 							_mixins: p.tableCol(5),
@@ -195,6 +197,10 @@ const d = new Descartes({
 							"vertical-align": "middle"
 						}
 					}
+				},
+				".button": {
+					_mixins: _button,
+					color: "#333"
 				},
 				h3: {
 					_mixins: heading,

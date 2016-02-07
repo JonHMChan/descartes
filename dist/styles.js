@@ -1,6 +1,6 @@
 "use strict";
 
-var m = { margin: 0, padding: 0, height: "100%" };
+var m = { margin: 0, padding: 0 };
 var heading = { "margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300 };
 var max = 900;
 var wrapper = { "max-width": max, margin: "0 auto" };
@@ -10,9 +10,11 @@ var _button = { background: "none",
 	"border-style": "solid",
 	"border-color": "currentColor",
 	padding: "10px 15px",
+	"text-decoration": "none",
 	"font-size": 12,
 	"letter-spacing": 1,
 	"text-transform": "uppercase",
+	"font-weight": "normal",
 	"cursor": "pointer" };
 var clearfix = { "&::after": {
 		content: "",
@@ -45,6 +47,7 @@ var d = new Descartes({
 		color: "#333",
 		"font-size": 16,
 		"font-weight": 300,
+		height: "100%",
 		body: {
 			_mixins: m,
 			_listeners: [[window, "click"], [window, "touchstart"]],
@@ -110,10 +113,8 @@ var d = new Descartes({
 					}
 				}
 			},
-			"a": {
-				".button": {
-					_mixins: _button
-				}
+			".button": {
+				_mixins: _button
 			},
 			button: {
 				_mixins: _button
@@ -179,10 +180,9 @@ var d = new Descartes({
 					width: "100%",
 					background: "rgba(255,255,255,0.75)",
 					position: "relative",
-					height: "100%",
+					"min-height": "100%",
 					"> .table-row": {
 						_mixins: [p.tableRow(), wrapper],
-						"height": "100%",
 						"padding": "25px 0",
 						".table-col5": {
 							_mixins: p.tableCol(5),
@@ -194,6 +194,10 @@ var d = new Descartes({
 							"vertical-align": "middle"
 						}
 					}
+				},
+				".button": {
+					_mixins: _button,
+					color: "#333"
 				},
 				h3: {
 					_mixins: heading,
