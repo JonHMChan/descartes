@@ -38,7 +38,7 @@ const prop = (sel, a, b, x, y) => {
 }
 
 const p = new Plato()
-
+const start = Date.now()
 const d = new Descartes({
 	"html": {
 		_mixins: m,
@@ -90,6 +90,9 @@ const d = new Descartes({
 			".table-col10": { _mixins: p.tableCol(10) },
 			".table-col11": { _mixins: p.tableCol(11) },
 			".table-col12": { _mixins: p.tableCol(12) },
+			"a": {
+				color: "currentColor"
+			},
 			"nav": {
 				_listeners: [[window, "scroll"]],
 				"text-align": "center",
@@ -216,5 +219,5 @@ const d = new Descartes({
 		}
 	}
 })
-
+document.getElementById("time").innerHTML = (Date.now() - start).toString()
 console.log(d.elemMappings)

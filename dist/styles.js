@@ -39,7 +39,7 @@ var prop = function prop(sel, a, b, x, y) {
 };
 
 var p = new Plato();
-
+var start = Date.now();
 var d = new Descartes({
 	"html": {
 		_mixins: m,
@@ -87,6 +87,9 @@ var d = new Descartes({
 			".table-col10": { _mixins: p.tableCol(10) },
 			".table-col11": { _mixins: p.tableCol(11) },
 			".table-col12": { _mixins: p.tableCol(12) },
+			"a": {
+				color: "currentColor"
+			},
 			"nav": {
 				_listeners: [[window, "scroll"]],
 				"text-align": "center",
@@ -213,5 +216,5 @@ var d = new Descartes({
 		}
 	}
 });
-
+document.getElementById("time").innerHTML = (Date.now() - start).toString();
 console.log(d.elemMappings);

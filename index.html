@@ -10,10 +10,10 @@
 	<body>
 		<nav>
 			<div class="row">
-				<div class="col2"><a href="#">Get Started</a></div>
+				<div class="col2"><a href="#">Overview</a></div>
 				<div class="col2"><a href="#">Features</a></div>
-				<div class="col2"><a href="#">Docs</a></div>
 				<div class="col2"><a href="#">About</a></div>
+				<div class="col2"><a href="#">Contributing</a></div>
 				<div class="col2"><a href="#">GitHub</a></div>
 				<div class="col2"><a href="#">Donate</a></div>
 			</div>
@@ -21,8 +21,8 @@
 		<header>
 			<div class="content">
 				<h1>Descartes</h1>
-				<h2>Styles that think with JavaScript</h2>
-				<p>An experimental library for reactive, computable CSS with DOM access</p>
+				<h2>Styling for Programmers</h2>
+				<p>An experimental library for writing CSS in JavaScript</p>
 				<button>Get Started</button>
 				<button>Documentation</button>
 			</div>
@@ -33,18 +33,17 @@
 					<h3>Smart Stylesheets</h3>
 					<h4>Powered by JavaScript</h4>
 					<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. You can get all the advantages of a typical preprocessor and some: complex programming to set styles, access to the DOM, and even basic event listeners!</p>
-					<p><button>Click anywhere to see it in action</button></p>
+					<p><a class="button">Click anywhere to see it in action</a></p>
 				</div>
 				<div class="table-col7">
 					<strong>index.html</strong>
 <pre><code class="javascript">&lt;!doctype html&gt;
 &lt;html&gt;
   &lt;head&gt;
-    &lt;script type="text/javascript" src="jquery.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="descartes.js"&gt;&lt;/script&gt;
   &lt;/head&gt;
   &lt;body&gt;
-	&lt;h1&gt;Hello World!&lt;/h1&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
   &lt;script type="text/javascript" src="styles.js"&gt;&lt;/script&gt;
   &lt;/body&gt;
 &lt;/html&gt;
@@ -101,8 +100,8 @@ new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
     "margin": 0,
     "padding": 0,
     "body" {
-    "margin": 0,
-    "padding": 0,
+      "margin": 0,
+      "padding": 0,
       "section" {
         "max-width": "800px"
       }
@@ -136,8 +135,8 @@ html body section {
 			</div>
 			<div class="table-col5">
 					<h3>A Familiar Style</h3>
-					<h4>JSON like Less and Sass</h4>
-					<p>It turns out writing styles like JSON isn't all that different from Less and Sass. I've written Descartes to act just like other CSS processors with some extra features. You get nesting, mixins, and variables just like the others!</p>
+					<h4>JavaScript like Less and Sass</h4>
+					<p>It turns out writing CSS as JSON isn't all that different from Less and Sass. I've written Descartes to act just like other CSS processors with some extra features. You get nesting, mixins, and variables just like the others!</p>
 					<p><a class="button" href="/guide">Learn the basics</a></p>
 			</div>
 			</div>
@@ -146,9 +145,9 @@ html body section {
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h3>Explicit</h3>
-					<h4>Makes styles easier to understand</h4>
-					<p>Cascading in stylesheets can be pretty awesome, but it gets in the way once your applications need to scale. Descartes insists that you be explicit about your styles, putting emphasis on styles that are deeply nested and using mixins to reuse styles that typically cascade.</p>
+					<h3>Small, Fast, Easy</h3>
+					<h4>Just a small JavaScript file</h4>
+					<p>Descartes is just under 30KB when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took just <span id="time"></span> milliseconds to compute and render.</p>
 					</div>
 				</div>
 				<div class="table-col7">&nbsp;</div>
