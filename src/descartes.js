@@ -150,14 +150,12 @@ class Descartes {
 	}
 
 	apply() {
-		if (this.findType === 'jquery') {
-			let all = this.find("*")
-			all.map(x => {
-				let style = x.getAttribute('data-descartes')
-				if (typeof style === 'undefined') return
-				x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
-			})
-		}
+		let all = this.find("*")
+		all.map(x => {
+			let style = x.getAttribute('data-descartes')
+			if (typeof style === 'undefined') return
+			x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
+		})
 	}
 
 	cascade(selector = null, rules = null) {
