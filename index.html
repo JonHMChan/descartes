@@ -85,10 +85,12 @@ new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
 		</section>
 		<section class="plain">
 			<div class="row">
-				<div class="col3">Dynamic Values</div>
-				<div class="col3">Mixins</div>
-				<div class="col3">Listeners</div>
-				<div class="col3">Extensibility</div>
+				<div class="col2">&nbsp;</div>
+				<div class="col8">
+					<h3>Small + Fast</h3>
+					<p>Descartes is just under <strong>30KB</strong> when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took just <strong><span id="time"></span> milliseconds</strong> to render on this page load.</p>
+				</div>
+				<div class="col2">&nbsp;</div>
 			</div>
 		</section>
 		<section class="offset">
@@ -141,50 +143,179 @@ html body section {
 			</div>
 			</div>
 		</section>
+		<section class="plain">
+			<div class="row">
+				<div class="col2">&nbsp;</div>
+				<div class="col8">
+					<h3>Plays Nice</h3>
+					<p>Descartes works great with other JavaScript libraries like jQuery, Angular, and React. It takes just a few hooks to get your styles to work together with your favorite front end frameworks. If the support isn't there yet, Descartes is <a href="http://github.com/jonhmchan/descartes" target="_blank">open source</a> so you can add it in yourself!</p>
+				</div>
+				<div class="col2">&nbsp;</div>
+			</div>
+		</section>
 		<section class="offset">
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h3>Small, Fast, Easy</h3>
-					<h4>Just a small JavaScript file</h4>
-					<p>Descartes is just under 30KB when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took just <span id="time"></span> milliseconds to compute and render.</p>
+					<h4>Style Tree</h4>
+					<p>You write all of your styles into a single JavaScript object literal that you pass to Descartes. It feels just like writing in other CSS preprocessors like Less or Sass, but you get all the benefits of constructing your style tree with JavaScript. That means real variables, functions, and operations.</p>
 					</div>
 				</div>
-				<div class="table-col7">&nbsp;</div>
-			</div>
-		</section>
-		<section class="offset left">
-			<div>
-				<div>
-					<h3>Dynamic Properties</h3>
-					<h4>Pass functions as CSS values</h4>
-					<p>You can set style properties as JavaScript functions that are accessed every time the Style Tree is rendered. This gives you access to the DOM, variables, and any of ther JavaScript you want!</p>
+				<div class="table-col7">
+<pre><code class="javascript">var standardSize = 16;
+var tree = {
+  "html": {
+    "margin": 0,
+    "padding": 0,
+    "height": "100%",
+    "body": {
+      "color": "#333",
+      "font-family": "Helvetica",
+      "font-size": standardSize,
+      "h1": {
+        "font-size": standardSize * 1.2,
+        "font-weight": 300
+      }
+    }
+  }
+};
+var d = new Descartes(tree);
+</code></pre>
 				</div>
 			</div>
-			<div>
-				&nbsp;
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4>Mixins</h4>
+					<p>Sometimes you'll want to reuse some of the same rules over and over again and variables won't cut it. Descartes supports mixins: reusable sets of declarations that you can insert into your style tree. Just define some preset rules and pass them into the mixins property for that selector. They apply in order, and won't overwrite your explicit styles.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">var reset = {
+  "margin": 0,
+  "padding": 0
+};
+var heading()
+var tree = {
+  "html": {
+    "_mixins": reset, // Gets margin and padding!
+    "background": "#fff",
+    "h1": {
+      "_mixins": [reset], // Can also pass an array of mixins
+      "margin-bottom": 10, // Explicit styles get priority
+    }
+  }
+};
+var d = new Descartes(tree);
+</code></pre>
+				</div>
 			</div>
-		</section>
-		<section class="offset right">
-			<div>&nbsp;</div>
-			<div>
-				<div>
-					<h3>Listeners</h3>
-					<h4>Bind events that updated your styles</h4>
-					<p>You can also attach listeners to different DOM events that render a specific set of rules. That makes things like parallax, window based positioning, and even interactivity a breeze.</p>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4>Dynamic Values</h4>
+					<p>Because you're writing styles in JavaScript, you can pass functions to compute properties in Descartes. Each node is passed as the first argument to any functions you define, so you can create powerful declarations that weren't possible before. You even get access to the DOM, so you can generate values based on other element properties.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">// Vertical alignment using margins
+var tree = {
+  .
+  .
+  .
+  ".verticalAlign": {
+    "margin-top": function(_) {
+      // '_' is the node for each selector
+      var parentHeight = _.parentNode.height;
+      var height = _.height;
+      return (parentHeight + height)/2;
+    }
+  }
+  .
+  .
+  .
+};
+var d = new Descartes(tree);
+</code></pre>
+				</div>
+			</div>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4>Event Listeners</h4>
+					<p>Combining event listeners with dynamic values unlocks a whole new level of control over your styles. You can bind any event to recompute the rules for that selector. This makes responsive design, parallax, and basic interactivity a breeze.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">// Vertical alignment using margins
+var tree = {
+  .
+  .
+  .
+  ".verticalAlign": {
+    "margin-top": function(_) {
+      // '_' is the node for each selector
+      var parentHeight = _.parentNode.height;
+      var height = _.height;
+      return (parentHeight + height)/2;
+    }
+  }
+  .
+  .
+  .
+};
+var d = new Descartes(tree);
+</code></pre>
 				</div>
 			</div>
 		</section>
-		<section class="offset left">
-			<div>
-				<div>
-					<h3>Mixins</h3>
-					<h4>Reuse your styles and functions</h4>
-					<p>Reuse rules that you use for multiple elements by creating mixins. They get reapplied to each element you specify it for, letting you apply things like consistent styles, listeners, and even other mixins.</p>
+		<section class="offset">
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4>12 Column Grid</h4>
+					<p>Writing a standard grid in Descartes becomes easy with Descartes. Because of dynamic values, access to the DOM, and listeners, you can create a fully responsive grid system in just a few lines of code.</p>
+					</div>
 				</div>
-			</div>
-			<div>
-				&nbsp;
+				<div class="table-col7">
+<pre><code class="javascript">// Example 12 column grid system
+/*
+&lt;div class="row"&gt;
+  &lt;div data-cols="3"&gt;3 columns&lt;/div&gt;
+  &lt;div data-cols="9"&gt;9 columns&lt;/div&gt;
+&lt;/div&gt;
+*/
+var columns = 12; // Number of columns in the grid
+var gutter = 1.6 // Gutter as percentage of row
+var d = new Descartes({
+  ".row": { // Container for columns
+    "overflow": "auto",
+    "&::after": { // Implement a clearfix
+      "content": "",
+      "display": "table",
+      "clear": "both"
+    },
+    "> [data-cols]": { // 'data-cols' is # of columns
+      "box-sizing": "border-box",
+      "float": "left",
+      "width": function(_) { // _ is the individual element
+        var n = parseInt(_.getAttribute("data-cols"))
+      	var full = 100-(columns-1)*gutter;
+        var gutterFill = (n-1)*gutter;
+        var width = (n*(full/columns))+gutterFill;
+        return width.toString() + '%';
+      },
+      "margin-right": function(_) {
+        if (_.nextElementSibling === null) {
+          return 0; // Remove gutter if last column element
+        }
+        return (gutter.toString() + "%");
+      }
+    }
+  }
+})
+</code></pre>
+				</div>
 			</div>
 		</section>
 	</body>

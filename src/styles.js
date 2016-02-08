@@ -3,11 +3,11 @@ const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight'
 const max = 900
 const wrapper = {"max-width": max, margin: "0 auto"}
 const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
-const _button = {background: "none",
+const _button = {"background": "none",
 				"border-width": "1px",
 				"border-style": "solid",
 				"border-color": "currentColor",
-				padding: "10px 15px",
+				"padding": "10px 15px",
 				"text-decoration": "none",
 				"font-size": 12,
 				"letter-spacing": 1,
@@ -39,6 +39,8 @@ const prop = (sel, a, b, x, y) => {
 
 const p = new Plato()
 const start = Date.now()
+
+var lastScroll = $(window).scrollTop()
 const d = new Descartes({
 	"html": {
 		_mixins: m,
@@ -98,7 +100,18 @@ const d = new Descartes({
 				"text-align": "center",
 				position: "fixed",
 				width: "100%",
+				"overflow": "hidden",
+				"transition": "all 0.5s ease",
 				"z-index": 9999,
+				height: (_) => {
+					const pos = $(window).scrollTop()
+					if (pos > (($(window).height()*0.9)-50) && pos > lastScroll) {
+						lastScroll = pos
+						return 0
+					}
+					lastScroll = pos
+					return 50
+				},
 				background: (_) => {
 					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.9) )
 				},
@@ -108,7 +121,6 @@ const d = new Descartes({
 				"> div": {
 					_mixins: wrapper,
 					padding: 15,
-					display: "block",
 					"a": {
 						_listeners: [[window, "scroll"]],
 						"text-decoration": "none",
@@ -124,6 +136,10 @@ const d = new Descartes({
 			},
 			button: {
 				_mixins: _button
+			},
+			"img.roundImage": {
+				"border-radius": function(_) { return _.width/2; },
+				"overflow": "hidden"
 			},
 			".wrapper": {
 				_mixins: wrapper
@@ -142,6 +158,7 @@ const d = new Descartes({
 					h1: {
 						_mixins: heading,
 						"font-size": 120,  
+						"font-weight": 100,
 						"line-height": 110,
 						"margin-bottom": 0
 					},
