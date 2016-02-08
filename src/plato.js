@@ -1,9 +1,11 @@
 class Plato {
 	constructor() {
 		this.wrapper = 1200
+		this.mobileBreak = 800
 		this.columns = 12
 
 		this.gutter = 1.6
+		this.fixedGutter = 15
 	}
 
 	/* Value functions */
@@ -55,11 +57,22 @@ class Plato {
 	// ----------
 	// Used as part of the grid, applies resets and clearfixes
 	row() {
-		return Object.assign(this.clearfix(), {"box-sizing", "border-box"})
+		return Object.assign(this.clearfix(), {
+			"_listeners": [[window, "resize"]],
+			"box-sizing": "border-box",
+			"padding": () => { return (window.innerWidth >= this.mobileBreak) ? "0" : ("0 " + this.fixedGutter + "px") }
+		})
 	}
 
 	tableRow() {
-		return Object.assign(this.clearfix(), {"display": "table", "box-sizing": "border-box"})
+		return Object.assign(this.clearfix(), {
+			"_listeners": [[window, "resize"]],
+			"display": () => {
+				return (window.innerWidth >= this.mobileBreak) ? "table" : "block"
+			},
+			"box-sizing": "border-box",
+			"padding": () => { return (window.innerWidth >= this.mobileBreak) ? "0" : ("0 " + this.fixedGutter + "px") },
+		})
 	}
 
 	// Column
@@ -68,9 +81,10 @@ class Plato {
 	col(num = 1, offset = 0, columns = this.columns, gutter = this.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
-			"float": "left",
+			"_listeners": [[window, "resize"]],
+			"float": () => { return (window.innerWidth >= this.mobileBreak) ? "left" : "none" },
 			"box-sizing": "border-box",
-			"width": calc(num,columns,gutter).toString() + "%",
+			"width": () => { return (window.innerWidth >= this.mobileBreak) ? calc(num,columns,gutter).toString() + "%" : "100%" },
 			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
 		}
 	}
@@ -78,10 +92,14 @@ class Plato {
 	tableCol(num = 1, offset = 0, columns = this.columns, gutter = this.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
-			"display": "table-cell",
+			"_listeners": [[window, "resize"]],
+			"display": () => { return (window.innerWidth >= this.mobileBreak) ? "table-cell" : "block" },
 			"box-sizing": "border-box",
-			"width": (calc(num,columns,gutter) + gutter).toString() + "%",
-			"border-width": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
+			"width": () => { return (window.innerWidth >= this.mobileBreak) ? (calc(num,columns,gutter) + gutter).toString() + "%" : "100%" },
+			"border-width": (_) => {
+				if (window.innerWidth < this.mobileBreak) return 0
+				return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%")
+			}
 		}
 	}
 }

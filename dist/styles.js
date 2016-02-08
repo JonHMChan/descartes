@@ -280,3 +280,4 @@ $(function () {
 		}
 	});
 });
+console.log(d.mappings)
