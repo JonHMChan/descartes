@@ -200,29 +200,41 @@ var d = new Descartes({
 						}
 					}
 				},
+				"&.features": {
+					"_mixins": m,
+					"width": "100%",
+					"color": "#fff",
+					"position": "relative",
+					"background": "#474949",
+					"margin-top": 25,
+					"padding": "50px 0",
+					"pre": {
+						"border": "1px dashed #666"
+					},
+					".row": {
+						"_mixins": [p.row(), wrapper],
+						"box-sizing": "border-box",
+						"font-size": 20
+					},
+					".table-row": {
+						"_mixins": [p.tableRow(), wrapper],
+						"margin-bottom": 15
+					},
+					".table-col5": {
+						"vertical-align": "middle",
+						"padding-right": 25,
+					}
+				},
 				"&.offset": {
 					"_mixins": m,
 					"width": "100%",
 					"background": "rgba(255,255,255,0.75)",
 					"position": "relative",
 					"min-height": "100%",
-					"&.features": {
-						"color": "#fff",
-						"background": "#474949",
-						"pre": {
-							"border": "1px dashed #666"
-						}
-					},
-					".row": {
-						"_mixins": [p.row(), wrapper],
-						"padding": "50px 25px",
-						"margin-top": 25,
-						"box-sizing": "border-box",
-						"font-size": 20
-					},
 					".table-row": {
 						"_mixins": [p.tableRow(), wrapper],
 						"padding": "25px 0",
+						"height": () => { return $(window).height() },
 						".table-col5": {
 							"_mixins": p.tableCol(5),
 							"vertical-align": "middle",
