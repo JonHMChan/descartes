@@ -93,7 +93,7 @@ var d = new Descartes({
 				"color": "currentColor"
 			},
 			"nav": {
-				"_listeners": [[window, "scroll"]],
+				"_listeners": [[window, "scroll"], [window, "resize"]],
 				"text-align": "center",
 				"position": "fixed",
 				"width": "100%",
@@ -102,6 +102,7 @@ var d = new Descartes({
 				"transition": "all 0.5s ease",
 				"z-index": 9999,
 				"height": function height(_) {
+					if ($(window).width() < p.mobileBreak) return "auto";
 					var pos = $(window).scrollTop();
 					if (pos > $(window).height() * 0.9 - 50 && pos > lastScroll) {
 						lastScroll = pos;
@@ -111,6 +112,7 @@ var d = new Descartes({
 					return 50;
 				},
 				"background": function background(_) {
+					if ($(window).width() < p.mobileBreak) return "#fff";
 					return p.rgba(255, 255, 255, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.9));
 				},
 				"box-shadow": function boxShadow(_) {
@@ -119,11 +121,12 @@ var d = new Descartes({
 				"> div": {
 					"_mixins": wrapper,
 					"a": {
-						"_listeners": [[window, "scroll"]],
+						"_listeners": [[window, "scroll"], [window, "resize"]],
 						"text-decoration": "none",
 						"display": "block",
 						"margin": "15px 0",
 						"color": function color(_) {
+							if ($(window).width() < p.mobileBreak) return "#333";
 							var v = p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 255, 50);
 							return p.rgba(v, v, v, 1);
 						}
@@ -190,8 +193,8 @@ var d = new Descartes({
 				}
 			},
 			"section": {
+				"padding": "50px 0",
 				"&.plain": {
-					"padding": "25px 0",
 					"background": "none",
 					"color": "#fff",
 					"text-align": "center",
@@ -206,7 +209,6 @@ var d = new Descartes({
 					"color": "#fff",
 					"background": "#474949",
 					"margin-top": 25,
-					"padding": "50px 0",
 					"pre": {
 						"border": "1px dashed #666"
 					},
@@ -225,7 +227,6 @@ var d = new Descartes({
 					}
 				},
 				"&.offset": {
-					"_mixins": m,
 					"width": "100%",
 					"background": "rgba(255,255,255,0.75)",
 					"position": "relative",

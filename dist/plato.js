@@ -157,6 +157,9 @@ var Plato = function () {
 				},
 				"margin-right": function marginRight(_) {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+				},
+				"margin-bottom": function marginBottom(_) {
+					return window.innerWidth >= _this3.mobileBreak ? 0 : _this3.fixedGutter;
 				}
 			};
 		}
@@ -186,6 +189,9 @@ var Plato = function () {
 				"border-width": function borderWidth(_) {
 					if (window.innerWidth < _this4.mobileBreak) return 0;
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+				},
+				"margin-bottom": function marginBottom(_) {
+					return window.innerWidth >= _this4.mobileBreak ? 0 : _this4.fixedGutter;
 				}
 			};
 		}
