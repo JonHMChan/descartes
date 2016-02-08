@@ -9,9 +9,11 @@ var Plato = function () {
 		_classCallCheck(this, Plato);
 
 		this.wrapper = 1200;
+		this.mobileBreak = 800;
 		this.columns = 12;
 
 		this.gutter = 1.6;
+		this.fixedGutter = 15;
 	}
 
 	/* Value functions */
@@ -93,12 +95,31 @@ var Plato = function () {
 	}, {
 		key: "row",
 		value: function row() {
-			return Object.assign(this.clearfix());
+			var _this = this;
+
+			return Object.assign(this.clearfix(), {
+				"_listeners": [[window, "resize"]],
+				"box-sizing": "border-box",
+				"padding": function padding() {
+					return window.innerWidth >= _this.mobileBreak ? "0" : "0 " + _this.fixedGutter + "px";
+				}
+			});
 		}
 	}, {
 		key: "tableRow",
 		value: function tableRow() {
-			return Object.assign(this.clearfix(), { "display": "table", "box-sizing": "border-box" });
+			var _this2 = this;
+
+			return Object.assign(this.clearfix(), {
+				"_listeners": [[window, "resize"]],
+				"display": function display() {
+					return window.innerWidth >= _this2.mobileBreak ? "table" : "block";
+				},
+				"box-sizing": "border-box",
+				"padding": function padding() {
+					return window.innerWidth >= _this2.mobileBreak ? "0" : "0 " + _this2.fixedGutter + "px";
+				}
+			});
 		}
 
 		// Column
@@ -110,6 +131,9 @@ var Plato = function () {
 		value: function col() {
 			var num = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
 			var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+			var _this3 = this;
+
 			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.columns : arguments[2];
 			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.gutter : arguments[3];
 
@@ -117,9 +141,14 @@ var Plato = function () {
 				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
 			};
 			return {
-				"float": "left",
+				"_listeners": [[window, "resize"]],
+				"float": function float() {
+					return window.innerWidth >= _this3.mobileBreak ? "left" : "none";
+				},
 				"box-sizing": "border-box",
-				"width": calc(num, columns, gutter).toString() + "%",
+				"width": function width() {
+					return window.innerWidth >= _this3.mobileBreak ? calc(num, columns, gutter).toString() + "%" : "100%";
+				},
 				"margin-right": function marginRight(_) {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
 				}
@@ -130,6 +159,9 @@ var Plato = function () {
 		value: function tableCol() {
 			var num = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
 			var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+			var _this4 = this;
+
 			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.columns : arguments[2];
 			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.gutter : arguments[3];
 
@@ -137,10 +169,16 @@ var Plato = function () {
 				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
 			};
 			return {
-				"display": "table-cell",
+				"_listeners": [[window, "resize"]],
+				"display": function display() {
+					return window.innerWidth >= _this4.mobileBreak ? "table-cell" : "block";
+				},
 				"box-sizing": "border-box",
-				"width": (calc(num, columns, gutter) + gutter).toString() + "%",
-				"margin-right": function marginRight(_) {
+				"width": function width() {
+					return window.innerWidth >= _this4.mobileBreak ? (calc(num, columns, gutter) + gutter).toString() + "%" : "100%";
+				},
+				"border-width": function borderWidth(_) {
+					if (window.innerWidth < _this4.mobileBreak) return 0;
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
 				}
 			};
