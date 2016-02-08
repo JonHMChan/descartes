@@ -184,6 +184,31 @@ var d = new Descartes(tree); // Renders style tree
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
+					<h4>Priority Cascading</h4>
+					<p>Cascading in traditional CSS gets complex and unmanageable very fast. Descartes uses Priority Cascading, which bypasses stylesheets completely and inlines styles on elements according to depth in the style tree. When there are conflicts, the rules with the higher priority win out.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">new Descartes({
+  "html": { // Root of tree, so priority = 0
+    "color": "red", // 0
+    "h1": { // Nesting, so priority++
+      "color": "white" // 1 (wins over red)
+    }, // Finish nesting, so priority--
+    "body": { // priority++
+      "h1": { // priority++
+        "color": "blue" // 2 (wins over red, white)
+      } // priority--
+    } // priority--
+  }
+});
+// You will get &lt;h1 style="color: blue;"&gt;
+</code></pre>
+				</div>
+			</div>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
 					<h4>Mixins</h4>
 					<p>Sometimes you'll want to reuse some of the same rules over and over again and variables won't cut it. Descartes supports mixins: reusable sets of declarations that you can insert into your style tree. Just define some preset rules and pass them into the mixins property for that selector. They apply in order, and won't overwrite your explicit styles.</p>
 					</div>
