@@ -60,7 +60,8 @@ class Plato {
 		return Object.assign(this.clearfix(), {
 			"_listeners": [[window, "resize"]],
 			"box-sizing": "border-box",
-			"padding": () => { return (window.innerWidth >= this.mobileBreak) ? "0" : ("0 " + this.fixedGutter + "px") }
+			"padding-left": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter },
+			"padding-right": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
 		})
 	}
 
@@ -71,7 +72,8 @@ class Plato {
 				return (window.innerWidth >= this.mobileBreak) ? "table" : "block"
 			},
 			"box-sizing": "border-box",
-			"padding": () => { return (window.innerWidth >= this.mobileBreak) ? "0" : ("0 " + this.fixedGutter + "px") },
+			"padding-left": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter },
+			"padding-right": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
 		})
 	}
 

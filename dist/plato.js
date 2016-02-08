@@ -100,8 +100,11 @@ var Plato = function () {
 			return Object.assign(this.clearfix(), {
 				"_listeners": [[window, "resize"]],
 				"box-sizing": "border-box",
-				"padding": function padding() {
-					return window.innerWidth >= _this.mobileBreak ? "0" : "0 " + _this.fixedGutter + "px";
+				"padding-left": function paddingLeft() {
+					return window.innerWidth >= _this.mobileBreak ? 0 : _this.fixedGutter;
+				},
+				"padding-right": function paddingRight() {
+					return window.innerWidth >= _this.mobileBreak ? 0 : _this.fixedGutter;
 				}
 			});
 		}
@@ -116,8 +119,11 @@ var Plato = function () {
 					return window.innerWidth >= _this2.mobileBreak ? "table" : "block";
 				},
 				"box-sizing": "border-box",
-				"padding": function padding() {
-					return window.innerWidth >= _this2.mobileBreak ? "0" : "0 " + _this2.fixedGutter + "px";
+				"padding-left": function paddingLeft() {
+					return window.innerWidth >= _this2.mobileBreak ? 0 : _this2.fixedGutter;
+				},
+				"padding-right": function paddingRight() {
+					return window.innerWidth >= _this2.mobileBreak ? 0 : _this2.fixedGutter;
 				}
 			});
 		}

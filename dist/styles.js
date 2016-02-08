@@ -98,6 +98,7 @@ var d = new Descartes({
 				"position": "fixed",
 				"width": "100%",
 				"overflow": "hidden",
+				"box-sizing": "border-box",
 				"transition": "all 0.5s ease",
 				"z-index": 9999,
 				"height": function height(_) {
@@ -117,10 +118,11 @@ var d = new Descartes({
 				},
 				"> div": {
 					"_mixins": wrapper,
-					"padding": 15,
 					"a": {
 						"_listeners": [[window, "scroll"]],
 						"text-decoration": "none",
+						"display": "block",
+						"margin": "15px 0",
 						"color": function color(_) {
 							var v = p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 255, 50);
 							return p.rgba(v, v, v, 1);
@@ -201,28 +203,25 @@ var d = new Descartes({
 					}
 				},
 				"&.features": {
-					"_mixins": m,
-					"width": "100%",
 					"color": "#fff",
-					"position": "relative",
 					"background": "#474949",
 					"margin-top": 25,
 					"padding": "50px 0",
 					"pre": {
 						"border": "1px dashed #666"
 					},
-					".row": {
-						"_mixins": [p.row(), wrapper],
-						"box-sizing": "border-box",
-						"font-size": 20
-					},
 					".table-row": {
 						"_mixins": [p.tableRow(), wrapper],
-						"margin-bottom": 15
-					},
-					".table-col5": {
-						"vertical-align": "middle",
-						"padding-right": 25,
+						".table-col12": {
+							"font-size": 20
+						},
+						".table-col5": {
+							"vertical-align": "middle",
+							"padding-right": 25
+						},
+						".table-col7": {
+							"vertical-align": "middle"
+						}
 					}
 				},
 				"&.offset": {
@@ -231,10 +230,17 @@ var d = new Descartes({
 					"background": "rgba(255,255,255,0.75)",
 					"position": "relative",
 					"min-height": "100%",
+					".row": {
+						"_mixins": [p.row(), wrapper],
+						"box-sizing": "border-box",
+						"font-size": 20
+					},
 					".table-row": {
+						"_listeners": [[window, 'resize']],
 						"_mixins": [p.tableRow(), wrapper],
-						"padding": "25px 0",
-						"min-height": () => { return $(window).height() },
+						"min-height": function minHeight() {
+							return window.innerHeight;
+						},
 						".table-col5": {
 							"_mixins": p.tableCol(5),
 							"vertical-align": "middle",
@@ -280,4 +286,3 @@ $(function () {
 		}
 	});
 });
-console.log(d.mappings)
