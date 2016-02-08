@@ -234,7 +234,7 @@ var d = new Descartes({
 					".table-row": {
 						"_mixins": [p.tableRow(), wrapper],
 						"padding": "25px 0",
-						"height": () => { return $(window).height() },
+						"min-height": () => { return $(window).height() },
 						".table-col5": {
 							"_mixins": p.tableCol(5),
 							"vertical-align": "middle",
