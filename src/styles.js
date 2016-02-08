@@ -1,16 +1,18 @@
-const m = {margin: 0, padding: 0, "height": "100%"}
+const m = {margin: 0, padding: 0}
 const heading = {"margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300}
 const max = 900
 const wrapper = {"max-width": max, margin: "0 auto"}
 const verticalAlign = {position: "relative", top: "50%", "transform": "translateY(-50%)"}
-const _button = {background: "none",
+const _button = {"background": "none",
 				"border-width": "1px",
 				"border-style": "solid",
 				"border-color": "currentColor",
-				padding: "10px 15px",
+				"padding": "10px 15px",
+				"text-decoration": "none",
 				"font-size": 12,
 				"letter-spacing": 1,
 				"text-transform": "uppercase",
+				"font-weight": "normal",
 				"cursor": "pointer"}
 const clearfix = {"&::after":
 	{
@@ -36,14 +38,17 @@ const prop = (sel, a, b, x, y) => {
 }
 
 const p = new Plato()
+const start = Date.now()
 
-new Descartes({
+var lastScroll = $(window).scrollTop()
+const d = new Descartes({
 	"html": {
 		_mixins: m,
 		"font-family": "Source Sans Pro, Helvetica",
 		color: "#333",
 		"font-size": 16,
 		"font-weight": 300,
+		height: "100%",
 		body: {
 			_mixins: m,
 			_listeners: [[window, "click"], [window, "touchstart"]],
@@ -61,7 +66,7 @@ new Descartes({
 					"font-family": "Anonymous Pro"
 				}
 			},
-			".row": { _mixins: p.clearfix() },
+			".row": { _mixins: p.row() },
 			".col1": { _mixins: p.col(1) },
 			".col2": { _mixins: p.col(2) },
 			".col3": { _mixins: p.col(3) },
@@ -74,15 +79,38 @@ new Descartes({
 			".col10": { _mixins: p.col(10) },
 			".col11": { _mixins: p.col(11) },
 			".col12": { _mixins: p.col(12) },
-			nav: {
+			".table-row": { _mixins: p.tableRow() },
+			".table-col1": { _mixins: p.tableCol(1) },
+			".table-col2": { _mixins: p.tableCol(2) },
+			".table-col3": { _mixins: p.tableCol(3) },
+			".table-col4": { _mixins: p.tableCol(4) },
+			".table-col5": { _mixins: p.tableCol(5) },
+			".table-col6": { _mixins: p.tableCol(6) },
+			".table-col7": { _mixins: p.tableCol(7) },
+			".table-col8": { _mixins: p.tableCol(8) },
+			".table-col9": { _mixins: p.tableCol(9) },
+			".table-col10": { _mixins: p.tableCol(10) },
+			".table-col11": { _mixins: p.tableCol(11) },
+			".table-col12": { _mixins: p.tableCol(12) },
+			"a": {
+				color: "currentColor"
+			},
+			"nav": {
 				_listeners: [[window, "scroll"]],
 				"text-align": "center",
 				position: "fixed",
 				width: "100%",
+				"overflow": "hidden",
+				"transition": "all 0.5s ease",
 				"z-index": 9999,
-				color: (_) => {
-					let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
-					return p.rgba(v,v,v,1)
+				height: (_) => {
+					const pos = $(window).scrollTop()
+					if (pos > (($(window).height()*0.9)-50) && pos > lastScroll) {
+						lastScroll = pos
+						return 0
+					}
+					lastScroll = pos
+					return 50
 				},
 				background: (_) => {
 					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.9) )
@@ -92,14 +120,26 @@ new Descartes({
 				},
 				"> div": {
 					_mixins: wrapper,
-					padding: 15
+					padding: 15,
+					"a": {
+						_listeners: [[window, "scroll"]],
+						"text-decoration": "none",
+						"color": (_) => {
+							let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
+							return p.rgba(v,v,v,1)
+						}
+					}
 				}
 			},
-			"a.button": {
+			".button": {
 				_mixins: _button
 			},
 			button: {
 				_mixins: _button
+			},
+			"img.roundImage": {
+				"border-radius": function(_) { return _.width/2; },
+				"overflow": "hidden"
 			},
 			".wrapper": {
 				_mixins: wrapper
@@ -118,6 +158,7 @@ new Descartes({
 					h1: {
 						_mixins: heading,
 						"font-size": 120,  
+						"font-weight": 100,
 						"line-height": 110,
 						"margin-bottom": 0
 					},
@@ -135,7 +176,6 @@ new Descartes({
 						width: "100%",
 						code: {
 							"text-align": "left",
-							"word-wrap": "pre-wrap",
 							"font-size": 16,
 							"font-family": "Anonymous Pro",
 							padding: 25,
@@ -159,38 +199,28 @@ new Descartes({
 					}
 				},
 				"&.offset": {
-					_mixins: clearfix,
+					_mixins: m,
+					width: "100%",
 					background: "rgba(255,255,255,0.75)",
 					position: "relative",
-					display: "table",
-					height: "100%",
-					width: "100%",
-					"&.left > div": {
-						width: "50%",
-						padding: 15,
-						"box-sizing": "border-box",
-						display: "table-cell",
-						"vertical-align": "middle",
-						"&:nth-child(1) > div": {
-							width: max/2,
-							float: "right"
-						}
-					},
-					"&.right > div": {
-						width: "50%",
-						padding: 15,
-						"box-sizing": "border-box",
-						display: "table-cell",
-						"vertical-align": "middle",
-						"&:nth-child(1) > div": {
-							width: max/2,
-							float: "right"
+					"min-height": "100%",
+					"> .table-row": {
+						_mixins: [p.tableRow(), wrapper],
+						"padding": "25px 0",
+						".table-col5": {
+							_mixins: p.tableCol(5),
+							"vertical-align": "middle",
+							"padding": "0 25px"
 						},
-						"&:nth-child(2) > div": {
-							width: max/2,
-							float: "left"
+						".table-col7": {
+							_mixins: p.tableCol(7),
+							"vertical-align": "middle"
 						}
 					}
+				},
+				".button": {
+					_mixins: _button,
+					color: "#333"
 				},
 				h3: {
 					_mixins: heading,
@@ -206,3 +236,5 @@ new Descartes({
 		}
 	}
 })
+document.getElementById("time").innerHTML = (Date.now() - start).toString()
+console.log(d.elemMappings)
