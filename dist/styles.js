@@ -203,7 +203,21 @@ var d = new Descartes({
 					background: "rgba(255,255,255,0.75)",
 					position: "relative",
 					"min-height": "100%",
-					"> .table-row": {
+					"&.features": {
+						color: "#fff",
+						background: "#474949",
+						"pre": {
+							"border": "1px dashed #666"
+						}
+					},
+					".row": {
+						_mixins: [p.row(), wrapper],
+						padding: "50px 25px",
+						"margin-top": 25,
+						"box-sizing": "border-box",
+						"font-size": 20
+					},
+					".table-row": {
 						_mixins: [p.tableRow(), wrapper],
 						"padding": "25px 0",
 						".table-col5": {
@@ -236,4 +250,18 @@ var d = new Descartes({
 	}
 });
 document.getElementById("time").innerHTML = (Date.now() - start).toString();
-console.log(d.elemMappings);
+
+$(function () {
+	$('a[href*="#"]:not([href="#"])').click(function () {
+		if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+			var target = $(this.hash);
+			target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+			if (target.length) {
+				$('html, body').animate({
+					scrollTop: target.offset().top
+				}, 1000);
+				return false;
+			}
+		}
+	});
+});
