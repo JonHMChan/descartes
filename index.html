@@ -10,12 +10,12 @@
 	<body>
 		<nav>
 			<div class="row">
-				<div class="col2"><a href="#">Overview</a></div>
-				<div class="col2"><a href="#">Features</a></div>
-				<div class="col2"><a href="#">About</a></div>
-				<div class="col2"><a href="#">Contributing</a></div>
-				<div class="col2"><a href="#">GitHub</a></div>
-				<div class="col2"><a href="#">Donate</a></div>
+				<div class="col2"><a href="#overview">Overview</a></div>
+				<div class="col2"><a href="#features">Features</a></div>
+				<div class="col2"><a href="#about">About</a></div>
+				<div class="col2"><a href="#examples">Examples</a></div>
+				<div class="col2"><a href="http://github.com/jonhmchan/descartes">GitHub</a></div>
+				<div class="col2"><a href="#donate">Donate</a></div>
 			</div>
 		</nav>
 		<header>
@@ -23,11 +23,12 @@
 				<h1>Descartes</h1>
 				<h2>Styling for Programmers</h2>
 				<p>An experimental library for writing CSS in JavaScript</p>
-				<button>Get Started</button>
-				<button>Documentation</button>
+				<a class="button" href="/dist/descartes.min.js">Download Beta</a>
+				<a class="button" href="#features">Read documentation</a>
 			</div>
 		</header>
 		<section class="offset">
+			<a name="overview" />
 			<div class="table-row">
 				<div class="table-col5">
 					<h3>Smart Stylesheets</h3>
@@ -143,17 +144,14 @@ html body section {
 			</div>
 			</div>
 		</section>
-		<section class="plain">
+		<section class="offset features">
+			<a name="features" />
 			<div class="row">
-				<div class="col2">&nbsp;</div>
-				<div class="col8">
-					<h3>Plays Nice</h3>
-					<p>Descartes works great with other JavaScript libraries like jQuery, Angular, and React. It takes just a few hooks to get your styles to work together with your favorite front end frameworks. If the support isn't there yet, Descartes is <a href="http://github.com/jonhmchan/descartes" target="_blank">open source</a> so you can add it in yourself!</p>
+				<div class="col12">
+					<h3>Features</h3>
+					<p>Descartes has most of the features you're familiar with from Less and Sass, but adds the power of JavaScript to your styles. Get an overview of what the library has to offer.
 				</div>
-				<div class="col2">&nbsp;</div>
 			</div>
-		</section>
-		<section class="offset">
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
@@ -163,23 +161,23 @@ html body section {
 				</div>
 				<div class="table-col7">
 <pre><code class="javascript">var standardSize = 16;
-var tree = {
+var tree = { // Just a JavaScript object literal
   "html": {
-    "margin": 0,
+    "margin": 0, // Implicit conversion to px
     "padding": 0,
     "height": "100%",
-    "body": {
+    "body": { // Nested inside of `html`
       "color": "#333",
       "font-family": "Helvetica",
-      "font-size": standardSize,
-      "h1": {
-        "font-size": standardSize * 1.2,
+      "font-size": standardSize, // Use variables
+      "h1": { // Nested inside of `html body`
+        "font-size": standardSize * 1.2, // Operations
         "font-weight": 300
       }
     }
   }
 };
-var d = new Descartes(tree);
+var d = new Descartes(tree); // Renders style tree
 </code></pre>
 				</div>
 			</div>
@@ -191,18 +189,31 @@ var d = new Descartes(tree);
 					</div>
 				</div>
 				<div class="table-col7">
-<pre><code class="javascript">var reset = {
+<pre><code class="javascript">var _reset = { // Mixin objects usually prefixed with _
   "margin": 0,
   "padding": 0
 };
-var heading()
+var _font = function(n) { // Mixin function that returns an object
+  var mixin = {
+    "font-size": 16 * Math.pow(1.4, n), // Modular scale
+    "font-family": "Helvetica",
+    "font-weight": 600
+  };
+  return mixin;
+}
 var tree = {
   "html": {
-    "_mixins": reset, // Gets margin and padding!
+    "_mixins": _reset, // Gets margin and padding!
     "background": "#fff",
     "h1": {
-      "_mixins": [reset], // Can also pass an array of mixins
-      "margin-bottom": 10, // Explicit styles get priority
+      "_mixins": _font(6) // You can pass function values
+    },
+    "h2": {
+      "_mixins": _font(5),
+      "font-weight": 300 // Explicit rules get priority
+    },
+    "p": {
+      "_mixins": [_font(1), _reset] // Applied in order
     }
   }
 };
@@ -225,10 +236,10 @@ var tree = {
   .
   ".verticalAlign": {
     "margin-top": function(_) {
-      // '_' is the node for each selector
-      var parentHeight = _.parentNode.height;
-      var height = _.height;
-      return (parentHeight + height)/2;
+      // _ is the individual .verticalAlign element
+      var parentHeight = _.parentNode.height; // Parent height (!)
+      var height = _.height; // Get current node's height
+      return (parentHeight + height)/2; // Compute margin in px
     }
   }
   .
@@ -247,22 +258,26 @@ var d = new Descartes(tree);
 					</div>
 				</div>
 				<div class="table-col7">
-<pre><code class="javascript">// Vertical alignment using margins
+<pre><code class="javascript">// Visible nav bar based on scroll direction like on this page
+
+var lastScroll = $(window).scrollTop() // Use jQuery if you want!
 var tree = {
-  .
-  .
-  .
-  ".verticalAlign": {
-    "margin-top": function(_) {
-      // '_' is the node for each selector
-      var parentHeight = _.parentNode.height;
-      var height = _.height;
-      return (parentHeight + height)/2;
+  "nav": {
+    "_listeners": [[window, 'scroll']], // Listen to scroll event
+    "overflow": "hidden",
+    "position": "fixed",
+    "width": "100%",
+    "transition": "all 0.5s ease", // Nice animations
+    "height": function(_) { // Dynamic value
+      var scroll = $(window).scrollTop();
+      if (scroll > lastScroll) { // Detect scroll direction
+        lastScroll = scroll;
+        return 0; // Hide the nav
+      }
+      lastScroll = scroll;
+      return 50; // Show the nav
     }
   }
-  .
-  .
-  .
 };
 var d = new Descartes(tree);
 </code></pre>
