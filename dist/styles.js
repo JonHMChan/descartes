@@ -1,10 +1,10 @@
 "use strict";
 
-var m = { margin: 0, padding: 0 };
-var heading = { "margin-top": 0, "margin-bottom": 15, padding: 0, 'font-weight': 300 };
+var m = { "margin": 0, "padding": 0 };
+var heading = { "margin-top": 0, "margin-bottom": 15, "padding": 0, 'font-weight': 300 };
 var max = 900;
-var wrapper = { "max-width": max, margin: "0 auto" };
-var verticalAlign = { position: "relative", top: "50%", "transform": "translateY(-50%)" };
+var wrapper = { "max-width": max, "margin": "0 auto" };
+var verticalAlign = { "position": "relative", "top": "50%", "transform": "translateY(-50%)" };
 var _button = { "background": "none",
 	"border-width": "1px",
 	"border-style": "solid",
@@ -17,9 +17,9 @@ var _button = { "background": "none",
 	"font-weight": "normal",
 	"cursor": "pointer" };
 var clearfix = { "&::after": {
-		content: "",
-		display: "table",
-		clear: "both"
+		"content": "",
+		"display": "table",
+		"clear": "both"
 	}
 };
 var rand_rgba = function rand_rgba() {
@@ -44,22 +44,22 @@ var start = Date.now();
 var lastScroll = $(window).scrollTop();
 var d = new Descartes({
 	"html": {
-		_mixins: m,
+		"_mixins": m,
 		"font-family": "Source Sans Pro, Helvetica",
-		color: "#333",
+		"color": "#333",
 		"font-size": 16,
 		"font-weight": 300,
-		height: "100%",
-		body: {
-			_mixins: m,
-			_listeners: [[window, "click"], [window, "touchstart"]],
-			height: "100%",
+		"height": "100%",
+		"body": {
+			"_mixins": m,
+			"_listeners": [[window, "click"], [window, "touchstart"]],
+			"height": "100%",
 			"background": function background() {
 				return 'linear-gradient(' + rand_angle().toString() + 'deg,' + rand_rgba() + ',' + rand_rgba() + ')' + ' center center fixed no-repeat';
 			},
-			pre: {
+			"pre": {
 				"font-size": 14,
-				code: {
+				"code": {
 					"font-family": "Anonymous Pro"
 				}
 			},
@@ -90,17 +90,17 @@ var d = new Descartes({
 			".table-col11": { _mixins: p.tableCol(11) },
 			".table-col12": { _mixins: p.tableCol(12) },
 			"a": {
-				color: "currentColor"
+				"color": "currentColor"
 			},
 			"nav": {
-				_listeners: [[window, "scroll"]],
+				"_listeners": [[window, "scroll"]],
 				"text-align": "center",
-				position: "fixed",
-				width: "100%",
+				"position": "fixed",
+				"width": "100%",
 				"overflow": "hidden",
 				"transition": "all 0.5s ease",
 				"z-index": 9999,
-				height: function height(_) {
+				"height": function height(_) {
 					var pos = $(window).scrollTop();
 					if (pos > $(window).height() * 0.9 - 50 && pos > lastScroll) {
 						lastScroll = pos;
@@ -109,17 +109,17 @@ var d = new Descartes({
 					lastScroll = pos;
 					return 50;
 				},
-				background: function background(_) {
+				"background": function background(_) {
 					return p.rgba(255, 255, 255, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.9));
 				},
 				"box-shadow": function boxShadow(_) {
 					return "0 0 15px " + p.rgba(100, 100, 100, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.2));
 				},
 				"> div": {
-					_mixins: wrapper,
-					padding: 15,
+					"_mixins": wrapper,
+					"padding": 15,
 					"a": {
-						_listeners: [[window, "scroll"]],
+						"_listeners": [[window, "scroll"]],
 						"text-decoration": "none",
 						"color": function color(_) {
 							var v = p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 255, 50);
@@ -129,10 +129,10 @@ var d = new Descartes({
 				}
 			},
 			".button": {
-				_mixins: _button
+				"_mixins": _button
 			},
-			button: {
-				_mixins: _button
+			"button": {
+				"_mixins": _button
 			},
 			"img.roundImage": {
 				"border-radius": function borderRadius(_) {
@@ -141,107 +141,110 @@ var d = new Descartes({
 				"overflow": "hidden"
 			},
 			".wrapper": {
-				_mixins: wrapper
+				"_mixins": wrapper
 			},
-			header: {
-				_mixins: m,
-				height: "90%",
-				color: "#fff",
+			"header": {
+				"_mixins": m,
+				"height": "90%",
+				"color": "#fff",
 				"div.content": {
-					_listeners: [[window, "scroll"]],
-					_mixins: [verticalAlign, wrapper],
+					"_listeners": [[window, "scroll"]],
+					"_mixins": [verticalAlign, wrapper],
 					"opacity": function opacity() {
 						return prop($(window).scrollTop(), 150, 350, 1, 0);
 					},
 					"text-align": "center",
-					h1: {
-						_mixins: heading,
+					"h1": {
+						"_mixins": heading,
 						"font-size": 120,
 						"font-weight": 100,
 						"line-height": 110,
 						"margin-bottom": 0
 					},
-					h2: {
-						_mixins: heading,
+					"h2": {
+						"_mixins": heading,
 						"margin-bottom": 0,
 						"font-size": 36
 					},
-					p: {
-						_mixins: heading,
+					"p": {
+						"_mixins": heading,
 						"margin-bottom": 15,
 						"font-size": 20
 					},
-					pre: {
-						width: "100%",
-						code: {
+					"pre": {
+						"width": "100%",
+						"code": {
 							"text-align": "left",
 							"font-size": 16,
 							"font-family": "Anonymous Pro",
-							padding: 25,
-							background: "rgba(0,0,0,0.75)"
+							"padding": 25,
+							"background": "rgba(0,0,0,0.75)"
 						}
 					},
-					button: {
-						_mixins: _button,
-						color: "#fff"
+					"button": {
+						"_mixins": _button,
+						"color": "#fff"
 					}
 				}
 			},
-			section: {
+			"section": {
 				"&.plain": {
-					padding: "25px 0",
-					background: "none",
-					color: "#fff",
+					"padding": "25px 0",
+					"background": "none",
+					"color": "#fff",
 					"text-align": "center",
 					"> div": {
-						_mixins: [wrapper, p.clearfix()]
+						"_mixins": [wrapper, p.clearfix()],
+						"a.button": {
+							"color": "#fff"
+						}
 					}
 				},
 				"&.offset": {
-					_mixins: m,
-					width: "100%",
-					background: "rgba(255,255,255,0.75)",
-					position: "relative",
+					"_mixins": m,
+					"width": "100%",
+					"background": "rgba(255,255,255,0.75)",
+					"position": "relative",
 					"min-height": "100%",
 					"&.features": {
-						color: "#fff",
-						background: "#474949",
+						"color": "#fff",
+						"background": "#474949",
 						"pre": {
 							"border": "1px dashed #666"
 						}
 					},
 					".row": {
-						_mixins: [p.row(), wrapper],
-						padding: "50px 25px",
+						"_mixins": [p.row(), wrapper],
+						"padding": "50px 25px",
 						"margin-top": 25,
 						"box-sizing": "border-box",
 						"font-size": 20
 					},
 					".table-row": {
-						_mixins: [p.tableRow(), wrapper],
+						"_mixins": [p.tableRow(), wrapper],
 						"padding": "25px 0",
 						".table-col5": {
-							_mixins: p.tableCol(5),
+							"_mixins": p.tableCol(5),
 							"vertical-align": "middle",
 							"padding": "0 25px"
 						},
 						".table-col7": {
-							_mixins: p.tableCol(7),
+							"_mixins": p.tableCol(7),
 							"vertical-align": "middle"
 						}
 					}
 				},
 				".button": {
-					_mixins: _button,
-					color: "#333"
+					"_mixins": _button,
+					"color": "#333"
 				},
-				h3: {
-					_mixins: heading,
+				"h3": {
+					"_mixins": heading,
 					"font-size": 36,
 					"margin-bottom": 0
 				},
-				h4: {
-					_mixins: heading,
+				"h4": {
+					"_mixins": heading,
 					"font-size": 24,
 					"margin-bottom": 0
 				}
