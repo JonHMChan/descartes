@@ -116,23 +116,20 @@ const d = new Descartes({
 				},
 				"background": (_) => {
 					if ($(window).width() < p.mobileBreak) return "#fff"
-					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.9) )
+					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.95) )
 				},
 				"box-shadow": (_) => {
 					return "0 0 15px " + p.rgba(100,100,100, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.2) )
 				},
-				"> div": {
-					"_mixins": wrapper,
-					"a": {
-						"_listeners": [[window, "scroll"], [window, "resize"]],
-						"text-decoration": "none",
-						"display": "block",
-						"margin": "15px 0",
-						"color": (_) => {
-							if ($(window).width() < p.mobileBreak) return "#333"
-							let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
-							return p.rgba(v,v,v,1)
-						}
+				"a": {
+					"_listeners": [[window, "scroll"], [window, "resize"]],
+					"text-decoration": "none",
+					"display": "block",
+					"margin": "15px 0",
+					"color": (_) => {
+						if ($(window).width() < p.mobileBreak) return "#333"
+						let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
+						return p.rgba(v,v,v,1)
 					}
 				}
 			},
