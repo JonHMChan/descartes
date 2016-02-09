@@ -160,21 +160,32 @@ var d = new Descartes({
 					},
 					"text-align": "center",
 					"h1": {
+						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
-						"font-size": 120,
+						"font-size": function fontSize() {
+							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 72, 120);
+						},
 						"font-weight": 100,
-						"line-height": 110,
+						"line-height": function lineHeight() {
+							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 60, 110);
+						},
 						"margin-bottom": 0
 					},
 					"h2": {
+						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"margin-bottom": 0,
-						"font-size": 36
+						"font-size": function fontSize() {
+							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 24, 36);
+						}
 					},
 					"p": {
+						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"margin-bottom": 15,
-						"font-size": 20
+						"font-size": function fontSize() {
+							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 16, 20);
+						}
 					},
 					"pre": {
 						"width": "100%",
@@ -193,7 +204,11 @@ var d = new Descartes({
 				}
 			},
 			"section": {
-				"padding": "50px 0",
+				"_listeners": [[window, "resize"]],
+				"padding": function padding() {
+					return window.innerWidth >= p.mobileBreak ? "50px 0" : "50px " + p.fixedGutter + "px";
+				},
+				"box-sizing": "border-box",
 				"&.plain": {
 					"background": "none",
 					"color": "#fff",
