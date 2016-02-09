@@ -62,6 +62,7 @@ var Descartes = function () {
 				var result = {};
 				for (var key in tree) {
 					var value = tree[key];
+					if (value === null) continue;
 					var keyObject = this.parseKey(key);
 					if (keyObject.type === this.selector) {
 						result[keyObject.key] = this.compute(value);
@@ -259,6 +260,7 @@ var Descartes = function () {
 			if (typeof rule === 'function' && elem !== null) {
 				rule = rule(elem);
 			}
+			if (rule === null) return null;
 			var except = ['font-weight', 'opacity', 'z-index'];
 			if (Number(rule) === rule && except.indexOf(key) < 0) {
 				return rule.toString() + "px";

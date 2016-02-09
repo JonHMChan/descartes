@@ -1,6 +1,6 @@
 "use strict";
 
-var m = { "margin": 0, "padding": 0 };
+var m = { "margin-left": 0, "margin-right": 0, "margin-top": 0, "margin-bottom": 0, "padding": 0 };
 var heading = { "margin-top": 0, "margin-bottom": 15, "padding": 0, 'font-weight': 300 };
 var max = 900;
 var wrapper = { "max-width": max, "margin": "0 auto" };
@@ -281,7 +281,7 @@ $(function () {
 			if (target.length) {
 				$('html, body').animate({
 					scrollTop: target.offset().top
-				}, 1000);
+				}, 500);
 				return false;
 			}
 		}

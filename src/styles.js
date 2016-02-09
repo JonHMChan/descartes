@@ -1,4 +1,4 @@
-const m = {"margin": 0, "padding": 0}
+const m = {"margin-left": 0, "margin-right": 0, "margin-top": 0, "margin-bottom": 0, "padding": 0}
 const heading = {"margin-top": 0, "margin-bottom": 15, "padding": 0, 'font-weight': 300}
 const max = 900
 const wrapper = {"max-width": max, "margin": "0 auto"}
@@ -280,7 +280,7 @@ $(function() {
       if (target.length) {
         $('html, body').animate({
           scrollTop: target.offset().top
-        }, 1000);
+        }, 500);
         return false;
       }
     }
