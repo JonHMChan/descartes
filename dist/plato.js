@@ -100,8 +100,11 @@ var Plato = function () {
 			return Object.assign(this.clearfix(), {
 				"_listeners": [[window, "resize"]],
 				"box-sizing": "border-box",
-				"padding": function padding() {
-					return window.innerWidth >= _this.mobileBreak ? "0" : "0 " + _this.fixedGutter + "px";
+				"margin-left": function marginLeft() {
+					return window.innerWidth >= _this.mobileBreak ? 0 : _this.fixedGutter;
+				},
+				"margin-right": function marginRight() {
+					return window.innerWidth >= _this.mobileBreak ? 0 : _this.fixedGutter;
 				}
 			});
 		}
@@ -116,8 +119,11 @@ var Plato = function () {
 					return window.innerWidth >= _this2.mobileBreak ? "table" : "block";
 				},
 				"box-sizing": "border-box",
-				"padding": function padding() {
-					return window.innerWidth >= _this2.mobileBreak ? "0" : "0 " + _this2.fixedGutter + "px";
+				"margin-left": function marginLeft() {
+					return window.innerWidth >= _this2.mobileBreak ? 0 : _this2.fixedGutter;
+				},
+				"margin-right": function marginRight() {
+					return window.innerWidth >= _this2.mobileBreak ? 0 : _this2.fixedGutter;
 				}
 			});
 		}
@@ -151,6 +157,9 @@ var Plato = function () {
 				},
 				"margin-right": function marginRight(_) {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+				},
+				"margin-bottom": function marginBottom(_) {
+					return window.innerWidth >= _this3.mobileBreak ? 0 : _this3.fixedGutter;
 				}
 			};
 		}
@@ -177,9 +186,8 @@ var Plato = function () {
 				"width": function width() {
 					return window.innerWidth >= _this4.mobileBreak ? (calc(num, columns, gutter) + gutter).toString() + "%" : "100%";
 				},
-				"border-width": function borderWidth(_) {
-					if (window.innerWidth < _this4.mobileBreak) return 0;
-					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+				"margin-bottom": function marginBottom(_) {
+					return window.innerWidth >= _this4.mobileBreak ? 0 : _this4.fixedGutter;
 				}
 			};
 		}

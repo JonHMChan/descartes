@@ -45,6 +45,7 @@ class Descartes {
 			let result = {}
 			for (let key in tree) {
 				let value = tree[key]
+				if (value === null) continue
 				let keyObject = this.parseKey(key)
 				if (keyObject.type === this.selector) {
 					result[keyObject.key] = this.compute(value)
@@ -206,6 +207,7 @@ class Descartes {
 		if (typeof rule === 'function' && elem !== null) {
 			rule = rule(elem)
 		}
+		if (rule === null) return null
 		let except = ['font-weight', 'opacity', 'z-index']
 		if (Number(rule) === rule && except.indexOf(key) < 0) {
 			return rule.toString() + "px"

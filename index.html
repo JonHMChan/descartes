@@ -9,14 +9,19 @@
 	</head>
 	<body>
 		<nav>
-			<div class="row">
-				<div class="col2"><a href="#overview">Overview</a></div>
-				<div class="col2"><a href="#features">Features</a></div>
-				<div class="col2"><a href="#about">About</a></div>
-				<div class="col2"><a href="#examples">Examples</a></div>
-				<div class="col2"><a href="http://github.com/jonhmchan/descartes">GitHub</a></div>
-				<div class="col2"><a href="#donate">Donate</a></div>
-			</div>
+      <div class="wrapper">
+  			<div class="row">
+  				<div class="col2"><a href="#overview">Overview</a></div>
+  				<div class="col2"><a href="#features">Features</a></div>
+  				<div class="col2"><a href="#about">About</a></div>
+  				<div class="col2"><a href="#examples">Examples</a></div>
+  				<div class="col2"><a href="http://github.com/jonhmchan/descartes">GitHub</a></div>
+  				<div class="col2"><a href="#donate">Donate</a></div>
+  			</div>
+        <div class="row" id="mobileMenu">
+          <a class="button" href="#">Close Menu</a>
+        </div>
+      </div>
 		</nav>
 		<header>
 			<div class="content">
@@ -101,13 +106,13 @@ new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
 				<div class="table-col7">
 				<strong>Descartes + JavaScript</strong>
 <pre><code class="javascript">new Descartes({
-  "html" {
+  "html": {
     "margin": 0,
     "padding": 0,
-    "body" {
+    "body": {
       "margin": 0,
       "padding": 0,
-      "section" {
+      "section": {
         "max-width": "800px"
       }
     }
@@ -118,8 +123,8 @@ new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
   margin: 0;
   padding: 0;
   body {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
     section {
       max-width: 800px;
     }
@@ -148,8 +153,8 @@ html body section {
 		</section>
 		<section class="features">
 			<a name="features" />
-			<div class="row">
-				<div class="col12">
+			<div class="table-row">
+				<div class="table-col12">
 					<h3>Features</h3>
 					<p>Descartes has most of the features you're familiar with from Less and Sass, but adds the power of JavaScript to your styles. Get an overview of what the library has to offer.
 				</div>

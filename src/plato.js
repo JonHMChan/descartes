@@ -60,7 +60,8 @@ class Plato {
 		return Object.assign(this.clearfix(), {
 			"_listeners": [[window, "resize"]],
 			"box-sizing": "border-box",
-			"padding": () => { return (window.innerWidth >= this.mobileBreak) ? "0" : ("0 " + this.fixedGutter + "px") }
+			"margin-left": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter },
+			"margin-right": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
 		})
 	}
 
@@ -71,7 +72,8 @@ class Plato {
 				return (window.innerWidth >= this.mobileBreak) ? "table" : "block"
 			},
 			"box-sizing": "border-box",
-			"padding": () => { return (window.innerWidth >= this.mobileBreak) ? "0" : ("0 " + this.fixedGutter + "px") },
+			"margin-left": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter },
+			"margin-right": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
 		})
 	}
 
@@ -85,7 +87,8 @@ class Plato {
 			"float": () => { return (window.innerWidth >= this.mobileBreak) ? "left" : "none" },
 			"box-sizing": "border-box",
 			"width": () => { return (window.innerWidth >= this.mobileBreak) ? calc(num,columns,gutter).toString() + "%" : "100%" },
-			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") }
+			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") },
+			"margin-bottom": (_) => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
 		}
 	}
 
@@ -96,10 +99,7 @@ class Plato {
 			"display": () => { return (window.innerWidth >= this.mobileBreak) ? "table-cell" : "block" },
 			"box-sizing": "border-box",
 			"width": () => { return (window.innerWidth >= this.mobileBreak) ? (calc(num,columns,gutter) + gutter).toString() + "%" : "100%" },
-			"border-width": (_) => {
-				if (window.innerWidth < this.mobileBreak) return 0
-				return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%")
-			}
+			"margin-bottom": (_) => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
 		}
 	}
 }

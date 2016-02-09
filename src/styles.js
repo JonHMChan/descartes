@@ -1,4 +1,4 @@
-const m = {"margin": 0, "padding": 0}
+const m = {"margin-left": 0, "margin-right": 0, "margin-top": 0, "margin-bottom": 0, "padding": 0}
 const heading = {"margin-top": 0, "margin-bottom": 15, "padding": 0, 'font-weight': 300}
 const max = 900
 const wrapper = {"max-width": max, "margin": "0 auto"}
@@ -96,14 +96,16 @@ const d = new Descartes({
 				"color": "currentColor"
 			},
 			"nav": {
-				"_listeners": [[window, "scroll"]],
+				"_listeners": [[window, "scroll"], [window, "resize"]],
 				"text-align": "center",
 				"position": "fixed",
 				"width": "100%",
 				"overflow": "hidden",
+				"box-sizing": "border-box",
 				"transition": "all 0.5s ease",
 				"z-index": 9999,
 				"height": (_) => {
+					if ($(window).width() < p.mobileBreak) return "auto"
 					const pos = $(window).scrollTop()
 					if (pos > (($(window).height()*0.9)-50) && pos > lastScroll) {
 						lastScroll = pos
@@ -113,21 +115,21 @@ const d = new Descartes({
 					return 50
 				},
 				"background": (_) => {
-					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.9) )
+					if ($(window).width() < p.mobileBreak) return "#fff"
+					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.95) )
 				},
 				"box-shadow": (_) => {
 					return "0 0 15px " + p.rgba(100,100,100, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.2) )
 				},
-				"> div": {
-					"_mixins": wrapper,
-					"padding": 15,
-					"a": {
-						"_listeners": [[window, "scroll"]],
-						"text-decoration": "none",
-						"color": (_) => {
-							let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
-							return p.rgba(v,v,v,1)
-						}
+				"a": {
+					"_listeners": [[window, "scroll"], [window, "resize"]],
+					"text-decoration": "none",
+					"display": "block",
+					"margin": "15px 0",
+					"color": (_) => {
+						if ($(window).width() < p.mobileBreak) return "#333"
+						let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
+						return p.rgba(v,v,v,1)
 					}
 				}
 			},
@@ -156,21 +158,24 @@ const d = new Descartes({
 					},
 					"text-align": "center",
 					"h1": {
+						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
-						"font-size": 120,  
+						"font-size": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 72, 120) }, 
 						"font-weight": 100,
-						"line-height": 110,
+						"line-height": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 60, 110) },
 						"margin-bottom": 0
 					},
 					"h2": {
+						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"margin-bottom": 0,
-						"font-size": 36
+						"font-size": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 24, 36) }
 					},
 					"p": {
+						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"margin-bottom": 15,
-						"font-size": 20
+						"font-size": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 16, 20) }
 					},
 					"pre": {
 						"width": "100%",
@@ -189,8 +194,10 @@ const d = new Descartes({
 				}
 			},
 			"section": {
+				"_listeners": [[window, "resize"]],
+				"padding": () => { return (window.innerWidth >= p.mobileBreak) ? "50px 0" : "50px "+p.fixedGutter+"px" },
+				"box-sizing": "border-box",
 				"&.plain": {
-					"padding": "25px 0",
 					"background": "none",
 					"color": "#fff",
 					"text-align": "center",
@@ -201,29 +208,41 @@ const d = new Descartes({
 						}
 					}
 				},
+				"&.features": {
+					"color": "#fff",
+					"background": "#474949",
+					"margin-top": 25,
+					"pre": {
+						"border": "1px dashed #666"
+					},
+					".table-row": {
+						"_mixins": [p.tableRow(), wrapper],
+						".table-col12": {
+							"font-size": 20
+						},
+						".table-col5": {
+							"vertical-align": "middle",
+							"padding-right": 25
+						},
+						".table-col7": {
+							"vertical-align": "middle"
+						}
+					}
+				},
 				"&.offset": {
-					"_mixins": m,
 					"width": "100%",
 					"background": "rgba(255,255,255,0.75)",
 					"position": "relative",
 					"min-height": "100%",
-					"&.features": {
-						"color": "#fff",
-						"background": "#474949",
-						"pre": {
-							"border": "1px dashed #666"
-						}
-					},
 					".row": {
 						"_mixins": [p.row(), wrapper],
-						"padding": "50px 25px",
-						"margin-top": 25,
 						"box-sizing": "border-box",
 						"font-size": 20
 					},
 					".table-row": {
+						"_listeners": [[window, 'resize']],
 						"_mixins": [p.tableRow(), wrapper],
-						"padding": "25px 0",
+						"min-height": () => { return window.innerHeight },
 						".table-col5": {
 							"_mixins": p.tableCol(5),
 							"vertical-align": "middle",
@@ -263,7 +282,7 @@ $(function() {
       if (target.length) {
         $('html, body').animate({
           scrollTop: target.offset().top
-        }, 1000);
+        }, 500);
         return false;
       }
     }
