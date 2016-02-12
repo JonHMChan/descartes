@@ -315,6 +315,39 @@ var d = new Descartes(tree);
 </code></pre>
 				</div>
 			</div>
+      <div class="table-row">
+        <div class="table-col5">
+          <div>
+          <h4>Extensibility + Transformers</h4>
+          <p>Because you're just passing a JavaScript object literal into Descartes, you can extend and manipulate the style tree before it's rendered by the library. That means you can do things like add browser prefixes to CSS3 properties, add predefined rules like a grid, or even <i>invent new rules</i> that turn into traditional style declarations.</p>
+          </div>
+        </div>
+        <div class="table-col7">
+<pre><code class="javascript">// Visible nav bar based on scroll direction like on this page
+
+var lastScroll = $(window).scrollTop() // Use jQuery if you want!
+var tree = {
+  "nav": {
+    "_listeners": [[window, 'scroll']], // Listen to scroll event
+    "overflow": "hidden",
+    "position": "fixed",
+    "width": "100%",
+    "transition": "all 0.5s ease", // Nice animations
+    "height": function(_) { // Dynamic value
+      var scroll = $(window).scrollTop();
+      if (scroll > lastScroll) { // Detect scroll direction
+        lastScroll = scroll;
+        return 0; // Hide the nav
+      }
+      lastScroll = scroll;
+      return 50; // Show the nav
+    }
+  }
+};
+var d = new Descartes(tree);
+</code></pre>
+        </div>
+      </div>
 		</section>
 		<section class="offset">
 			<div class="table-row">
