@@ -308,7 +308,7 @@ var _font = function(n) { // Mixin function that returns an object
     "font-weight": 600
   };
   return mixin;
-}
+};
 var tree = {
   "html": {
     "_mixins": _reset, // Gets margin and padding!
@@ -368,7 +368,7 @@ var d = new Descartes(tree);
 				<div class="table-col7">
 <pre><code class="javascript">// Visible nav bar based on scroll direction like on this page
 
-var lastScroll = $(window).scrollTop() // Use jQuery if you want!
+var lastScroll = $(window).scrollTop(); // Use jQuery if you want!
 var tree = {
   "nav": {
     "_listeners": [[window, 'scroll']], // Listen to scroll event
@@ -394,33 +394,39 @@ var d = new Descartes(tree);
       <div class="table-row">
         <div class="table-col5">
           <div>
-          <h4><i class="fa fa-random"></i> Extensibility + Transformers</h4>
+          <h4><i class="fa fa-random"></i> Transformers</h4>
           <p>Because you're just passing a JavaScript object literal into Descartes, you can extend and manipulate the style tree before it's rendered by the library. That means you can do things like add browser prefixes to CSS3 properties, add predefined rules like a grid, or even <i>invent new rules</i> that turn into traditional style declarations.</p>
           </div>
         </div>
         <div class="table-col7">
-<pre><code class="javascript">// Visible nav bar based on scroll direction like on this page
-
-var lastScroll = $(window).scrollTop() // Use jQuery if you want!
-var tree = {
-  "nav": {
-    "_listeners": [[window, 'scroll']], // Listen to scroll event
-    "overflow": "hidden",
-    "position": "fixed",
-    "width": "100%",
-    "transition": "all 0.5s ease", // Nice animations
-    "height": function(_) { // Dynamic value
-      var scroll = $(window).scrollTop();
-      if (scroll > lastScroll) { // Detect scroll direction
-        lastScroll = scroll;
-        return 0; // Hide the nav
-      }
-      lastScroll = scroll;
-      return 50; // Show the nav
-    }
+<pre><code class="javascript">var tree = {
+  ".animate": { // Uh oh, forgot browser prefixes!
+    "animate": "all 0.5s ease"
   }
 };
-var d = new Descartes(tree);
+// This is a transformer that will add prefixes!
+function prefixTransformer(tree) { // It takes a style tree
+  var newTree = {}; // Store a temporary value
+  for (var key in tree) {
+    var value = tree[key]; // Get the property value
+    if (typeof value === 'object' && !(value instanceof Array)) {
+      // Recursively apply nested rules
+      newTree[key] = prefix(value);
+    } else {
+      newTree[key] = value;
+      if (key === "animate") { // See if it needs a prefix
+        var prefixes = ["-webkit-"];
+        for (var index in prefixes) {
+          // Add browser prefixes to tree
+          newTree[prefixes[index] + key] = value
+        }
+      }
+    }
+  }
+  return newTree; // And "transforms" it with prefixes
+}
+// Apply the transformer before render
+new Descartes(prefixTransformer(style));
 </code></pre>
         </div>
       </div>
