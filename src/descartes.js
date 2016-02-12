@@ -110,21 +110,12 @@ class Descartes {
 			let rules = mapping['rules']
 			listeners.map(l => {
 				if (typeof l[0] === 'string') {
-					if (this.findType == 'jquery') {
-						this.find(l[0]).map(x => {
-							x.bind(l[1], () => {
-								this.cascade(selector, rules)
-								this.apply()
-							})
+					this.find(l[0]).map(x => {
+						x.addEventListener(l[1], () => {
+							this.cascade(selector, rules)
+							this.apply()
 						})
-					} else if (this.findType === 'sizzle') {
-						this.find(l[0]).map(x => {
-							x.addEventListener(l[1], () => {
-								this.cascade(selector, rules)
-								this.apply()
-							})
-						})
-					}
+					})
 				} else {
 					l[0].addEventListener(l[1], () => {
 						this.cascade(selector, rules)
