@@ -93,7 +93,7 @@ var d = new Descartes({
 				"color": "currentColor"
 			},
 			"nav": {
-				"_listeners": [[window, "scroll"], [window, "resize"]],
+				"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
 				"text-align": "center",
 				"position": "fixed",
 				"width": "100%",
@@ -112,11 +112,20 @@ var d = new Descartes({
 					return 50;
 				},
 				"background": function background(_) {
-					if ($(window).width() < p.mobileBreak) return "#fff";
+					if ($(window).width() < p.mobileBreak) {
+						return "rgba(255,255,255,0.9)";
+					}
 					return p.rgba(255, 255, 255, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.95));
 				},
 				"box-shadow": function boxShadow(_) {
 					return "0 0 15px " + p.rgba(100, 100, 100, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.2));
+				},
+				".options": {
+					"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
+					"display": function display(_) {
+						if ($(window).width() < p.mobileBreak && !$("nav").hasClass("show")) return "none";
+						return "block";
+					}
 				},
 				"a": {
 					"_listeners": [[window, "scroll"], [window, "resize"]],
@@ -144,7 +153,8 @@ var d = new Descartes({
 				"border-radius": function borderRadius(_) {
 					return _.width / 2;
 				},
-				"overflow": "hidden"
+				"overflow": "hidden",
+				"margin-top": 10
 			},
 			".wrapper": {
 				"_mixins": wrapper
@@ -214,7 +224,7 @@ var d = new Descartes({
 					"background": "none",
 					"color": "#fff",
 					"text-align": "center",
-					"> div": {
+					".row": {
 						"_mixins": [wrapper, p.clearfix()],
 						"a.button": {
 							"color": "#fff"
@@ -230,6 +240,9 @@ var d = new Descartes({
 					},
 					".table-row": {
 						"_mixins": [p.tableRow(), wrapper],
+						".fa": {
+							"padding-right": 10
+						},
 						".table-col12": {
 							"font-size": 20
 						},
@@ -252,20 +265,26 @@ var d = new Descartes({
 						"box-sizing": "border-box",
 						"font-size": 20
 					},
-					".request-row": {
-						"_listeners": [[window], 'resize'],
+					".info-row": {
 						"_mixins": [p.tableRow()],
 						"width": "100%",
-						".request-col3": {
+						".info-col3": {
 							"_mixins": p.tableCol(3),
 							"vertical-align": "middle",
 							"text-align": "right",
+							".fa": {
+								"padding-right": 25
+							},
 							"img": {
+								"_listeners": [[window, 'resize']],
+								"display": function display() {
+									return $(window).width() >= p.mobileBreak ? "inline-block" : "none";
+								},
 								"width": 25,
 								"padding-right": 25
 							}
 						},
-						".request-col9": {
+						".info-col9": {
 							"_mixins": p.tableCol(9),
 							"vertical-align": "middle",
 							"text-align": "left",
@@ -318,6 +337,10 @@ var d = new Descartes({
 	}
 });
 document.getElementById("time").innerHTML = (Date.now() - start).toString();
+$("#mobileMenu").click(function () {
+	$("nav").toggleClass("show");
+	$("#mobileMenu a.button").html($("nav").hasClass("show") ? "Close Menu" : "Show Menu");
+});
 
 $(function () {
 	$('a[href*="#"]:not([href="#"])').click(function () {
