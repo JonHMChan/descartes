@@ -145,7 +145,8 @@ const d = new Descartes({
 			},
 			"img.roundImage": {
 				"border-radius": function(_) { return _.width/2; },
-				"overflow": "hidden"
+				"overflow": "hidden",
+				"margin-top": 10
 			},
 			".wrapper": {
 				"_mixins": wrapper
@@ -205,7 +206,7 @@ const d = new Descartes({
 					"background": "none",
 					"color": "#fff",
 					"text-align": "center",
-					"> div": {
+					".row": {
 						"_mixins": [wrapper, p.clearfix()],
 						"a.button": {
 							"color": "#fff"
@@ -243,11 +244,11 @@ const d = new Descartes({
 						"box-sizing": "border-box",
 						"font-size": 20
 					},
-					".request-row": {
+					".info-row": {
 						"_listeners": [[window], 'resize'],
 						"_mixins": [p.tableRow()],
 						"width": "100%",
-						".request-col3": {
+						".info-col3": {
 							"_mixins": p.tableCol(3),
 							"vertical-align": "middle",
 							"text-align": "right",
@@ -256,7 +257,7 @@ const d = new Descartes({
 								"padding-right": 25
 							}
 						},
-						".request-col9": {
+						".info-col9": {
 							"_mixins": p.tableCol(9),
 							"vertical-align": "middle",
 							"text-align": "left",

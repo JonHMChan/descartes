@@ -33,7 +33,7 @@
 			</div>
 		</header>
 		<section class="offset">
-			<a name="overview" />
+			<a name="overview"></a>
 			<div class="table-row">
 				<div class="table-col5">
 					<h3>Smart Stylesheets</h3>
@@ -90,13 +90,12 @@ new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
 			</div>
 		</section>
 		<section class="plain">
-			<a name="speed" />
 			<div class="row">
 				<div class="col2">&nbsp;</div>
 				<div class="col8">
-					<h3>Small + Pretty Fast</h3>
-					<p>Descartes is just under <strong>30KB</strong> when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also reasonably fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took <strong><span id="time"></span> milliseconds</strong> to render on this page load.</p>
-					<p><a class="button" onclick="window.location.href='index.html#speed';window.location.reload(true);">Reload to test speed again</a></p>
+					<h3>Small Library</h3>
+					<p>Descartes is just under <strong>30KB</strong> when minified and just over 300 lines of code. It's written entirely in JavaScript with its one dependency, Sizzle, baked in. It works really well with some of your favorite libraries, and especially jQuery.</p>
+          <p><a class="button" href="https://github.com/jonhmchan/descartes">See the source code</a></p>
 				</div>
 				<div class="col2">&nbsp;</div>
 			</div>
@@ -152,19 +151,18 @@ html body section {
 			</div>
 		</section>
     <section class="plain">
-      <a name="speed" />
       <div class="row">
         <div class="col2">&nbsp;</div>
         <div class="col8">
-          <h3>???</h3>
-          <p>Descartes is just under <strong>30KB</strong> when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also reasonably fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took <strong><span id="time"></span> milliseconds</strong> to render on this page load.</p>
+          <h3>Pretty Fast</h3>
+          <p>Descartes uses an object literal and JavaScript to calculate the cascade and inline styles on elements. It's still reasonably fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took <strong><span id="time"></span> milliseconds</strong> to render on this page load.</p>
           <p><a class="button" onclick="window.location.href='index.html#speed';window.location.reload(true);">Reload to test speed again</a></p>
         </div>
         <div class="col2">&nbsp;</div>
       </div>
     </section>
     <section class="offset">
-      <a name="overview" />
+      <a name="overview"></a>
       <div class="table-row">
         <div class="table-col5">
           <h3>Open Source</h3>
@@ -173,55 +171,63 @@ html body section {
           <p><a class="button" href="https://github.com/jonhmchan/descartes" target="_blank">Go to GitHub</a></p>
         </div>
         <div class="table-col7">
-          <div class="request-row">
-            <div class="request-col3">
+          <div class="info-row">
+            <div class="info-col3">
               &nbsp;
             </div>
-            <div class="request-col9">
+            <div class="info-col9">
               <h3>Known Issues</h3>
             </div>
           </div>
-          <div class="request-row">
-            <div class="request-col3">
+          <div class="info-row">
+            <div class="info-col3">
                <img src="img/pull_request_icon.png" width="25" />
             </div>
-            <div class="request-col9">
+            <div class="info-col9">
               <p><strong>Improve performance</strong></p>
               <p><span>Since it's all JavaScript, we don't get browser optimizations for CSS. There are a lot of people that are better at JavaScript performance that could help out here.</span></p>
             </div>
           </div>
-          <div class="request-row">
-            <div class="request-col3">
+          <div class="info-row">
+            <div class="info-col3">
                <img src="img/pull_request_icon.png" width="25" />
             </div>
-            <div class="request-col9">
+            <div class="info-col9">
               <p><strong>Helper functions and variables</strong></p>
               <p><span>Some functions and variables are used all the time, like grids and colors. Should these be settings and functions part of the core library, or be an extension or companion library?</span></p>
             </div>
           </div>
-          <div class="request-row">
-            <div class="request-col3">
+          <div class="info-row">
+            <div class="info-col3">
                <img src="img/pull_request_icon.png" width="25" />
             </div>
-            <div class="request-col9">
+            <div class="info-col9">
               <p><strong>Compatability with other libraries</strong></p>
               <p><span>Some JS libraries work really well with Descartes like jQuery. But what about heavier front end frameworks like React, Angular, and Backbone?</span></p>
             </div>
           </div>
-          <div class="request-row">
-            <div class="request-col3">
+          <div class="info-row">
+            <div class="info-col3">
                <img src="img/pull_request_icon.png" width="25" />
             </div>
-            <div class="request-col9">
+            <div class="info-col9">
               <p><strong>Generate backup CSS stylesheet</strong></p>
               <p><span>Descartes should be able to work just like any other preprocessor and generate CSS that can be used as a backup. This just needs to get built.</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+              &nbsp;
+            </div>
+            <div class="info-col9">
+              <p><span>See more <a href="https://github.com/jonhmchan/descartes/" target="_blank">on GitHub</a> or open up an issue</span></p>
             </div>
           </div>
         </div>
       </div>
     </section>
 		<section class="features">
-			<a name="features" />
+			<a name="features"></a>
 			<div class="table-row">
 				<div class="table-col12">
 					<h3>Features</h3>
@@ -422,48 +428,33 @@ var d = new Descartes(tree);
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h4>12 Column Grid</h4>
-					<p>Writing a standard grid in Descartes becomes easy with Descartes. Because of dynamic values, access to the DOM, and listeners, you can create a fully responsive grid system in just a few lines of code.</p>
+					<h3>About</h3>
+          <h4>Who I am and why I built this</h4>
+          <img src="img/jon.jpg" width="100" class="roundImage" />
+          <p>My name is Jon Chan. I'm a developer and the head of Marketing Engineering and Developer Evangelism at <a href="https://stackoverflow.com/" target="_blank">Stack Overflow</a>. I'm also the founder of <a href="https://bento.io/" target="_blank">Bento</a>, where I help people around the world become self-taught full stack developers. I work a lot in the front end and think a lot about making development faster.</p>
+          <p><a class="button" href="https://twitter.com/jonhmchan" target="_blank">Follow me on Twitter</a></p><br/>
+          <p><strong>Why build Descartes?</strong></p>
+					<p>At <a href="https://stackoverflow.com/" target="_blank">Stack Overflow</a> and <a href="https://bento.io/" target="_blank">Bento</a>, I work on a lot of highly interactive front end that uses a lot of JavaScript and CSS. I kept running into the same issue: the moment the front end reaches some complexity, the separation between JavaScript and CSS breaks down really quickly. Wrestling with the cascade has also always been a problem. I wondered what it might be like to break that barrier down entirely, against conventional wisdom.</p>
 					</div>
 				</div>
 				<div class="table-col7">
-<pre><code class="javascript">// Example 12 column grid system
-/*
-&lt;div class="row"&gt;
-  &lt;div data-cols="3"&gt;3 columns&lt;/div&gt;
-  &lt;div data-cols="9"&gt;9 columns&lt;/div&gt;
-&lt;/div&gt;
-*/
-var columns = 12; // Number of columns in the grid
-var gutter = 1.6 // Gutter as percentage of row
-var d = new Descartes({
-  ".row": { // Container for columns
-    "overflow": "auto",
-    "&::after": { // Implement a clearfix
-      "content": "",
-      "display": "table",
-      "clear": "both"
-    },
-    "> [data-cols]": { // 'data-cols' is # of columns
-      "box-sizing": "border-box",
-      "float": "left",
-      "width": function(_) { // _ is the individual element
-        var n = parseInt(_.getAttribute("data-cols"))
-      	var full = 100-(columns-1)*gutter;
-        var gutterFill = (n-1)*gutter;
-        var width = (n*(full/columns))+gutterFill;
-        return width.toString() + '%';
-      },
-      "margin-right": function(_) {
-        if (_.nextElementSibling === null) {
-          return 0; // Remove gutter if last column element
-        }
-        return (gutter.toString() + "%");
-      }
-    }
-  }
-})
-</code></pre>
+          <div class="info-row">
+            <div class="info-col3">
+              &nbsp;
+            </div>
+            <div class="info-col9">
+              <h3>Other Motivations</h3>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="info-col9">
+              <p><strong>Improve performance</strong></p>
+              <p><span>Since it's all JavaScript, we don't get browser optimizations for CSS. There are a lot of people that are better at JavaScript performance that could help out here.</span></p>
+            </div>
+          </div>
 				</div>
 			</div>
 		</section>
