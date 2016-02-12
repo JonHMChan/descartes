@@ -131,7 +131,11 @@ var d = new Descartes({
 				}
 			},
 			".button": {
-				"_mixins": _button
+				"_mixins": _button,
+				"&.primary": {
+					"_listeners": [[window, "click"]],
+					"background": "rgba(255,255,255, 0.25)"
+				}
 			},
 			"button": {
 				"_mixins": _button
@@ -247,6 +251,36 @@ var d = new Descartes({
 						"_mixins": [p.row(), wrapper],
 						"box-sizing": "border-box",
 						"font-size": 20
+					},
+					".request-row": {
+						"_listeners": [[window], 'resize'],
+						"_mixins": [p.tableRow()],
+						"width": "100%",
+						".request-col3": {
+							"_mixins": p.tableCol(3),
+							"vertical-align": "middle",
+							"text-align": "right",
+							"img": {
+								"width": 25,
+								"padding-right": 25
+							}
+						},
+						".request-col9": {
+							"_mixins": p.tableCol(9),
+							"vertical-align": "middle",
+							"text-align": "left",
+							"padding-bottom": 15,
+							"h3": {
+								"font-weight": 100,
+								"font-size": 25
+							},
+							"p": {
+								"margin": 0,
+								"span": {
+									"font-size": 14
+								}
+							}
+						}
 					},
 					".table-row": {
 						"_listeners": [[window, 'resize']],

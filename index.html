@@ -28,8 +28,8 @@
 				<h1>Descartes</h1>
 				<h2>Styling for Programmers</h2>
 				<p>An experimental library for writing CSS in JavaScript</p>
-				<a class="button" href="/dist/descartes.min.js">Download Beta</a>
-				<a class="button" href="#features">Read documentation</a>
+				<a class="button primary" href="/dist/descartes.min.js">Download Beta</a>
+				<a class="button" href="#features">See Features</a>
 			</div>
 		</header>
 		<section class="offset">
@@ -94,8 +94,8 @@ new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
 			<div class="row">
 				<div class="col2">&nbsp;</div>
 				<div class="col8">
-					<h3>Small + Fast</h3>
-					<p>Descartes is just under <strong>30KB</strong> when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took just <strong><span id="time"></span> milliseconds</strong> to render on this page load.</p>
+					<h3>Small + Pretty Fast</h3>
+					<p>Descartes is just under <strong>30KB</strong> when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also reasonably fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took <strong><span id="time"></span> milliseconds</strong> to render on this page load.</p>
 					<p><a class="button" onclick="window.location.href='index.html#speed';window.location.reload(true);">Reload to test speed again</a></p>
 				</div>
 				<div class="col2">&nbsp;</div>
@@ -151,6 +151,75 @@ html body section {
 			</div>
 			</div>
 		</section>
+    <section class="plain">
+      <a name="speed" />
+      <div class="row">
+        <div class="col2">&nbsp;</div>
+        <div class="col8">
+          <h3>???</h3>
+          <p>Descartes is just under <strong>30KB</strong> when minified. It's written entirely in JavaScript with its few dependencies baked in. It's also reasonably fast: <a href="dist/styles.js" target="_blank">the styles for this page</a> took <strong><span id="time"></span> milliseconds</strong> to render on this page load.</p>
+          <p><a class="button" onclick="window.location.href='index.html#speed';window.location.reload(true);">Reload to test speed again</a></p>
+        </div>
+        <div class="col2">&nbsp;</div>
+      </div>
+    </section>
+    <section class="offset">
+      <a name="overview" />
+      <div class="table-row">
+        <div class="table-col5">
+          <h3>Open Source</h3>
+          <h4>Help me fix some things</h4>
+          <p>Descartes is highly experimental and very much a work in progress. Members of the developer community (and even you) have thought a lot about many of these problems, and I want to build on that past knowledge. Take a look at open issues, write some extensions, and have discussions about what's presented here.</p>
+          <p><a class="button" href="https://github.com/jonhmchan/descartes" target="_blank">Go to GitHub</a></p>
+        </div>
+        <div class="table-col7">
+          <div class="request-row">
+            <div class="request-col3">
+              &nbsp;
+            </div>
+            <div class="request-col9">
+              <h3>Known Issues</h3>
+            </div>
+          </div>
+          <div class="request-row">
+            <div class="request-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="request-col9">
+              <p><strong>Improve performance</strong></p>
+              <p><span>Since it's all JavaScript, we don't get browser optimizations for CSS. There are a lot of people that are better at JavaScript performance that could help out here.</span></p>
+            </div>
+          </div>
+          <div class="request-row">
+            <div class="request-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="request-col9">
+              <p><strong>Helper functions and variables</strong></p>
+              <p><span>Some functions and variables are used all the time, like grids and colors. Should these be settings and functions part of the core library, or be an extension or companion library?</span></p>
+            </div>
+          </div>
+          <div class="request-row">
+            <div class="request-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="request-col9">
+              <p><strong>Compatability with other libraries</strong></p>
+              <p><span>Some JS libraries work really well with Descartes like jQuery. But what about heavier front end frameworks like React, Angular, and Backbone?</span></p>
+            </div>
+          </div>
+          <div class="request-row">
+            <div class="request-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="request-col9">
+              <p><strong>Generate backup CSS stylesheet</strong></p>
+              <p><span>Descartes should be able to work just like any other preprocessor and generate CSS that can be used as a backup. This just needs to get built.</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 		<section class="features">
 			<a name="features" />
 			<div class="table-row">
@@ -315,6 +384,39 @@ var d = new Descartes(tree);
 </code></pre>
 				</div>
 			</div>
+      <div class="table-row">
+        <div class="table-col5">
+          <div>
+          <h4>Extensibility + Transformers</h4>
+          <p>Because you're just passing a JavaScript object literal into Descartes, you can extend and manipulate the style tree before it's rendered by the library. That means you can do things like add browser prefixes to CSS3 properties, add predefined rules like a grid, or even <i>invent new rules</i> that turn into traditional style declarations.</p>
+          </div>
+        </div>
+        <div class="table-col7">
+<pre><code class="javascript">// Visible nav bar based on scroll direction like on this page
+
+var lastScroll = $(window).scrollTop() // Use jQuery if you want!
+var tree = {
+  "nav": {
+    "_listeners": [[window, 'scroll']], // Listen to scroll event
+    "overflow": "hidden",
+    "position": "fixed",
+    "width": "100%",
+    "transition": "all 0.5s ease", // Nice animations
+    "height": function(_) { // Dynamic value
+      var scroll = $(window).scrollTop();
+      if (scroll > lastScroll) { // Detect scroll direction
+        lastScroll = scroll;
+        return 0; // Hide the nav
+      }
+      lastScroll = scroll;
+      return 50; // Show the nav
+    }
+  }
+};
+var d = new Descartes(tree);
+</code></pre>
+        </div>
+      </div>
 		</section>
 		<section class="offset">
 			<div class="table-row">
