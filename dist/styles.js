@@ -52,7 +52,7 @@ var d = new Descartes({
 		"height": "100%",
 		"body": {
 			"_mixins": m,
-			"_listeners": [[window, "click"], [window, "touchstart"]],
+			"_listeners": [[window, "click"], ["#bgChange", "touchstart"]],
 			"height": "100%",
 			"background": function background() {
 				return 'linear-gradient(' + rand_angle().toString() + 'deg,' + rand_rgba() + ',' + rand_rgba() + ')' + ' center center fixed no-repeat';
