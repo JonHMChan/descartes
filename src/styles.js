@@ -245,7 +245,6 @@ const d = new Descartes({
 						"font-size": 20
 					},
 					".info-row": {
-						"_listeners": [[window], 'resize'],
 						"_mixins": [p.tableRow()],
 						"width": "100%",
 						".info-col3": {
@@ -253,6 +252,8 @@ const d = new Descartes({
 							"vertical-align": "middle",
 							"text-align": "right",
 							"img": {
+								"_listeners": [[window, 'resize']],
+								"display": () => { return ($(window).width() >= p.mobileBreak) ? "inline-block" : "none" },
 								"width": 25,
 								"padding-right": 25
 							}
