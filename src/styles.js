@@ -96,7 +96,7 @@ const d = new Descartes({
 				"color": "currentColor"
 			},
 			"nav": {
-				"_listeners": [[window, "scroll"], [window, "resize"]],
+				"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
 				"text-align": "center",
 				"position": "fixed",
 				"width": "100%",
@@ -115,11 +115,20 @@ const d = new Descartes({
 					return 50
 				},
 				"background": (_) => {
-					if ($(window).width() < p.mobileBreak) return "#fff"
+					if ($(window).width() < p.mobileBreak) {
+						return "rgba(255,255,255,0.9)"
+					}
 					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.95) )
 				},
 				"box-shadow": (_) => {
 					return "0 0 15px " + p.rgba(100,100,100, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.2) )
+				},
+				".options": {
+					"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
+					"display": (_) => {
+						if ($(window).width() < p.mobileBreak && !$("nav").hasClass("show")) return "none"
+						return "block" 
+					}
 				},
 				"a": {
 					"_listeners": [[window, "scroll"], [window, "resize"]],
@@ -309,6 +318,10 @@ const d = new Descartes({
 	}
 })
 document.getElementById("time").innerHTML = (Date.now() - start).toString()
+$("#mobileMenu").click(function() {
+	$("nav").toggleClass("show")
+	$("#mobileMenu a.button").html($("nav").hasClass("show") ? "Close Menu" : "Show Menu")
+})
 
 $(function() {
   $('a[href*="#"]:not([href="#"])').click(function() {
