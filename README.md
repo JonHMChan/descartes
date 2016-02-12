@@ -14,7 +14,7 @@ This is an experimental library for writing CSS in JavaScript. The current versi
 				<script type="text/javascript" src="/path/to/descartes.js"></script>
 			</head>
 			<body>
-				<h1>I compute, therefore, I am.</h1>
+				<h1>I compute, therefore I am.</h1>
 				<script type="text/javascript" src="/path/to/styles.js"></script>
 			</body>
 		</html>
