@@ -51,7 +51,7 @@ const d = new Descartes({
 		"height": "100%",
 		"body": {
 			"_mixins": m,
-			"_listeners": [[window, "click"], [window, "touchstart"]],
+			"_listeners": [[window, "click"], ["#bgChange", "touchstart"]],
 			"height": "100%",
 			"background": () => {
 				return 'linear-gradient('
