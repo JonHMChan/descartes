@@ -8,6 +8,7 @@
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,600,700,900' rel='stylesheet' type='text/css'>
 		<link href='https://fonts.googleapis.com/css?family=Anonymous+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 		<script type="text/javascript" src="dist/descartes.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	</head>
 	<body>
 		<nav>
@@ -237,7 +238,7 @@ html body section {
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h4>Style Tree</h4>
+					<h4><i class="fa fa-pagelines"></i> Style Tree</h4>
 					<p>You write all of your styles into a single JavaScript object literal that you pass to Descartes. It feels just like writing in other CSS preprocessors like Less or Sass, but you get all the benefits of constructing your style tree with JavaScript. That means real variables, functions, and operations.</p>
 					</div>
 				</div>
@@ -266,7 +267,7 @@ var d = new Descartes(tree); // Renders style tree
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h4>Priority Cascading</h4>
+					<h4><i class="fa fa-code"></i> Priority Cascading</h4>
 					<p>Cascading in traditional CSS gets complex and unmanageable very fast. Descartes uses Priority Cascading, which bypasses stylesheets completely and inlines styles on elements according to depth in the style tree. When there are conflicts, the rules with the higher priority win out.</p>
 					</div>
 				</div>
@@ -291,7 +292,7 @@ var d = new Descartes(tree); // Renders style tree
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h4>Mixins</h4>
+					<h4><i class="fa fa-paint-brush"></i> Mixins</h4>
 					<p>Sometimes you'll want to reuse some of the same rules over and over again and variables won't cut it. Descartes supports mixins: reusable sets of declarations that you can insert into your style tree. Just define some preset rules and pass them into the mixins property for that selector. They apply in order, and won't overwrite your explicit styles.</p>
 					</div>
 				</div>
@@ -331,7 +332,7 @@ var d = new Descartes(tree);
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h4>Dynamic Values</h4>
+					<h4><i class="fa fa-cogs"></i> Dynamic Values</h4>
 					<p>Because you're writing styles in JavaScript, you can pass functions to compute properties in Descartes. Each node is passed as the first argument to any functions you define, so you can create powerful declarations that weren't possible before. You even get access to the DOM, so you can generate values based on other element properties.</p>
 					</div>
 				</div>
@@ -360,7 +361,7 @@ var d = new Descartes(tree);
 			<div class="table-row">
 				<div class="table-col5">
 					<div>
-					<h4>Event Listeners</h4>
+					<h4><i class="fa fa-exclamation"></i> Event Listeners</h4>
 					<p>Combining event listeners with dynamic values unlocks a whole new level of control over your styles. You can bind any event to recompute the rules for that selector. This makes responsive design, parallax, and basic interactivity a breeze.</p>
 					</div>
 				</div>
@@ -393,7 +394,7 @@ var d = new Descartes(tree);
       <div class="table-row">
         <div class="table-col5">
           <div>
-          <h4>Extensibility + Transformers</h4>
+          <h4><i class="fa fa-random"></i> Extensibility + Transformers</h4>
           <p>Because you're just passing a JavaScript object literal into Descartes, you can extend and manipulate the style tree before it's rendered by the library. That means you can do things like add browser prefixes to CSS3 properties, add predefined rules like a grid, or even <i>invent new rules</i> that turn into traditional style declarations.</p>
           </div>
         </div>
@@ -449,11 +450,20 @@ var d = new Descartes(tree);
           </div>
           <div class="info-row">
             <div class="info-col3">
-               <img src="img/pull_request_icon.png" width="25" />
+               <i class="fa fa-2x fa-code"></i>
             </div>
             <div class="info-col9">
-              <p><strong>Improve performance</strong></p>
-              <p><span>Since it's all JavaScript, we don't get browser optimizations for CSS. There are a lot of people that are better at JavaScript performance that could help out here.</span></p>
+              <p><strong>Bypass the Cascade</strong></p>
+              <p><span>Even using preprocessors like Less and Sass don't fully solve the problems with the cascade which get really hairy at scale. Using JavaScript to compute and inline styles means we can get full control over the cascade at the cost of some speed.</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <i class="fa fa-2x fa-cubes"></i>
+            </div>
+            <div class="info-col9">
+              <p><strong>Extremely Extensible</strong></p>
+              <p><span>Because you're manipulating a JavaScript object literal that resembles Less or Sass, you can do all sorts of things with styles that you couldn't with other preprocessors. With all the regular tools of JavaScript, transformers, and dynamic values, the possibilities are endless.</span></p>
             </div>
           </div>
 				</div>

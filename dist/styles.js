@@ -240,6 +240,9 @@ var d = new Descartes({
 					},
 					".table-row": {
 						"_mixins": [p.tableRow(), wrapper],
+						".fa": {
+							"padding-right": 10
+						},
 						".table-col12": {
 							"font-size": 20
 						},
@@ -269,6 +272,9 @@ var d = new Descartes({
 							"_mixins": p.tableCol(3),
 							"vertical-align": "middle",
 							"text-align": "right",
+							".fa": {
+								"padding-right": 25
+							},
 							"img": {
 								"_listeners": [[window, 'resize']],
 								"display": function display() {
