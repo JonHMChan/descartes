@@ -138,21 +138,12 @@ var Descartes = function () {
 				var rules = mapping['rules'];
 				listeners.map(function (l) {
 					if (typeof l[0] === 'string') {
-						if (_this.findType == 'jquery') {
-							_this.find(l[0]).map(function (x) {
-								x.bind(l[1], function () {
-									_this.cascade(selector, rules);
-									_this.apply();
-								});
+						_this.find(l[0]).map(function (x) {
+							x.addEventListener(l[1], function () {
+								_this.cascade(selector, rules);
+								_this.apply();
 							});
-						} else if (_this.findType === 'sizzle') {
-							_this.find(l[0]).map(function (x) {
-								x.addEventListener(l[1], function () {
-									_this.cascade(selector, rules);
-									_this.apply();
-								});
-							});
-						}
+						});
 					} else {
 						l[0].addEventListener(l[1], function () {
 							_this.cascade(selector, rules);
