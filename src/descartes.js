@@ -1,4 +1,4 @@
-/*! Descartes v0.0.1-pre | (c) Jon Chan @jonhmchan | descartes.io/license */
+/*! Descartes v0.0.1 | (c) Jonathan Chan @jonhmchan */
 class Descartes {
 	constructor(tree) {
 		this.tree = tree
