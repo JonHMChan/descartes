@@ -145,7 +145,7 @@ class Descartes {
 		let all = this.find("*")
 		all.map(x => {
 			let style = x.getAttribute('data-descartes')
-			if (typeof style === 'undefined') return
+			if (typeof style === 'undefined' || style === null) return
 			x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
 		})
 	}
