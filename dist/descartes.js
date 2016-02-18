@@ -187,7 +187,7 @@ var Descartes = function () {
 			var all = this.find("*");
 			all.map(function (x) {
 				var style = x.getAttribute('data-descartes');
-				if (typeof style === 'undefined') return;
+				if (typeof style === 'undefined' || style === null) return;
 				x.setAttribute('style', _this3.createStyleString(JSON.parse(style), x));
 			});
 		}
