@@ -190,13 +190,18 @@ var d = new Descartes({
 							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 24, 36);
 						}
 					},
-					"p": {
+					".subtitle": {
 						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"margin-bottom": 15,
 						"font-size": function fontSize() {
 							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 16, 20);
 						}
+					},
+					".shares": {
+						"_listeners": [[window, "resize"]],
+						"margin-top": 15,
+						"font-size": 14
 					},
 					"pre": {
 						"width": "100%",
