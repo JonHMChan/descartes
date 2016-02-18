@@ -328,7 +328,11 @@ const d = new Descartes({
 		}
 	}
 })
-document.getElementById("time").innerHTML = (Date.now() - start).toString()
+var time = Date.now() - start
+document.getElementById("time").innerHTML = (time).toString()
+if (time > 250) {
+	document.getElementById("disclaimer").innerHTML = ' Okay, well, not so fast this time. Try reloading or take a look at how it might get faster <a href="https://github.com/JonHMChan/descartes/issues/26" target="_blank">in this open issue.</a>'
+}
 $("#mobileMenu").click(function() {
 	$("nav").toggleClass("show")
 	$("#mobileMenu a.button").html($("nav").hasClass("show") ? "Close Menu" : "Show Menu")
