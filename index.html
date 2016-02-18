@@ -56,7 +56,7 @@
 					<h3>Smart Stylesheets</h3>
 					<h4>Powered by JavaScript</h4>
 					<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. You can get all the advantages of a typical preprocessor and some: complex programming to set styles, access to the DOM, and even basic event listeners!</p>
-					<p><a id="bgChange" class="button">Click anywhere to see it in action</a></p>
+					<p><a id="bgChange" class="button">Click here to see it in action</a></p>
 				</div>
 				<div class="table-col7">
 					<strong>index.html</strong>
@@ -427,7 +427,7 @@ function prefixTransformer(tree) { // It takes a style tree
     var value = tree[key]; // Get the property value
     if (typeof value === 'object' && !(value instanceof Array)) {
       // Recursively apply nested rules
-      newTree[key] = prefix(value);
+      newTree[key] = prefixTransformer(value);
     } else {
       newTree[key] = value;
       if (key === "animate") { // See if it needs a prefix
