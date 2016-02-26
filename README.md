@@ -20,13 +20,13 @@ This is an experimental library for writing CSS in JavaScript. The current versi
 		</body>
 	</html>
     ```
-    
+
 3. Create a `styles.js` where you will write your styles. Try the following:
 
     ```javascript
 new Descartes({
 	"h1": {
-		"_listeners": [[window, click]],
+		"_listeners": [[window, 'click']],
 		"font-family": "Helvetica",
 		"font-size": function() {
 			return 16 + Math.round(Math.random() * 42);
@@ -34,5 +34,5 @@ new Descartes({
 	}
 })
     ```
-    
+
 4. Save and open up your HTML file in a browser. Clicking anywhere on the window should randomize the size of your heading.
