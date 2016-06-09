@@ -124,7 +124,8 @@ var Descartes = function () {
 		value: function render() {
 			this.flatten();
 			this.bindListeners();
-			this.applyAll();
+			this.prioritize();
+			this.paint();
 		}
 	}, {
 		key: 'bindListeners',
@@ -141,13 +142,13 @@ var Descartes = function () {
 						_this.find(l[0]).map(function (x) {
 							x.addEventListener(l[1], function () {
 								_this.cascade(selector, rules);
-								_this.apply();
+								_this.paint();
 							});
 						});
 					} else {
 						l[0].addEventListener(l[1], function () {
 							_this.cascade(selector, rules);
-							_this.apply();
+							_this.paint();
 						});
 					}
 				});
@@ -160,11 +161,10 @@ var Descartes = function () {
 			}
 		}
 	}, {
-		key: 'applyAll',
-		value: function applyAll() {
+		key: 'prioritize',
+		value: function prioritize() {
 			var _this2 = this;
 
-			// sort by priority
 			var prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(function () {
 				return [];
 			});
@@ -177,11 +177,10 @@ var Descartes = function () {
 					_this2.cascade(mapping[0], mapping[1]);
 				});
 			});
-			this.apply();
 		}
 	}, {
-		key: 'apply',
-		value: function apply() {
+		key: 'paint',
+		value: function paint() {
 			var _this3 = this;
 
 			var all = this.find("*");
@@ -339,6 +338,8 @@ var Descartes = function () {
 
 	return Descartes;
 }();
+
+// Completely hide the entire DOM until Descartes fires
 
 document.getElementsByTagName("html")[0].style.display = "none";
 (function (funcName, baseObj) {

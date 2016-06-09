@@ -99,7 +99,8 @@ class Descartes {
 	render() {
 		this.flatten()
 		this.bindListeners()
-		this.applyAll()
+		this.prioritize()
+		this.paint()
 	}
 
 	bindListeners() {
@@ -113,21 +114,20 @@ class Descartes {
 					this.find(l[0]).map(x => {
 						x.addEventListener(l[1], () => {
 							this.cascade(selector, rules)
-							this.apply()
+							this.paint()
 						})
 					})
 				} else {
 					l[0].addEventListener(l[1], () => {
 						this.cascade(selector, rules)
-						this.apply()
+						this.paint()
 					})
 				}
 			})
 		}
 	}
 
-	applyAll() {
-		// sort by priority
+	prioritize() {
 		let prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(() => { return [] })
 		for (let key in this.mappings) {
 			let mapping = this.mappings[key]
@@ -138,10 +138,9 @@ class Descartes {
 				this.cascade(mapping[0], mapping[1])
 			})
 		})
-		this.apply()
 	}
 
-	apply() {
+	paint() {
 		let all = this.find("*")
 		all.map(x => {
 			let style = x.getAttribute('data-descartes')
@@ -272,6 +271,8 @@ class Descartes {
 		return this.properties.indexOf(key) > -1
 	}
 }
+
+// Completely hide the entire DOM until Descartes fires
 document.getElementsByTagName("html")[0].style.display = "none";
 (function(funcName, baseObj) {
     // The public function name defaults to window.docReady
