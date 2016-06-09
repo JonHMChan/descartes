@@ -8,7 +8,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*! Descartes v0.0.1 | (c) Jonathan Chan @jonhmchan */
 
+/** Class representing a full Descartes engine */
+
 var Descartes = function () {
+
+	/**
+  * Initialize and fire Descartes engine
+  * @param {object} tree - Full style tree that represents styles for the whole page
+  */
+
 	function Descartes(tree) {
 		_classCallCheck(this, Descartes);
 
@@ -28,9 +36,13 @@ var Descartes = function () {
 
 		this.findType = undefined;
 		this.find = this.findLibrary();
-
 		this.render();
 	}
+
+	/**
+     * Based on the style tree passed to the engine, applies all styles
+     * @return {function} the selector engine, generally jQuery, but Sizzle as a fall back
+     */
 
 	_createClass(Descartes, [{
 		key: 'findLibrary',
@@ -51,7 +63,24 @@ var Descartes = function () {
 			}
 		}
 
-		// Returns the computed rules tree based on original tree
+		/**
+      * Based on the style tree passed to the engine, applies all styles
+      */
+
+	}, {
+		key: 'render',
+		value: function render() {
+			this.flatten();
+			this.bindListeners();
+			this.prioritize();
+			this.paint();
+		}
+
+		/**
+   * Recursively flattens the style tree into the valid CSS selector and its corresponding rules, priority, and event listeners (if any)
+   * @param {object} tree - the current tree or subtree that specifies a selector or rule as a key, and its styles or value, respectively
+   * @return {object} a flattened tree with the correct rules
+  */
 
 	}, {
 		key: 'compute',
@@ -118,14 +147,6 @@ var Descartes = function () {
 				if (this.mappingsPriority < priority) this.mappingsPriority = priority;
 			}
 			return this.mappings;
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			this.flatten();
-			this.bindListeners();
-			this.prioritize();
-			this.paint();
 		}
 	}, {
 		key: 'bindListeners',
