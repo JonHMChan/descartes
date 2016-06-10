@@ -6,7 +6,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/*! Descartes v0.0.1 | (c) Jonathan Chan @jonhmchan */
+/*! Descartes v0.0.2 | (c) Jonathan Chan @jonhmchan */
 
 /** Class representing a full Descartes engine */
 
@@ -15,7 +15,7 @@ var Descartes = function () {
 	/**
   * Initialize and fire Descartes engine
   * @param {object} tree - Full style tree that represents styles for the whole page
-  */
+ */
 
 	function Descartes(tree) {
 		_classCallCheck(this, Descartes);
@@ -42,7 +42,7 @@ var Descartes = function () {
 	/**
      * Based on the style tree passed to the engine, applies all styles
      * @return {function} the selector engine, generally jQuery, but Sizzle as a fall back
-     */
+    */
 
 	_createClass(Descartes, [{
 		key: 'findLibrary',
@@ -65,7 +65,7 @@ var Descartes = function () {
 
 		/**
       * Based on the style tree passed to the engine, applies all styles
-      */
+     */
 
 	}, {
 		key: 'render',

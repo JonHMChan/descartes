@@ -1,4 +1,4 @@
-/*! Descartes v0.0.1 | (c) Jonathan Chan @jonhmchan */
+/*! Descartes v0.0.2 | (c) Jonathan Chan @jonhmchan */
 
 /** Class representing a full Descartes engine */
 class Descartes {
@@ -6,7 +6,7 @@ class Descartes {
 	/**
 	 * Initialize and fire Descartes engine
 	 * @param {object} tree - Full style tree that represents styles for the whole page
-	 */
+	*/
 	constructor(tree) {
 		this.tree = tree
 		this.mappings = {}
@@ -30,7 +30,7 @@ class Descartes {
 	/**
      * Based on the style tree passed to the engine, applies all styles
      * @return {function} the selector engine, generally jQuery, but Sizzle as a fall back
-     */
+    */
 	findLibrary() {
 		if (typeof $ !== 'undefined') {
 			this.findType = 'jquery'
@@ -50,7 +50,7 @@ class Descartes {
 
 	/**
      * Based on the style tree passed to the engine, applies all styles
-     */
+    */
 	render() {
 		this.flatten()
 		this.cascade()
