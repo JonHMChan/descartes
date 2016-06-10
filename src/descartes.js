@@ -303,7 +303,7 @@ class Descartes {
 		let isMeta = this.isMeta(property)
 		let isRule = this.isRule(property)
 		return {
-			property,
+			key: property,
 			type: isMeta ? this.meta : isRule ? this.rule : this.selector
 		}
 	}

@@ -382,7 +382,7 @@ var Descartes = function () {
 			var isMeta = this.isMeta(property);
 			var isRule = this.isRule(property);
 			return {
-				property: property,
+				key: property,
 				type: isMeta ? this.meta : isRule ? this.rule : this.selector
 			};
 		}
