@@ -29,7 +29,7 @@ class Descartes {
 
 	/**
      * Based on the style tree passed to the engine, applies all styles
-     * @return {function} the selector engine, generally jQuery, but Sizzle as a fall back
+     * @return {object} the selector engine, generally jQuery, but Sizzle as a fall back
     */
 	findLibrary() {
 		if (typeof $ !== 'undefined') {
