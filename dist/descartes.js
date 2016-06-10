@@ -344,6 +344,14 @@ var Descartes = function () {
 				x.setAttribute('style', _this4.createStyleString(JSON.parse(style), x));
 			});
 		}
+
+		/**
+   * Generate valid CSS ruleset as a string
+   * @param {object} ruleset - a full ruleset to be converted
+   * @param {object} elem - the DOM node to evaluate any functional values on
+   * @return {string} the final CSS ruleset string
+  */
+
 	}, {
 		key: 'createStyleString',
 		value: function createStyleString(ruleset, elem) {

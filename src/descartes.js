@@ -273,6 +273,12 @@ class Descartes {
 		})
 	}
 
+	/**
+	 * Generate valid CSS ruleset as a string
+	 * @param {object} ruleset - a full ruleset to be converted
+	 * @param {object} elem - the DOM node to evaluate any functional values on
+	 * @return {string} the final CSS ruleset string
+	*/
 	createStyleString(ruleset, elem) {
 		let style = ""
 		for (let property in ruleset) {
