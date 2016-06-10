@@ -11,12 +11,13 @@ class Descartes {
 		this.tree = tree
 		this.mappings = {}
 		this.mappingsPriority = 0
+		this.listening = true
 
-		this.selector = 'selector'
-		this.property = 'property'
-		this.meta = 'meta'
-		this.mixins = '_mixins'
-		this.listeners = '_listeners'
+		this.SELECTOR = 'selector'
+		this.PROPERTY = 'property'
+		this.META = 'meta'
+		this.MIXINS = '_mixins'
+		this.LISTENERS = '_listeners'
 		
 		this.prefixes = ['-webkit-', '-moz-', '-o-', '-ms-']
 		this.properties = ['align-content','align-items','align-self','all','animation','animation-delay','animation-direction','animation-duration','animation-fill-mode','animation-iteration-count','animation-name','animation-play-state','animation-timing-function','backface-visibility','background','background-attachment','background-blend-mode','background-clip','background-color','background-image','background-origin','background-position','background-repeat','background-size','border','border-bottom','border-bottom-color','border-bottom-left-radius','border-bottom-right-radius','border-bottom-style','border-bottom-width','border-collapse','border-color','border-image','border-image-outset','border-image-repeat','border-image-slice','border-image-source','border-image-width','border-left','border-left-color','border-left-style','border-left-width','border-radius','border-right','border-right-color','border-right-style','border-right-width','border-spacing','border-style','border-top','border-top-color','border-top-left-radius','border-top-right-radius','border-top-style','border-top-width','border-width','bottom','box-shadow','box-sizing','caption-side','clear','clip','color','column-count','column-fill','column-gap','column-rule','column-rule-color','column-rule-style','column-rule-width','column-span','column-width','columns','content','counter-increment','counter-reset','cursor','direction','display','empty-cells','filter','flex','flex-basis','flex-direction','flex-flow','flex-grow','flex-shrink','flex-wrap','float','font','@font-face','font-family','font-size','font-size-adjust','font-stretch','font-style','font-variant','font-weight','hanging-punctuation','height','justify-content','@keyframes','left','letter-spacing','line-height','list-style','list-style-image','list-style-position','list-style-type','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','@media','min-height','min-width','nav-down','nav-index','nav-left','nav-right','nav-up','opacity','order','outline','outline-color','outline-offset','outline-style','outline-width','overflow','overflow-x','overflow-y','padding','padding-bottom','padding-left','padding-right','padding-top','page-break-after','page-break-before','page-break-inside','perspective','perspective-origin','position','quotes','resize','right','tab-size','table-layout','text-align','text-align-last','text-decoration','text-decoration-color','text-decoration-line','text-decoration-style','text-indent','text-justify','text-overflow','text-shadow','text-transform','top','transform','transform-origin','transform-style','transition','transition-delay','transition-duration','transition-property','transition-timing-function','unicode-bidi','vertical-align','visibility','white-space','width','word-break','word-spacing','word-wrap','z-index']
@@ -67,7 +68,7 @@ class Descartes {
 	flatten(tree = this.sanitize(tree), parentSelector = "", priority = this.mappingsPriority) {
 		for (let selector in tree) {
 			let rules = Object.assign({}, tree[selector])
-			let _listeners = rules[this.listeners]
+			let _listeners = rules[this.LISTENERS]
 			// Add the rules in here
 			for (let rule in rules) {
 				if (!this.isRule(rule)) {
@@ -106,15 +107,15 @@ class Descartes {
 				let value = tree[key]
 				if (value === null) continue
 				let keyObject = this.parseKey(key)
-				if (keyObject.type === this.selector) {
+				if (keyObject.type === this.SELECTOR) {
 					result[keyObject.key] = this.sanitize(value)
-				} else if (keyObject.type === this.property) {
+				} else if (keyObject.type === this.PROPERTY) {
 					result[keyObject.key] = value
-				} else if (keyObject.type === this.meta) {
-					if (keyObject.key === this.mixins) {
+				} else if (keyObject.type === this.META) {
+					if (keyObject.key === this.MIXINS) {
 						let mixedRules = this.parseMixins(tree, key)
 						result = mixedRules
-					} else if (keyObject.key === this.listeners) {
+					} else if (keyObject.key === this.LISTENERS) {
 						result[keyObject.key] = value
 					}
 				}
@@ -131,7 +132,7 @@ class Descartes {
 	 * @return {object} the resulting ruleset with the calculated mixins
 	*/
 	parseMixins(ruleset, selector) {
-		let mixins = ruleset[this.mixins]
+		let mixins = ruleset[this.MIXINS]
 
 		if (!Array.isArray(mixins)) {
 			mixins = [mixins]
@@ -147,7 +148,7 @@ class Descartes {
 				throw("'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
 			}
 		}
-		delete ruleset[this.mixins]
+		delete ruleset[this.MIXINS]
 		return ruleset
 	}
 
@@ -244,23 +245,28 @@ class Descartes {
 	 * Binds event listeners for all selectors
 	*/
 	bindListeners() {
+		let _this = this
 		for (let selector in this.mappings) {
 			let mapping = this.mappings[selector]
-			let listeners = mapping[this.listeners]
+			let listeners = mapping[this.LISTENERS]
 			if (typeof listeners === 'undefined') continue
 			let rules = mapping['rules']
 			listeners.map(l => {
 				if (typeof l[0] === 'string') {
 					this.find(l[0]).map(x => {
 						x.addEventListener(l[1], () => {
-							this.applyRuleset(selector, rules)
-							this.paint()
+							if (_this.listening) {
+								this.applyRuleset(selector, rules)
+								this.paint()
+							}
 						})
 					})
 				} else {
 					l[0].addEventListener(l[1], () => {
-						this.applyRuleset(selector, rules)
-						this.paint()
+						if (_this.listening) {
+							this.applyRuleset(selector, rules)
+							this.paint()
+						}
 					})
 				}
 			})
@@ -283,6 +289,8 @@ class Descartes {
 	 Replaces the current DOM with the stylesheet string
 	*/
 	showStyleSheet() {
+		this.stylesheet = true
+		this.listening = false
 		document.body.setAttribute('style', 'font-family: "Courier New", Courier, monospace; font-size: 14px;')
 		document.body.innerHTML = this.createStyleSheet()
 	}
@@ -343,7 +351,7 @@ class Descartes {
 		let isRule = this.isRule(key)
 		return {
 			key,
-			type: isMeta ? this.meta : isRule ? this.property : this.selector
+			type: isMeta ? this.META : isRule ? this.PROPERTY : this.SELECTOR
 		}
 	}
 
@@ -352,7 +360,7 @@ class Descartes {
 	 * @return {bool} whether the key is a Descartes meta rule
 	*/
 	isMeta(key) {
-		const metas = [this.mixins, this.listeners]
+		const metas = [this.MIXINS, this.LISTENERS]
 		return metas.indexOf(key) > -1
 	}
 
