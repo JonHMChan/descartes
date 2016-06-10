@@ -7,7 +7,7 @@ class Descartes {
 	 * Initialize and fire Descartes engine
 	 * @param {object} tree - Full style tree that represents styles for the whole page
 	*/
-	constructor(tree) {
+	constructor(tree, stylesheet = false) {
 		this.tree = tree
 		this.mappings = {}
 		this.mappingsPriority = 0
@@ -25,6 +25,7 @@ class Descartes {
 		this.findType = undefined
 		this.find = this.findLibrary()		
 		this.render()
+		if (stylesheet) this.showStyleSheet()
 	}
 
 	/**
@@ -194,12 +195,17 @@ class Descartes {
 	 * @param {string} property - the name of the property i.e. "border", "margin", etc.
 	 * @param {object} value - the unparsed value of the rule, a function, string, or number
 	 * @param {object} elem - the DOM element that the value function should use, if passed
-	 * @return {string} the valid CSS property value
+	 * @return {string, bool} the valid CSS property value, otherwise false
 	*/
 	computeRule(property, value, elem = null) {
 		// If the value is a function, evaluate the function to get the computed value
-		if (typeof value === 'function' && elem !== null) {
-			value = value(elem)
+		if (typeof value === 'function') {
+			try {
+				value = value(elem)
+			}
+			catch(e) {
+				return false
+			}
 		}
 		// If no value, skip
 		if (value === null) return null
@@ -274,16 +280,39 @@ class Descartes {
 	}
 
 	/**
+	 Replaces the current DOM with the stylesheet string
+	*/
+	showStyleSheet() {
+		document.body.setAttribute('style', 'font-family: "Courier New", Courier, monospace; font-size: 14px;')
+		document.body.innerHTML = this.createStyleSheet()
+	}
+
+	/**
+	 * Generates a valid CSS stylesheet body based on the current mapping
+	 * @return {string} the final CSS ruleset string
+	*/
+	createStyleSheet() {
+		if (!this.mappings) return false;
+		let sheet = "";
+		for (let selector in this.mappings) {
+			let ruleset = this.mappings[selector].rules;
+			sheet += selector + " {" + this.createStyleString(ruleset) + "}<br/>"
+		}
+		return sheet
+	}
+
+	/**
 	 * Generate valid CSS ruleset as a string
 	 * @param {object} ruleset - a full ruleset to be converted
 	 * @param {object} elem - the DOM node to evaluate any functional values on
 	 * @return {string} the final CSS ruleset string
 	*/
-	createStyleString(ruleset, elem) {
+	createStyleString(ruleset, elem = null) {
 		let style = ""
 		for (let property in ruleset) {
-			let computedRule = this.computeRule(property, ruleset[property], elem)
-			style += property + ": " + computedRule + "; "
+			let value = ruleset[property];
+			let computedRule = this.computeRule(property, value, elem)
+			if (computedRule) style += property + ": " + computedRule + "; "
 		}
 		style = style.slice(0, -1);
 		return style

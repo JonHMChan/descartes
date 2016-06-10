@@ -18,6 +18,8 @@ var Descartes = function () {
  */
 
 	function Descartes(tree) {
+		var stylesheet = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
 		_classCallCheck(this, Descartes);
 
 		this.tree = tree;
@@ -37,6 +39,7 @@ var Descartes = function () {
 		this.findType = undefined;
 		this.find = this.findLibrary();
 		this.render();
+		if (stylesheet) this.showStyleSheet();
 	}
 
 	/**
@@ -242,7 +245,7 @@ var Descartes = function () {
    * @param {string} property - the name of the property i.e. "border", "margin", etc.
    * @param {object} value - the unparsed value of the rule, a function, string, or number
    * @param {object} elem - the DOM element that the value function should use, if passed
-   * @return {string} the valid CSS property value
+   * @return {string, bool} the valid CSS property value, otherwise false
   */
 
 	}, {
@@ -251,8 +254,12 @@ var Descartes = function () {
 			var elem = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
 			// If the value is a function, evaluate the function to get the computed value
-			if (typeof value === 'function' && elem !== null) {
-				value = value(elem);
+			if (typeof value === 'function') {
+				try {
+					value = value(elem);
+				} catch (e) {
+					return false;
+				}
 			}
 			// If no value, skip
 			if (value === null) return null;
@@ -346,6 +353,34 @@ var Descartes = function () {
 		}
 
 		/**
+   Replaces the current DOM with the stylesheet string
+  */
+
+	}, {
+		key: 'showStyleSheet',
+		value: function showStyleSheet() {
+			document.body.setAttribute('style', 'font-family: "Courier New", Courier, monospace; font-size: 14px;');
+			document.body.innerHTML = this.createStyleSheet();
+		}
+
+		/**
+   * Generates a valid CSS stylesheet body based on the current mapping
+   * @return {string} the final CSS ruleset string
+  */
+
+	}, {
+		key: 'createStyleSheet',
+		value: function createStyleSheet() {
+			if (!this.mappings) return false;
+			var sheet = "";
+			for (var selector in this.mappings) {
+				var ruleset = this.mappings[selector].rules;
+				sheet += selector + " {" + this.createStyleString(ruleset) + "}<br/>";
+			}
+			return sheet;
+		}
+
+		/**
    * Generate valid CSS ruleset as a string
    * @param {object} ruleset - a full ruleset to be converted
    * @param {object} elem - the DOM node to evaluate any functional values on
@@ -354,11 +389,14 @@ var Descartes = function () {
 
 	}, {
 		key: 'createStyleString',
-		value: function createStyleString(ruleset, elem) {
+		value: function createStyleString(ruleset) {
+			var elem = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
 			var style = "";
 			for (var property in ruleset) {
-				var computedRule = this.computeRule(property, ruleset[property], elem);
-				style += property + ": " + computedRule + "; ";
+				var value = ruleset[property];
+				var computedRule = this.computeRule(property, value, elem);
+				if (computedRule) style += property + ": " + computedRule + "; ";
 			}
 			style = style.slice(0, -1);
 			return style;

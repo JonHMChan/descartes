@@ -327,7 +327,7 @@ const d = new Descartes({
 			}
 		}
 	}
-})
+}, true)
 var time = Date.now() - start
 document.getElementById("time").innerHTML = (time).toString()
 if (time > 250) {
