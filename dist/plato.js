@@ -18,13 +18,28 @@ var Plato = function () {
 		this.fixedGutter = 15;
 	}
 
-	/* Value functions */
-
-	// rgba()
-	// ----------
-	// Shorthand for rgba() colors
-
 	_createClass(Plato, [{
+		key: "base",
+		value: function base() {
+			var tree = {
+				"html": {
+					"box-sizing": "border-box",
+					"body": {}
+				},
+				"*, *::before, *::after": {
+					"box-sizing": "border-box"
+				}
+			};
+			return tree;
+		}
+
+		/* Value functions */
+
+		// rgba()
+		// ----------
+		// Shorthand for rgba() colors
+
+	}, {
 		key: "rgba",
 		value: function rgba() {
 			var r = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];

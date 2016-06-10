@@ -1,0 +1,533 @@
+<!doctype html>
+<html>
+	<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An open source experimental library for writing your CSS styles in JavaScript. Bypass the cascade and get all the power JavaScript in your styles.">
+		<title>Descartes</title>
+
+    <meta property="og:url"                content="https://descartes.io/" />
+    <meta property="og:title"              content="Descartes - Write CSS in JavaScript" />
+    <meta property="og:description"        content="Descartes is an open source experimental library for writing your CSS styles in JavaScript. Bypass the cascade and get all the power JavaScript in your styles." />
+    <meta property="og:type"               content="website">
+    <meta property="og:image"              content="https://descartes.io/img/social_card.png" />
+    <meta property="og:site_name" content="Descartes - Write CSS in JavaScript">
+ 
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@jonhmchan">
+    <meta name="twitter:creator" content="@jonhmchan">
+    <meta name="twitter:title" content="Descartes - Write CSS in JavaScript">
+    <meta name="twitter:description" content="Descartes is an open source experimental library for writing your CSS styles in JavaScript. Bypass the cascade and get all the power JavaScript in your styles.">
+    <meta name="twitter:image:src" content="https://descartes.io/img/social_card.png">
+
+		<link rel="stylesheet" href="../highlight/styles/rainbow.css">
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,600,700,900' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Anonymous+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+		<script type="text/javascript" src="../dist/descartes.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	</head>
+	<body>
+		<nav>
+      <div class="wrapper">
+  			<div class="row options">
+  				<div class="col3"><a href="#overview">Overview</a></div>
+  				<div class="col3"><a href="#features">Features</a></div>
+  				<div class="col3"><a href="#about">About</a></div>
+  				<div class="col3"><a href="http://github.com/jonhmchan/descartes">GitHub</a></div>
+  			</div>
+        <div class="row" id="mobileMenu">
+          <a class="button">Show Menu</a>
+        </div>
+      </div>
+		</nav>
+		<header>
+			<div class="content">
+				<h1>Descartes</h1>
+				<h2>Styling for Programmers</h2>
+				<p class="subtitle">An experimental library for writing CSS in JavaScript</p>
+				<a class="button primary" href="https://github.com/jonhmchan/descartes">Get started</a>
+				<a class="button" href="#features">See Features</a>
+        <p class="shares">Share on <a href="https://twitter.com/intent/tweet?url=https://descartes.io/&text=An%20interesting%20library%20about%20writing%20CSS%20in%20JavaScript%20-%20check%20it%20out!%20@jonhmchan" target="_blank">Twitter</a> and <a href="https://www.facebook.com/sharer/sharer.php?u=https://descartes.io/" target="_blank">Facebook</a></p>
+			</div>
+		</header>
+		<section class="offset">
+			<a name="overview"></a>
+			<div class="table-row">
+				<div class="table-col5">
+					<h3>Smart Stylesheets</h3>
+					<h4>Powered by JavaScript</h4>
+					<p>I've taken some ideas from CSS preprocessors like Less and Sass and wondered what it would be like to write CSS as JSON. You can get all the advantages of a typical preprocessor and some: complex programming to set styles, access to the DOM, and even basic event listeners!</p>
+					<p><a id="bgChange" class="button">Click here to see it in action</a></p>
+				</div>
+				<div class="table-col7">
+					<strong>index.html</strong>
+<pre><code class="javascript">&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;script type="text/javascript" src="descartes.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
+  &lt;script type="text/javascript" src="styles.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+			<strong>styles.js</strong>
+<pre><code class="javascript">var reset = {"margin": 0,
+  "padding": 0,
+  "box-sizing": "border-box"
+};
+var rand_angle = function() {
+  return Math.round(Math.random() * (180) - 90);
+};
+var rand_rgba = function() {
+  return "rgba("+[255,255,255].map(function(x) {
+    return Math.round(Math.random() * x);
+  }).join()+", 1)"
+};
+
+new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
+  "html": {
+    "_mixins": reset, // Reuse CSS rules with mixins
+    "body": { // Nest selectors just like in Sass and Less
+      "_mixins": reset,
+      "_listeners": [
+        [window, "click"],
+        [window, "touchstart"]], // Bind events...
+      "background": function() {
+        return 'linear-gradient('
+          + rand_angle().toString() + 'deg,'
+          + rand_rgba() + ','
+          + rand_rgba() + ')'
+      } // ...to set dynamic property values when they fire!
+    }
+  }
+})
+</code></pre>
+				</div>
+			</div>
+		</section>
+		<section class="plain">
+			<div class="row">
+				<div class="col2">&nbsp;</div>
+				<div class="col8">
+					<h3>Small Library</h3>
+					<p>Descartes is just over <strong>30KB</strong> when minified and just over 300 lines of code. It's written entirely in JavaScript with its one dependency, Sizzle, baked in. It works really well with some of your favorite libraries, and especially jQuery.</p>
+          <p><a class="button" href="https://github.com/jonhmchan/descartes">See the source code</a></p>
+				</div>
+				<div class="col2">&nbsp;</div>
+			</div>
+		</section>
+		<section class="offset">
+			<div class="table-row">
+				<div class="table-col7">
+				<strong>Descartes + JavaScript</strong>
+<pre><code class="javascript">new Descartes({
+  "html": {
+    "margin": 0,
+    "padding": 0,
+    "body": {
+      "margin": 0,
+      "padding": 0,
+      "section": {
+        "max-width": "800px"
+      }
+    }
+  }
+})</code></pre>
+				<strong>Sass or Less Equivalent</strong>
+<pre><code class="sass">html {
+  margin: 0;
+  padding: 0;
+  body {
+    margin: 0;
+    padding: 0;
+    section {
+      max-width: 800px;
+    }
+  }
+}</code></pre>
+				<strong>Plain CSS Equivalent</strong>
+<pre><code class="css">html {
+  margin: 0;
+  padding: 0;
+}
+html body {
+  margin: 0;
+  padding: 0;
+}
+html body section {
+  max-width: 800px;
+}</code></pre>
+			</div>
+			<div class="table-col5">
+					<h3>A Familiar Style</h3>
+					<h4>JavaScript like Less and Sass</h4>
+					<p>It turns out writing CSS as JSON isn't all that different from Less and Sass. I've written Descartes to act just like other CSS processors with some extra features. You get nesting, mixins, and variables just like the others!</p>
+					<p><a class="button" href="#features">Learn the basics</a></p>
+			</div>
+			</div>
+		</section>
+    <section class="plain">
+      <div class="row">
+        <div class="col2">&nbsp;</div>
+        <div class="col8">
+          <h3>Pretty Fast</h3>
+          <p>Descartes uses an object literal and JavaScript to calculate the cascade and inline styles on elements. It's still reasonably fast on some page loads: <a href="dist/styles.js" target="_blank">the styles for this page</a> took <strong><span id="time"></span> milliseconds</strong> to render on this page load.<span id="disclaimer"></span></p>
+          <p><a class="button" onclick="window.location.href='index.html#speed';window.location.reload(true);">Reload to test speed again</a></p>
+        </div>
+        <div class="col2">&nbsp;</div>
+      </div>
+    </section>
+    <section class="offset">
+      <a name="overview"></a>
+      <div class="table-row">
+        <div class="table-col5">
+          <h3>Open Source</h3>
+          <h4>Help me fix some things</h4>
+          <p>Descartes is highly experimental and very much a work in progress. Members of the developer community (and even you) have thought a lot about many of these problems, and I want to build on that past knowledge. Take a look at open issues, write some extensions, and have discussions about what's presented here.</p>
+          <p><a class="button" href="https://github.com/jonhmchan/descartes" target="_blank">Go to GitHub</a></p>
+        </div>
+        <div class="table-col7">
+          <div class="info-row">
+            <div class="info-col3">
+              &nbsp;
+            </div>
+            <div class="info-col9">
+              <h3>Known Issues</h3>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="info-col9">
+              <p><strong>Improve performance</strong></p>
+              <p><span>Since it's all JavaScript, we don't get browser optimizations for CSS. There are a lot of people that are better at JavaScript performance that could help out here.</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="info-col9">
+              <p><strong>Helper functions and variables</strong></p>
+              <p><span>Some functions and variables are used all the time, like grids and colors. Should these be settings and functions part of the core library, or be an extension or companion library?</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="info-col9">
+              <p><strong>Compatability with other libraries</strong></p>
+              <p><span>Some JS libraries work really well with Descartes like jQuery. But what about heavier front end frameworks like React, Angular, and Backbone?</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <img src="img/pull_request_icon.png" width="25" />
+            </div>
+            <div class="info-col9">
+              <p><strong>Generate backup CSS stylesheet</strong></p>
+              <p><span>Descartes should be able to work just like any other preprocessor and generate CSS that can be used as a backup. This just needs to get built.</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+              &nbsp;
+            </div>
+            <div class="info-col9">
+              <p><span>See more <a href="https://github.com/jonhmchan/descartes/" target="_blank">on GitHub</a> or open up an issue</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+		<section class="features">
+			<a name="features"></a>
+			<div class="table-row">
+				<div class="table-col12">
+					<h3>Features</h3>
+					<p>Descartes has most of the features you're familiar with from Less and Sass, but adds the power of JavaScript to your styles. Get an overview of what the library has to offer.
+				</div>
+			</div>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4><i class="fa fa-pagelines"></i> Style Tree</h4>
+					<p>You write all of your styles into a single JavaScript object literal that you pass to Descartes. It feels just like writing in other CSS preprocessors like Less or Sass, but you get all the benefits of constructing your style tree with JavaScript. That means real variables, functions, and operations.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">var standardSize = 16;
+var tree = { // Just a JavaScript object literal
+  "html": {
+    "margin": 0, // Implicit conversion to px
+    "padding": 0,
+    "height": "100%",
+    "body": { // Nested inside of `html`
+      "color": "#333",
+      "font-family": "Helvetica",
+      "font-size": standardSize, // Use variables
+      "h1": { // Nested inside of `html body`
+        "font-size": standardSize * 1.2, // Operations
+        "font-weight": 300
+      }
+    }
+  }
+};
+var d = new Descartes(tree); // Renders style tree
+</code></pre>
+				</div>
+			</div>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4><i class="fa fa-code"></i> Priority Cascading</h4>
+					<p>Cascading in traditional CSS gets complex and unmanageable very fast. Descartes uses Priority Cascading, which bypasses stylesheets completely and inlines styles on elements according to depth in the style tree. When there are conflicts, the rules with the higher priority win out.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">new Descartes({
+  "html": { // Root of tree, so priority = 0
+    "color": "red", // 0
+    "h1": { // Nesting, so priority++
+      "color": "white" // 1 (wins over red)
+    }, // Finish nesting, so priority--
+    "body": { // priority++
+      "h1": { // priority++
+        "color": "blue" // 2 (wins over red, white)
+      } // priority--
+    } // priority--
+  }
+});
+// After cascading, you will get &lt;h1 style="color: blue;"&gt;
+</code></pre>
+				</div>
+			</div>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4><i class="fa fa-paint-brush"></i> Mixins</h4>
+					<p>Sometimes you'll want to reuse some of the same rules over and over again and variables won't cut it. Descartes supports mixins: reusable sets of declarations that you can insert into your style tree. Just define some preset rules and pass them into the mixins property for that selector. They apply in order, and won't overwrite your explicit styles.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">var _reset = { // Mixin objects usually prefixed with _
+  "margin": 0,
+  "padding": 0
+};
+var _font = function(n) { // Mixin function that returns an object
+  var mixin = {
+    "font-size": 16 * Math.pow(1.4, n), // Modular scale
+    "font-family": "Helvetica",
+    "font-weight": 600
+  };
+  return mixin;
+};
+var tree = {
+  "html": {
+    "_mixins": _reset, // Gets margin and padding!
+    "background": "#fff",
+    "h1": {
+      "_mixins": _font(6) // You can pass function values
+    },
+    "h2": {
+      "_mixins": _font(5),
+      "font-weight": 300 // Explicit rules get priority
+    },
+    "p": {
+      "_mixins": [_font(1), _reset] // Applied in order
+    }
+  }
+};
+var d = new Descartes(tree);
+</code></pre>
+				</div>
+			</div>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4><i class="fa fa-cogs"></i> Dynamic Values</h4>
+					<p>Because you're writing styles in JavaScript, you can pass functions to compute properties in Descartes. Each node is passed as the first argument to any functions you define, so you can create powerful declarations that weren't possible before. You even get access to the DOM, so you can generate values based on other element properties.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">// Vertical alignment using margins
+var tree = {
+  .
+  .
+  .
+  ".verticalAlign": {
+    "margin-top": function(_) {
+      // _ is the individual .verticalAlign element
+      var parentHeight = _.parentNode.height; // Parent height (!)
+      var height = _.height; // Get current node's height
+      return (parentHeight + height)/2; // Compute margin in px
+    }
+  }
+  .
+  .
+  .
+};
+var d = new Descartes(tree);
+</code></pre>
+				</div>
+			</div>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h4><i class="fa fa-exclamation"></i> Event Listeners</h4>
+					<p>Combining event listeners with dynamic values unlocks a whole new level of control over your styles. You can bind any event to recompute the rules for that selector. This makes responsive design, parallax, and basic interactivity a breeze.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+<pre><code class="javascript">// Visible nav bar based on scroll direction like on this page
+
+var lastScroll = $(window).scrollTop(); // Use jQuery if you want!
+var tree = {
+  "nav": {
+    "_listeners": [[window, 'scroll']], // Listen to scroll event
+    "overflow": "hidden",
+    "position": "fixed",
+    "width": "100%",
+    "transition": "all 0.5s ease", // Nice animations
+    "height": function(_) { // Dynamic value
+      var scroll = $(window).scrollTop();
+      if (scroll > lastScroll) { // Detect scroll direction
+        lastScroll = scroll;
+        return 0; // Hide the nav
+      }
+      lastScroll = scroll;
+      return 50; // Show the nav
+    }
+  }
+};
+var d = new Descartes(tree);
+</code></pre>
+				</div>
+			</div>
+      <div class="table-row">
+        <div class="table-col5">
+          <div>
+          <h4><i class="fa fa-random"></i> Transformers</h4>
+          <p>Because you're just passing a JavaScript object literal into Descartes, you can extend and manipulate the style tree before it's rendered by the library. That means you can do things like add browser prefixes to CSS3 properties, add predefined rules like a grid, or even <i>invent new rules</i> that turn into traditional style declarations.</p>
+          </div>
+        </div>
+        <div class="table-col7">
+<pre><code class="javascript">var tree = {
+  ".animate": { // Uh oh, forgot browser prefixes!
+    "animate": "all 0.5s ease"
+  }
+};
+// This is a transformer that will add prefixes!
+function prefixTransformer(tree) { // It takes a style tree
+  var newTree = {}; // Store a temporary value
+  for (var key in tree) {
+    var value = tree[key]; // Get the property value
+    if (typeof value === 'object' && !(value instanceof Array)) {
+      // Recursively apply nested rules
+      newTree[key] = prefixTransformer(value);
+    } else {
+      newTree[key] = value;
+      if (key === "animate") { // See if it needs a prefix
+        var prefixes = ["-webkit-"];
+        for (var index in prefixes) {
+          // Add browser prefixes to tree
+          newTree[prefixes[index] + key] = value
+        }
+      }
+    }
+  }
+  return newTree; // And "transforms" it with prefixes
+}
+// Apply the transformer before render
+new Descartes(prefixTransformer(style));
+</code></pre>
+        </div>
+      </div>
+		</section>
+		<section class="offset">
+      <a name="about"></a>
+			<div class="table-row">
+				<div class="table-col5">
+					<div>
+					<h3>About</h3>
+          <h4>Who I am and why I built this</h4>
+          <img src="img/jon.jpg" width="100" class="roundImage" />
+          <p>My name is Jon Chan. I'm a developer and the head of Marketing Engineering and Developer Evangelism at <a href="https://stackoverflow.com/" target="_blank">Stack Overflow</a>. I'm also the founder of <a href="https://bento.io/" target="_blank">Bento</a>, where I help people around the world become self-taught full stack developers. I work a lot in the front end and think a lot about making development faster.</p>
+          <p><a class="button" href="https://twitter.com/jonhmchan" target="_blank"><i class="fa fa-twitter"></i> Follow me on Twitter</a></p><br/>
+          <p><strong>Why build Descartes?</strong></p>
+					<p>At <a href="https://stackoverflow.com/" target="_blank">Stack Overflow</a> and <a href="https://bento.io/" target="_blank">Bento</a>, I work on a lot of highly interactive front end that uses a lot of JavaScript and CSS. I kept running into the same issue: the moment the front end reaches some complexity, the separation between JavaScript and CSS breaks down really quickly. Wrestling with the cascade has also always been a problem. I wondered what it might be like to break that barrier down entirely, against conventional wisdom.</p>
+					</div>
+				</div>
+				<div class="table-col7">
+          <div class="info-row">
+            <div class="info-col3">
+              &nbsp;
+            </div>
+            <div class="info-col9">
+              <h3>Other Motivations</h3>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <i class="fa fa-2x fa-code"></i>
+            </div>
+            <div class="info-col9">
+              <p><strong>Bypass the Cascade</strong></p>
+              <p><span>Even using preprocessors like Less and Sass don't fully solve the problems with the cascade which get really hairy at scale. Using JavaScript to compute and inline styles means we can get full control over the cascade at the cost of some speed.</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <i class="fa fa-2x fa-retweet"></i>
+            </div>
+            <div class="info-col9">
+              <p><strong>Evolving Preprocessors</strong></p>
+              <p><span>While Less and Sass give you some powerful tools like variables, mixins, and basic calculation, I always thought it could go a step further. I've tried to keep these familiar features, but introduce all the programming power of JavaScript: more programming control, DOM access, and event binding.</span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <i class="fa fa-2x fa-lightbulb-o"></i>
+            </div>
+            <div class="info-col9">
+              <p><strong>Inspiration</strong></p>
+              <p><span>There are a lot of people that have had similar ideas that I'm building on. Take a look at what some others have said about these problems:</span></p>
+              <p><span><a href="https://www.youtube.com/watch?v=iniwPUEbPUM" target="_blank">Cascading Shit Show by Jacob Thorton (@fat)</a></span></p>
+              <p><span><a href="https://speakerdeck.com/vjeux/react-css-in-js" target="_blank">React: CSS in JS by Christopher "vjeux" Chedeau</a></span></p>
+              <p><span><a href="https://www.youtube.com/watch?v=yHBHOT_PwcY" target="_blank">AbsurdJS Hacking the Front End by Krasimir Tsonev (@KrasimirTsonev)</a></span></p>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-col3">
+               <i class="fa fa-2x fa-flask"></i>
+            </div>
+            <div class="info-col9">
+              <p><strong>Fun + Experimentation</strong></p>
+              <p><span>Working on this is just fun. Everyone that I talk to about writing CSS in JavaScript says it's <em>really</em> crazy, and chances are they're probably right, but it is a lot of fun trying. From when I first commited to the core to publishing this page, it took about a week, and I want to see where this will go. I'm curious to hear what other people's thoughts are.</span></p>
+            </div>
+          </div>
+				</div>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../jquery-2.2.0.min.js"></script>
+	<script type="text/javascript" src="../dist/plato.js"></script>
+	<script type="text/javascript" src="../dist/styles.js"></script>
+
+	<script type="text/javascript" src="../highlight/highlight.pack.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-73962501-1', 'auto');
+	  ga('send', 'pageview');
+	
+	</script>
+</html>
