@@ -53,9 +53,9 @@ class Descartes {
      */
 	render() {
 		this.flatten()
-		this.bindListeners()
-		this.prioritize()
+		this.cascade()
 		this.paint()
+		this.bindListeners()
 	}
 
 	/**
@@ -63,33 +63,7 @@ class Descartes {
 	 * @param {object} tree - the current tree or subtree that specifies a selector or rule as a key, and its styles or value, respectively
 	 * @return {object} a flattened tree with the correct rules
 	*/
-	compute(tree = this.tree) {
-		if (typeof tree === 'object') {
-			let result = {}
-			for (let key in tree) {
-				let value = tree[key]
-				if (value === null) continue
-				let keyObject = this.parseKey(key)
-				if (keyObject.type === this.selector) {
-					result[keyObject.key] = this.compute(value)
-				} else if (keyObject.type === this.rule) {
-					result[keyObject.key] = value
-				} else if (keyObject.type === this.meta) {
-					if (keyObject.key === this.mixins) {
-						let mixedRules = this.parseMixins(tree, key)
-						result = mixedRules
-					} else if (keyObject.key === this.listeners) {
-						result[keyObject.key] = value
-					}
-				}
-			}
-			return result
-		}
-		return null
-	}
-
-	// Expands the computed rules tree into a flat rule mappings object
-	flatten(tree = this.compute(tree), parentSelector = "", priority = this.mappingsPriority) {
+	flatten(tree = this.sanitize(tree), parentSelector = "", priority = this.mappingsPriority) {
 		for (let selector in tree) {
 			let rules = Object.assign({}, tree[selector])
 			let _listeners = rules[this.listeners]
@@ -119,6 +93,128 @@ class Descartes {
 		return this.mappings
 	}
 
+	/**
+	 * Recursively sanitizes the style tree and expand, calculate mixins
+	 * @param {object} tree - the current unsanitized tree or subtree
+	 * @return {object} a new, validated style tree with no expanded mixins
+	*/
+	sanitize(tree = this.tree) {
+		if (typeof tree === 'object') {
+			let result = {}
+			for (let key in tree) {
+				let value = tree[key]
+				if (value === null) continue
+				let keyObject = this.parseKey(key)
+				if (keyObject.type === this.selector) {
+					result[keyObject.key] = this.sanitize(value)
+				} else if (keyObject.type === this.rule) {
+					result[keyObject.key] = value
+				} else if (keyObject.type === this.meta) {
+					if (keyObject.key === this.mixins) {
+						let mixedRules = this.parseMixins(tree, key)
+						result = mixedRules
+					} else if (keyObject.key === this.listeners) {
+						result[keyObject.key] = value
+					}
+				}
+			}
+			return result
+		}
+		return null
+	}
+
+	/**
+	 * Calculates and expands mixins on a particular ruleset
+	 * @param {object} ruleset - the ruleset for the current selector
+	 * @param {string} selector - the relevant selector string
+	 * @return {object} the resulting ruleset with the calculated mixins
+	*/
+	parseMixins(ruleset, selector) {
+		let mixins = ruleset[this.mixins]
+
+		if (!Array.isArray(mixins)) {
+			mixins = [mixins]
+		}
+
+		for (let index in mixins) {
+			let mixin = mixins[index]
+			if (mixin !== null && typeof mixin === 'object') {
+				for (let rule in mixin) {
+					if (!ruleset.hasOwnProperty(rule) || ruleset[rule] === null) ruleset[rule] = mixin[rule]
+				}
+			} else {
+				throw("'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
+			}
+		}
+		delete ruleset[this.mixins]
+		return ruleset
+	}
+
+	/**
+	 * Prioritizes and cascades the style tree for the entire document
+	*/
+	cascade() {
+		let prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(() => { return [] })
+		for (let key in this.mappings) {
+			let mapping = this.mappings[key]
+			prioritizedList[mapping.priority].push([key, mapping.rules])
+		}
+		prioritizedList.map(set => {
+			set.map(mapping => {
+				this.applyRuleset(mapping[0], mapping[1])
+			})
+		})
+	}
+
+	/**
+	 * Apply a ruleset for a certain selector
+	 * @param {string} selector - the selector string i.e. "html body .thing"
+	 * @param {object} ruleset - the full style ruleset to be applied
+	*/
+	applyRuleset(selector = null, ruleset = null) {
+		if (selector === null || ruleset === null) return false
+		if (this.isPseudo(selector) && this.applyPsuedo(selector, ruleset)) return
+		let elems = this.find(selector.toString())
+		if (elems.length === 0) return false
+		elems.map(elem => {
+			let style = elem.getAttribute('data-descartes')
+			if (typeof style === 'undefined') return
+			style = (style === null) ? {} : JSON.parse(style)
+			let computed = {}
+			for (let property in ruleset) {
+				computed[property] = this.computeRule(property, ruleset[property], elem)
+			}
+			style = Object.assign(style, computed)
+			elem.setAttribute('data-descartes', JSON.stringify(style))
+		})
+	}
+
+	/**
+	 * Apply a ruleset for a certain selector
+	 * @param {string} property - the name of the property i.e. "border", "margin", etc.
+	 * @param {object} value - the unparsed value of the rule, a function, string, or number
+	 * @param {object} elem - the DOM element that the value function should use, if passed
+	*/
+	computeRule(property, value, elem = null) {
+		// If the value is a function, evaluate the function to get the computed value
+		if (typeof value === 'function' && elem !== null) {
+			value = value(elem)
+		}
+		// If no value, skip
+		if (value === null) return null
+		let except = ['font-weight', 'opacity', 'z-index']
+		if (Number(value) === value && except.indexOf(property) < 0) {
+			return value.toString() + "px"
+		}
+		if (property === 'content') {
+			return "'" + value.toString() + "'"
+		}
+		return value.toString()
+	}
+
+	/**
+	 * Binds event listeners for all selectors
+	*/
 	bindListeners() {
 		for (let selector in this.mappings) {
 			let mapping = this.mappings[selector]
@@ -129,31 +225,18 @@ class Descartes {
 				if (typeof l[0] === 'string') {
 					this.find(l[0]).map(x => {
 						x.addEventListener(l[1], () => {
-							this.cascade(selector, rules)
+							this.applyRuleset(selector, rules)
 							this.paint()
 						})
 					})
 				} else {
 					l[0].addEventListener(l[1], () => {
-						this.cascade(selector, rules)
+						this.applyRuleset(selector, rules)
 						this.paint()
 					})
 				}
 			})
 		}
-	}
-
-	prioritize() {
-		let prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(() => { return [] })
-		for (let key in this.mappings) {
-			let mapping = this.mappings[key]
-			prioritizedList[mapping.priority].push([key, mapping.rules])
-		}
-		prioritizedList.map(set => {
-			set.map(mapping => {
-				this.cascade(mapping[0], mapping[1])
-			})
-		})
 	}
 
 	paint() {
@@ -165,29 +248,10 @@ class Descartes {
 		})
 	}
 
-	cascade(selector = null, rules = null) {
-		if (selector === null || rules === null) return false
-		if (this.isPseudo(selector) && this.applyPsuedo(selector, rules)) return
-		let elems = this.find(selector.toString())
-		if (elems.length === 0) return false
-		elems.map(elem => {
-			let style = elem.getAttribute('data-descartes')
-			if (typeof style === 'undefined') return
-			style = (style === null) ? {} : JSON.parse(style)
-			let computed = {}
-			for (let key in rules) {
-				computed[key] = this.computeRule(rules[key], key, elem)
-			}
-			style = Object.assign(style, computed)
-			elem.setAttribute('data-descartes', JSON.stringify(style))
-		})
-		return true
-	}
-
 	createStyleString(rules, elem) {
 		let style = ""
 		for (let key in rules) {
-			let computedRule = this.computeRule(rules[key], key, elem)
+			let computedRule = this.computeRule(key, rules[key], elem)
 			style += key + ": " + computedRule + "; "
 		}
 		style = style.slice(0, -1);
@@ -209,21 +273,6 @@ class Descartes {
 		return false
 	}
 
-	computeRule(rule, key, elem = null) {
-		if (typeof rule === 'function' && elem !== null) {
-			rule = rule(elem)
-		}
-		if (rule === null) return null
-		let except = ['font-weight', 'opacity', 'z-index']
-		if (Number(rule) === rule && except.indexOf(key) < 0) {
-			return rule.toString() + "px"
-		}
-		if (key === 'content') {
-			return "'" + rule.toString() + "'"
-		}
-		return rule.toString()
-	}
-
 	nestSelector(current, parent) {
 		let separator = " "
 		if (this.selIsAppending(current)) {
@@ -241,28 +290,6 @@ class Descartes {
 			key,
 			type: isMeta ? this.meta : isRule ? this.rule : this.selector
 		}
-	}
-
-	// Adds mixins to existing tree
-	parseMixins(tree, selector) {
-		let mixins = tree[this.mixins]
-
-		if (!Array.isArray(mixins)) {
-			mixins = [mixins]
-		}
-
-		for (let index in mixins) {
-			let mixin = mixins[index]
-			if (mixin !== null && typeof mixin === 'object') {
-				for (let rule in mixin) {
-					if (!tree.hasOwnProperty(rule) || tree[rule] === null) tree[rule] = mixin[rule]
-				}
-			} else {
-				throw("'" + selector + "' tree has an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
-			}
-		}
-		delete tree[this.mixins]
-		return tree
 	}
 
 	isPseudo(sel) {
