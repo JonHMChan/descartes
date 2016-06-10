@@ -167,13 +167,13 @@ class Descartes {
 	}
 
 	/**
-	 * Apply a ruleset for a certain selector
+	 * Apply a ruleset for a certain selector into the selector's nodes
 	 * @param {string} selector - the selector string i.e. "html body .thing"
 	 * @param {object} ruleset - the full style ruleset to be applied
 	*/
 	applyRuleset(selector = null, ruleset = null) {
 		if (selector === null || ruleset === null) return false
-		if (this.isPseudo(selector) && this.applyPsuedo(selector, ruleset)) return
+		if (this.isPseudo(selector) && this.applyPsuedo(selector, ruleset)) return true
 		let elems = this.find(selector.toString())
 		if (elems.length === 0) return false
 		elems.map(elem => {
@@ -194,6 +194,7 @@ class Descartes {
 	 * @param {string} property - the name of the property i.e. "border", "margin", etc.
 	 * @param {object} value - the unparsed value of the rule, a function, string, or number
 	 * @param {object} elem - the DOM element that the value function should use, if passed
+	 * @return {string} the valid CSS property value
 	*/
 	computeRule(property, value, elem = null) {
 		// If the value is a function, evaluate the function to get the computed value
@@ -210,6 +211,27 @@ class Descartes {
 			return "'" + value.toString() + "'"
 		}
 		return value.toString()
+	}
+
+	/**
+	 * Create inline styles for pseudo selectors
+	 * @param {string} selector - the selector string
+	 * @param {object} ruleset - the relevant ruleset for the selector
+	 * @return {bool} whether the application was successful
+	*/
+	applyPsuedo(selector, ruleset) {
+		if (this.isPseudo(selector)) {
+			let sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
+			if (this.findType === 'jquery') {
+				$(sheet).appendTo("body")
+				return
+			} else if (this.findType === 'sizzle') {
+				document.body.appendChild(sheet)
+				return
+			}
+			return true
+		}
+		return false
 	}
 
 	/**
@@ -239,6 +261,9 @@ class Descartes {
 		}
 	}
 
+	/**
+	 * Apply inline styles for all finalized rules
+	*/
 	paint() {
 		let all = this.find("*")
 		all.map(x => {
@@ -248,29 +273,14 @@ class Descartes {
 		})
 	}
 
-	createStyleString(rules, elem) {
+	createStyleString(ruleset, elem) {
 		let style = ""
-		for (let key in rules) {
-			let computedRule = this.computeRule(key, rules[key], elem)
-			style += key + ": " + computedRule + "; "
+		for (let property in ruleset) {
+			let computedRule = this.computeRule(property, ruleset[property], elem)
+			style += property + ": " + computedRule + "; "
 		}
 		style = style.slice(0, -1);
 		return style
-	}
-
-	applyPsuedo(selector, rules) {
-		if (this.isPseudo(selector)) {
-			let sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
-			if (this.findType === 'jquery') {
-				$(sheet).appendTo("body")
-				return
-			} else if (this.findType === 'sizzle') {
-				document.body.appendChild(sheet)
-				return
-			}
-			return true
-		}
-		return false
 	}
 
 	nestSelector(current, parent) {
@@ -283,11 +293,11 @@ class Descartes {
 	}
 
 	// Runs any checks on the current key to see what type it is
-	parseKey(key) {
-		let isMeta = this.isMeta(key)
-		let isRule = this.isRule(key)
+	parseKey(property) {
+		let isMeta = this.isMeta(property)
+		let isRule = this.isRule(property)
 		return {
-			key,
+			property,
 			type: isMeta ? this.meta : isRule ? this.rule : this.selector
 		}
 	}

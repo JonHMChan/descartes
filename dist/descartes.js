@@ -207,7 +207,7 @@ var Descartes = function () {
 		}
 
 		/**
-   * Apply a ruleset for a certain selector
+   * Apply a ruleset for a certain selector into the selector's nodes
    * @param {string} selector - the selector string i.e. "html body .thing"
    * @param {object} ruleset - the full style ruleset to be applied
   */
@@ -221,7 +221,7 @@ var Descartes = function () {
 			var ruleset = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
 			if (selector === null || ruleset === null) return false;
-			if (this.isPseudo(selector) && this.applyPsuedo(selector, ruleset)) return;
+			if (this.isPseudo(selector) && this.applyPsuedo(selector, ruleset)) return true;
 			var elems = this.find(selector.toString());
 			if (elems.length === 0) return false;
 			elems.map(function (elem) {
@@ -242,6 +242,7 @@ var Descartes = function () {
    * @param {string} property - the name of the property i.e. "border", "margin", etc.
    * @param {object} value - the unparsed value of the rule, a function, string, or number
    * @param {object} elem - the DOM element that the value function should use, if passed
+   * @return {string} the valid CSS property value
   */
 
 	}, {
@@ -263,6 +264,30 @@ var Descartes = function () {
 				return "'" + value.toString() + "'";
 			}
 			return value.toString();
+		}
+
+		/**
+   * Create inline styles for pseudo selectors
+   * @param {string} selector - the selector string
+   * @param {object} ruleset - the relevant ruleset for the selector
+   * @return {bool} whether the application was successful
+  */
+
+	}, {
+		key: 'applyPsuedo',
+		value: function applyPsuedo(selector, ruleset) {
+			if (this.isPseudo(selector)) {
+				var sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
+				if (this.findType === 'jquery') {
+					$(sheet).appendTo("body");
+					return;
+				} else if (this.findType === 'sizzle') {
+					document.body.appendChild(sheet);
+					return;
+				}
+				return true;
+			}
+			return false;
 		}
 
 		/**
@@ -302,6 +327,11 @@ var Descartes = function () {
 				if (_ret === 'continue') continue;
 			}
 		}
+
+		/**
+   * Apply inline styles for all finalized rules
+  */
+
 	}, {
 		key: 'paint',
 		value: function paint() {
@@ -316,30 +346,14 @@ var Descartes = function () {
 		}
 	}, {
 		key: 'createStyleString',
-		value: function createStyleString(rules, elem) {
+		value: function createStyleString(ruleset, elem) {
 			var style = "";
-			for (var key in rules) {
-				var computedRule = this.computeRule(key, rules[key], elem);
-				style += key + ": " + computedRule + "; ";
+			for (var property in ruleset) {
+				var computedRule = this.computeRule(property, ruleset[property], elem);
+				style += property + ": " + computedRule + "; ";
 			}
 			style = style.slice(0, -1);
 			return style;
-		}
-	}, {
-		key: 'applyPsuedo',
-		value: function applyPsuedo(selector, rules) {
-			if (this.isPseudo(selector)) {
-				var sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
-				if (this.findType === 'jquery') {
-					$(sheet).appendTo("body");
-					return;
-				} else if (this.findType === 'sizzle') {
-					document.body.appendChild(sheet);
-					return;
-				}
-				return true;
-			}
-			return false;
 		}
 	}, {
 		key: 'nestSelector',
@@ -356,11 +370,11 @@ var Descartes = function () {
 
 	}, {
 		key: 'parseKey',
-		value: function parseKey(key) {
-			var isMeta = this.isMeta(key);
-			var isRule = this.isRule(key);
+		value: function parseKey(property) {
+			var isMeta = this.isMeta(property);
+			var isRule = this.isRule(property);
 			return {
-				key: key,
+				property: property,
 				type: isMeta ? this.meta : isRule ? this.rule : this.selector
 			};
 		}
