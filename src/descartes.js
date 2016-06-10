@@ -13,7 +13,7 @@ class Descartes {
 		this.mappingsPriority = 0
 
 		this.selector = 'selector'
-		this.rule = 'rule'
+		this.property = 'property'
 		this.meta = 'meta'
 		this.mixins = '_mixins'
 		this.listeners = '_listeners'
@@ -107,7 +107,7 @@ class Descartes {
 				let keyObject = this.parseKey(key)
 				if (keyObject.type === this.selector) {
 					result[keyObject.key] = this.sanitize(value)
-				} else if (keyObject.type === this.rule) {
+				} else if (keyObject.type === this.property) {
 					result[keyObject.key] = value
 				} else if (keyObject.type === this.meta) {
 					if (keyObject.key === this.mixins) {
@@ -173,7 +173,7 @@ class Descartes {
 	*/
 	applyRuleset(selector = null, ruleset = null) {
 		if (selector === null || ruleset === null) return false
-		if (this.isPseudo(selector) && this.applyPsuedo(selector, ruleset)) return true
+		if (this.hasPsuedo(selector) && this.applyPsuedo(selector, ruleset)) return true
 		let elems = this.find(selector.toString())
 		if (elems.length === 0) return false
 		elems.map(elem => {
@@ -220,7 +220,7 @@ class Descartes {
 	 * @return {bool} whether the application was successful
 	*/
 	applyPsuedo(selector, ruleset) {
-		if (this.isPseudo(selector)) {
+		if (this.hasPsuedo(selector)) {
 			let sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
 			if (this.findType === 'jquery') {
 				$(sheet).appendTo("body")
@@ -289,45 +289,69 @@ class Descartes {
 		return style
 	}
 
+	/**
+	 * Creates a valid nested CSS selector based on nested selectors in style tree
+	 * @param {string} current - the current level selector
+	 * @param {string} parent - the parent selector (if there is one)
+	 * @return {string} the final CSS selector string
+	*/
 	nestSelector(current, parent) {
 		let separator = " "
-		if (this.selIsAppending(current)) {
+		if (this.isSuffix(current)) {
 			separator = ""
 			current = current.substring(1)
 		}
 		return parent + separator + current
 	}
 
-	// Runs any checks on the current key to see what type it is
-	parseKey(property) {
-		let isMeta = this.isMeta(property)
-		let isRule = this.isRule(property)
+	/**
+	 * Evaluates a key and returns its type as a meta, a CSS property, or CSS selector
+	 * @param {string} key - the key to be validated
+	 * @return {object} an object with the original key and its type
+	*/
+	parseKey(key) {
+		let isMeta = this.isMeta(key)
+		let isRule = this.isRule(key)
 		return {
-			key: property,
-			type: isMeta ? this.meta : isRule ? this.rule : this.selector
+			key,
+			type: isMeta ? this.meta : isRule ? this.property : this.selector
 		}
 	}
 
-	isPseudo(sel) {
-		for (let key in this.pseudos) {
-			let pattern = this.pseudos[key]
-			let regex = new RegExp('.+' + pattern)
-			if (sel.match(regex) != null) return true
-		}
-		return false
-	}
-
+	/**
+	 * Checks if a key is special Descartes meta rule i.e. mixins, event listeners
+	 * @return {bool} whether the key is a Descartes meta rule
+	*/
 	isMeta(key) {
 		const metas = [this.mixins, this.listeners]
 		return metas.indexOf(key) > -1
 	}
 
-	selIsAppending(sel) {
-		return sel.substr(0, 1) === '&'
-	}
-
+	/** Checks if the key is a valid CSS property
+	 * @return {bool} whether the key is a valid CSS property
+	*/
 	isRule(key) {
 		return this.properties.indexOf(key) > -1
+	}
+
+	/** Checks if the key is a suffix to the parent selector
+	 * @return {bool} whether the key is a suffix to the parent selector
+	*/
+	isSuffix(key) {
+		return key.substr(0, 1) === '&'
+	}
+
+	/**
+	 * Checks if the selector has a pseudo selector i.e. :after, :before, etc.
+	 * @return {bool} whether the selector contains a pseudo selector
+	*/
+	hasPsuedo(selector) {
+		for (let key in this.pseudos) {
+			let pattern = this.pseudos[key]
+			let regex = new RegExp('.+' + pattern)
+			if (selector.match(regex) != null) return true
+		}
+		return false
 	}
 }
 

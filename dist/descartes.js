@@ -25,7 +25,7 @@ var Descartes = function () {
 		this.mappingsPriority = 0;
 
 		this.selector = 'selector';
-		this.rule = 'rule';
+		this.property = 'property';
 		this.meta = 'meta';
 		this.mixins = '_mixins';
 		this.listeners = '_listeners';
@@ -137,7 +137,7 @@ var Descartes = function () {
 					var keyObject = this.parseKey(key);
 					if (keyObject.type === this.selector) {
 						result[keyObject.key] = this.sanitize(value);
-					} else if (keyObject.type === this.rule) {
+					} else if (keyObject.type === this.property) {
 						result[keyObject.key] = value;
 					} else if (keyObject.type === this.meta) {
 						if (keyObject.key === this.mixins) {
@@ -221,7 +221,7 @@ var Descartes = function () {
 			var ruleset = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
 			if (selector === null || ruleset === null) return false;
-			if (this.isPseudo(selector) && this.applyPsuedo(selector, ruleset)) return true;
+			if (this.hasPsuedo(selector) && this.applyPsuedo(selector, ruleset)) return true;
 			var elems = this.find(selector.toString());
 			if (elems.length === 0) return false;
 			elems.map(function (elem) {
@@ -276,7 +276,7 @@ var Descartes = function () {
 	}, {
 		key: 'applyPsuedo',
 		value: function applyPsuedo(selector, ruleset) {
-			if (this.isPseudo(selector)) {
+			if (this.hasPsuedo(selector)) {
 				var sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
 				if (this.findType === 'jquery') {
 					$(sheet).appendTo("body");
@@ -363,54 +363,88 @@ var Descartes = function () {
 			style = style.slice(0, -1);
 			return style;
 		}
+
+		/**
+   * Creates a valid nested CSS selector based on nested selectors in style tree
+   * @param {string} current - the current level selector
+   * @param {string} parent - the parent selector (if there is one)
+   * @return {string} the final CSS selector string
+  */
+
 	}, {
 		key: 'nestSelector',
 		value: function nestSelector(current, parent) {
 			var separator = " ";
-			if (this.selIsAppending(current)) {
+			if (this.isSuffix(current)) {
 				separator = "";
 				current = current.substring(1);
 			}
 			return parent + separator + current;
 		}
 
-		// Runs any checks on the current key to see what type it is
+		/**
+   * Evaluates a key and returns its type as a meta, a CSS property, or CSS selector
+   * @param {string} key - the key to be validated
+   * @return {object} an object with the original key and its type
+  */
 
 	}, {
 		key: 'parseKey',
-		value: function parseKey(property) {
-			var isMeta = this.isMeta(property);
-			var isRule = this.isRule(property);
+		value: function parseKey(key) {
+			var isMeta = this.isMeta(key);
+			var isRule = this.isRule(key);
 			return {
-				key: property,
-				type: isMeta ? this.meta : isRule ? this.rule : this.selector
+				key: key,
+				type: isMeta ? this.meta : isRule ? this.property : this.selector
 			};
 		}
-	}, {
-		key: 'isPseudo',
-		value: function isPseudo(sel) {
-			for (var key in this.pseudos) {
-				var pattern = this.pseudos[key];
-				var regex = new RegExp('.+' + pattern);
-				if (sel.match(regex) != null) return true;
-			}
-			return false;
-		}
+
+		/**
+   * Checks if a key is special Descartes meta rule i.e. mixins, event listeners
+   * @return {bool} whether the key is a Descartes meta rule
+  */
+
 	}, {
 		key: 'isMeta',
 		value: function isMeta(key) {
 			var metas = [this.mixins, this.listeners];
 			return metas.indexOf(key) > -1;
 		}
-	}, {
-		key: 'selIsAppending',
-		value: function selIsAppending(sel) {
-			return sel.substr(0, 1) === '&';
-		}
+
+		/** Checks if the key is a valid CSS property
+   * @return {bool} whether the key is a valid CSS property
+  */
+
 	}, {
 		key: 'isRule',
 		value: function isRule(key) {
 			return this.properties.indexOf(key) > -1;
+		}
+
+		/** Checks if the key is a suffix to the parent selector
+   * @return {bool} whether the key is a suffix to the parent selector
+  */
+
+	}, {
+		key: 'isSuffix',
+		value: function isSuffix(key) {
+			return key.substr(0, 1) === '&';
+		}
+
+		/**
+   * Checks if the selector has a pseudo selector i.e. :after, :before, etc.
+   * @return {bool} whether the selector contains a pseudo selector
+  */
+
+	}, {
+		key: 'hasPsuedo',
+		value: function hasPsuedo(selector) {
+			for (var key in this.pseudos) {
+				var pattern = this.pseudos[key];
+				var regex = new RegExp('.+' + pattern);
+				if (selector.match(regex) != null) return true;
+			}
+			return false;
 		}
 	}]);
 
