@@ -1,12 +1,19 @@
 /*! Descartes v0.0.1 | (c) Jonathan Chan @jonhmchan */
+
+/** Class representing a full Descartes engine */
 class Descartes {
+
+	/**
+	 * Initialize and fire Descartes engine
+	 * @param {object} tree - Full style tree that represents styles for the whole page
+	 */
 	constructor(tree) {
 		this.tree = tree
 		this.mappings = {}
 		this.mappingsPriority = 0
 
 		this.selector = 'selector'
-		this.rule = 'rule'
+		this.property = 'property'
 		this.meta = 'meta'
 		this.mixins = '_mixins'
 		this.listeners = '_listeners'
@@ -15,13 +22,15 @@ class Descartes {
 		this.properties = ['align-content','align-items','align-self','all','animation','animation-delay','animation-direction','animation-duration','animation-fill-mode','animation-iteration-count','animation-name','animation-play-state','animation-timing-function','backface-visibility','background','background-attachment','background-blend-mode','background-clip','background-color','background-image','background-origin','background-position','background-repeat','background-size','border','border-bottom','border-bottom-color','border-bottom-left-radius','border-bottom-right-radius','border-bottom-style','border-bottom-width','border-collapse','border-color','border-image','border-image-outset','border-image-repeat','border-image-slice','border-image-source','border-image-width','border-left','border-left-color','border-left-style','border-left-width','border-radius','border-right','border-right-color','border-right-style','border-right-width','border-spacing','border-style','border-top','border-top-color','border-top-left-radius','border-top-right-radius','border-top-style','border-top-width','border-width','bottom','box-shadow','box-sizing','caption-side','clear','clip','color','column-count','column-fill','column-gap','column-rule','column-rule-color','column-rule-style','column-rule-width','column-span','column-width','columns','content','counter-increment','counter-reset','cursor','direction','display','empty-cells','filter','flex','flex-basis','flex-direction','flex-flow','flex-grow','flex-shrink','flex-wrap','float','font','@font-face','font-family','font-size','font-size-adjust','font-stretch','font-style','font-variant','font-weight','hanging-punctuation','height','justify-content','@keyframes','left','letter-spacing','line-height','list-style','list-style-image','list-style-position','list-style-type','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','@media','min-height','min-width','nav-down','nav-index','nav-left','nav-right','nav-up','opacity','order','outline','outline-color','outline-offset','outline-style','outline-width','overflow','overflow-x','overflow-y','padding','padding-bottom','padding-left','padding-right','padding-top','page-break-after','page-break-before','page-break-inside','perspective','perspective-origin','position','quotes','resize','right','tab-size','table-layout','text-align','text-align-last','text-decoration','text-decoration-color','text-decoration-line','text-decoration-style','text-indent','text-justify','text-overflow','text-shadow','text-transform','top','transform','transform-origin','transform-style','transition','transition-delay','transition-duration','transition-property','transition-timing-function','unicode-bidi','vertical-align','visibility','white-space','width','word-break','word-spacing','word-wrap','z-index']
 		this.pseudos = ['::after','::before','::first-letter','::first-line','::selection','::backdrop',':active',':any',':checked',':default',':dir',':disabled',':empty',':enabled',':first',':first-child',':first-of-type',':fullscreen',':focus',':hover',':indeterminate',':in-range',':invalid',':lang',':last-child',':last-of-type',':left',':link',':not',':nth-child',':nth-last-child',':nth-last-of-type',':nth-of-type',':only-child',':only-of-type',':optional',':out-of-range',':read-only',':read-write',':required',':right',':root',':scope',':target',':valid',':visited']
 
-
 		this.findType = undefined
-		this.find = this.findLibrary()
-		
+		this.find = this.findLibrary()		
 		this.render()
 	}
 
+	/**
+     * Based on the style tree passed to the engine, applies all styles
+     * @return {function} the selector engine, generally jQuery, but Sizzle as a fall back
+     */
 	findLibrary() {
 		if (typeof $ !== 'undefined') {
 			this.findType = 'jquery'
@@ -39,34 +48,22 @@ class Descartes {
 		}
 	}
 
-	// Returns the computed rules tree based on original tree
-	compute(tree = this.tree) {
-		if (typeof tree === 'object') {
-			let result = {}
-			for (let key in tree) {
-				let value = tree[key]
-				if (value === null) continue
-				let keyObject = this.parseKey(key)
-				if (keyObject.type === this.selector) {
-					result[keyObject.key] = this.compute(value)
-				} else if (keyObject.type === this.rule) {
-					result[keyObject.key] = value
-				} else if (keyObject.type === this.meta) {
-					if (keyObject.key === this.mixins) {
-						let mixedRules = this.parseMixins(tree, key)
-						result = mixedRules
-					} else if (keyObject.key === this.listeners) {
-						result[keyObject.key] = value
-					}
-				}
-			}
-			return result
-		}
-		return null
+	/**
+     * Based on the style tree passed to the engine, applies all styles
+     */
+	render() {
+		this.flatten()
+		this.cascade()
+		this.paint()
+		this.bindListeners()
 	}
 
-	// Expands the computed rules tree into a flat rule mappings object
-	flatten(tree = this.compute(tree), parentSelector = "", priority = this.mappingsPriority) {
+	/**
+	 * Recursively flattens the style tree into the valid CSS selector and its corresponding rules, priority, and event listeners (if any)
+	 * @param {object} tree - the current tree or subtree that specifies a selector or rule as a key, and its styles or value, respectively
+	 * @return {object} a flattened tree with the correct rules
+	*/
+	flatten(tree = this.sanitize(tree), parentSelector = "", priority = this.mappingsPriority) {
 		for (let selector in tree) {
 			let rules = Object.assign({}, tree[selector])
 			let _listeners = rules[this.listeners]
@@ -96,38 +93,67 @@ class Descartes {
 		return this.mappings
 	}
 
-	render() {
-		this.flatten()
-		this.bindListeners()
-		this.applyAll()
-	}
-
-	bindListeners() {
-		for (let selector in this.mappings) {
-			let mapping = this.mappings[selector]
-			let listeners = mapping[this.listeners]
-			if (typeof listeners === 'undefined') continue
-			let rules = mapping['rules']
-			listeners.map(l => {
-				if (typeof l[0] === 'string') {
-					this.find(l[0]).map(x => {
-						x.addEventListener(l[1], () => {
-							this.cascade(selector, rules)
-							this.apply()
-						})
-					})
-				} else {
-					l[0].addEventListener(l[1], () => {
-						this.cascade(selector, rules)
-						this.apply()
-					})
+	/**
+	 * Recursively sanitizes the style tree and expand, calculate mixins
+	 * @param {object} tree - the current unsanitized tree or subtree
+	 * @return {object} a new, validated style tree with no expanded mixins
+	*/
+	sanitize(tree = this.tree) {
+		if (typeof tree === 'object') {
+			let result = {}
+			for (let key in tree) {
+				let value = tree[key]
+				if (value === null) continue
+				let keyObject = this.parseKey(key)
+				if (keyObject.type === this.selector) {
+					result[keyObject.key] = this.sanitize(value)
+				} else if (keyObject.type === this.property) {
+					result[keyObject.key] = value
+				} else if (keyObject.type === this.meta) {
+					if (keyObject.key === this.mixins) {
+						let mixedRules = this.parseMixins(tree, key)
+						result = mixedRules
+					} else if (keyObject.key === this.listeners) {
+						result[keyObject.key] = value
+					}
 				}
-			})
+			}
+			return result
 		}
+		return null
 	}
 
-	applyAll() {
-		// sort by priority
+	/**
+	 * Calculates and expands mixins on a particular ruleset
+	 * @param {object} ruleset - the ruleset for the current selector
+	 * @param {string} selector - the relevant selector string
+	 * @return {object} the resulting ruleset with the calculated mixins
+	*/
+	parseMixins(ruleset, selector) {
+		let mixins = ruleset[this.mixins]
+
+		if (!Array.isArray(mixins)) {
+			mixins = [mixins]
+		}
+
+		for (let index in mixins) {
+			let mixin = mixins[index]
+			if (mixin !== null && typeof mixin === 'object') {
+				for (let rule in mixin) {
+					if (!ruleset.hasOwnProperty(rule) || ruleset[rule] === null) ruleset[rule] = mixin[rule]
+				}
+			} else {
+				throw("'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
+			}
+		}
+		delete ruleset[this.mixins]
+		return ruleset
+	}
+
+	/**
+	 * Prioritizes and cascades the style tree for the entire document
+	*/
+	cascade() {
 		let prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(() => { return [] })
 		for (let key in this.mappings) {
 			let mapping = this.mappings[key]
@@ -135,24 +161,19 @@ class Descartes {
 		}
 		prioritizedList.map(set => {
 			set.map(mapping => {
-				this.cascade(mapping[0], mapping[1])
+				this.applyRuleset(mapping[0], mapping[1])
 			})
 		})
-		this.apply()
 	}
 
-	apply() {
-		let all = this.find("*")
-		all.map(x => {
-			let style = x.getAttribute('data-descartes')
-			if (typeof style === 'undefined' || style === null) return
-			x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
-		})
-	}
-
-	cascade(selector = null, rules = null) {
-		if (selector === null || rules === null) return false
-		if (this.isPseudo(selector) && this.applyPsuedo(selector, rules)) return
+	/**
+	 * Apply a ruleset for a certain selector into the selector's nodes
+	 * @param {string} selector - the selector string i.e. "html body .thing"
+	 * @param {object} ruleset - the full style ruleset to be applied
+	*/
+	applyRuleset(selector = null, ruleset = null) {
+		if (selector === null || ruleset === null) return false
+		if (this.hasPsuedo(selector) && this.applyPsuedo(selector, ruleset)) return true
 		let elems = this.find(selector.toString())
 		if (elems.length === 0) return false
 		elems.map(elem => {
@@ -160,28 +181,47 @@ class Descartes {
 			if (typeof style === 'undefined') return
 			style = (style === null) ? {} : JSON.parse(style)
 			let computed = {}
-			for (let key in rules) {
-				computed[key] = this.computeRule(rules[key], key, elem)
+			for (let property in ruleset) {
+				computed[property] = this.computeRule(property, ruleset[property], elem)
 			}
 			style = Object.assign(style, computed)
 			elem.setAttribute('data-descartes', JSON.stringify(style))
 		})
-		return true
 	}
 
-	createStyleString(rules, elem) {
-		let style = ""
-		for (let key in rules) {
-			let computedRule = this.computeRule(rules[key], key, elem)
-			style += key + ": " + computedRule + "; "
+	/**
+	 * Apply a ruleset for a certain selector
+	 * @param {string} property - the name of the property i.e. "border", "margin", etc.
+	 * @param {object} value - the unparsed value of the rule, a function, string, or number
+	 * @param {object} elem - the DOM element that the value function should use, if passed
+	 * @return {string} the valid CSS property value
+	*/
+	computeRule(property, value, elem = null) {
+		// If the value is a function, evaluate the function to get the computed value
+		if (typeof value === 'function' && elem !== null) {
+			value = value(elem)
 		}
-		style = style.slice(0, -1);
-		return style
+		// If no value, skip
+		if (value === null) return null
+		let except = ['font-weight', 'opacity', 'z-index']
+		if (Number(value) === value && except.indexOf(property) < 0) {
+			return value.toString() + "px"
+		}
+		if (property === 'content') {
+			return "'" + value.toString() + "'"
+		}
+		return value.toString()
 	}
 
-	applyPsuedo(selector, rules) {
-		if (this.isPseudo(selector)) {
-			let sheet = '<style type="text/css" class="_after">' + selector + " {" + this.createStyleString(rules) + ' }</style>';
+	/**
+	 * Create inline styles for pseudo selectors
+	 * @param {string} selector - the selector string
+	 * @param {object} ruleset - the relevant ruleset for the selector
+	 * @return {bool} whether the application was successful
+	*/
+	applyPsuedo(selector, ruleset) {
+		if (this.hasPsuedo(selector)) {
+			let sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
 			if (this.findType === 'jquery') {
 				$(sheet).appendTo("body")
 				return
@@ -194,84 +234,128 @@ class Descartes {
 		return false
 	}
 
-	computeRule(rule, key, elem = null) {
-		if (typeof rule === 'function' && elem !== null) {
-			rule = rule(elem)
+	/**
+	 * Binds event listeners for all selectors
+	*/
+	bindListeners() {
+		for (let selector in this.mappings) {
+			let mapping = this.mappings[selector]
+			let listeners = mapping[this.listeners]
+			if (typeof listeners === 'undefined') continue
+			let rules = mapping['rules']
+			listeners.map(l => {
+				if (typeof l[0] === 'string') {
+					this.find(l[0]).map(x => {
+						x.addEventListener(l[1], () => {
+							this.applyRuleset(selector, rules)
+							this.paint()
+						})
+					})
+				} else {
+					l[0].addEventListener(l[1], () => {
+						this.applyRuleset(selector, rules)
+						this.paint()
+					})
+				}
+			})
 		}
-		if (rule === null) return null
-		let except = ['font-weight', 'opacity', 'z-index']
-		if (Number(rule) === rule && except.indexOf(key) < 0) {
-			return rule.toString() + "px"
-		}
-		if (key === 'content') {
-			return "'" + rule.toString() + "'"
-		}
-		return rule.toString()
 	}
 
+	/**
+	 * Apply inline styles for all finalized rules
+	*/
+	paint() {
+		let all = this.find("*")
+		all.map(x => {
+			let style = x.getAttribute('data-descartes')
+			if (typeof style === 'undefined' || style === null) return
+			x.setAttribute('style', this.createStyleString(JSON.parse(style), x))
+		})
+	}
+
+	/**
+	 * Generate valid CSS ruleset as a string
+	 * @param {object} ruleset - a full ruleset to be converted
+	 * @param {object} elem - the DOM node to evaluate any functional values on
+	 * @return {string} the final CSS ruleset string
+	*/
+	createStyleString(ruleset, elem) {
+		let style = ""
+		for (let property in ruleset) {
+			let computedRule = this.computeRule(property, ruleset[property], elem)
+			style += property + ": " + computedRule + "; "
+		}
+		style = style.slice(0, -1);
+		return style
+	}
+
+	/**
+	 * Creates a valid nested CSS selector based on nested selectors in style tree
+	 * @param {string} current - the current level selector
+	 * @param {string} parent - the parent selector (if there is one)
+	 * @return {string} the final CSS selector string
+	*/
 	nestSelector(current, parent) {
 		let separator = " "
-		if (this.selIsAppending(current)) {
+		if (this.isSuffix(current)) {
 			separator = ""
 			current = current.substring(1)
 		}
 		return parent + separator + current
 	}
 
-	// Runs any checks on the current key to see what type it is
+	/**
+	 * Evaluates a key and returns its type as a meta, a CSS property, or CSS selector
+	 * @param {string} key - the key to be validated
+	 * @return {object} an object with the original key and its type
+	*/
 	parseKey(key) {
 		let isMeta = this.isMeta(key)
 		let isRule = this.isRule(key)
 		return {
 			key,
-			type: isMeta ? this.meta : isRule ? this.rule : this.selector
+			type: isMeta ? this.meta : isRule ? this.property : this.selector
 		}
 	}
 
-	// Adds mixins to existing tree
-	parseMixins(tree, selector) {
-		let mixins = tree[this.mixins]
-
-		if (!Array.isArray(mixins)) {
-			mixins = [mixins]
-		}
-
-		for (let index in mixins) {
-			let mixin = mixins[index]
-			if (mixin !== null && typeof mixin === 'object') {
-				for (let rule in mixin) {
-					if (!tree.hasOwnProperty(rule) || tree[rule] === null) tree[rule] = mixin[rule]
-				}
-			} else {
-				throw("'" + selector + "' tree has an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
-			}
-		}
-		delete tree[this.mixins]
-		return tree
-	}
-
-	isPseudo(sel) {
-		for (let key in this.pseudos) {
-			let pattern = this.pseudos[key]
-			let regex = new RegExp('.+' + pattern)
-			if (sel.match(regex) != null) return true
-		}
-		return false
-	}
-
+	/**
+	 * Checks if a key is special Descartes meta rule i.e. mixins, event listeners
+	 * @return {bool} whether the key is a Descartes meta rule
+	*/
 	isMeta(key) {
 		const metas = [this.mixins, this.listeners]
 		return metas.indexOf(key) > -1
 	}
 
-	selIsAppending(sel) {
-		return sel.substr(0, 1) === '&'
-	}
-
+	/** Checks if the key is a valid CSS property
+	 * @return {bool} whether the key is a valid CSS property
+	*/
 	isRule(key) {
 		return this.properties.indexOf(key) > -1
 	}
+
+	/** Checks if the key is a suffix to the parent selector
+	 * @return {bool} whether the key is a suffix to the parent selector
+	*/
+	isSuffix(key) {
+		return key.substr(0, 1) === '&'
+	}
+
+	/**
+	 * Checks if the selector has a pseudo selector i.e. :after, :before, etc.
+	 * @return {bool} whether the selector contains a pseudo selector
+	*/
+	hasPsuedo(selector) {
+		for (let key in this.pseudos) {
+			let pattern = this.pseudos[key]
+			let regex = new RegExp('.+' + pattern)
+			if (selector.match(regex) != null) return true
+		}
+		return false
+	}
 }
+
+// Completely hide the entire DOM until Descartes fires
 document.getElementsByTagName("html")[0].style.display = "none";
 (function(funcName, baseObj) {
     // The public function name defaults to window.docReady

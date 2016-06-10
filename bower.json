@@ -1,0 +1,24 @@
+{
+  "name": "descartes",
+  "homepage": "https://github.com/jonhmchan/descartes",
+  "authors": [
+    "jonhmchan"
+  ],
+  "description": "This is an experimental library for writing CSS in JavaScript. The current version is a beta and highly unstable, with changes happening on a daily basis. It is actively being developed with your help.",
+  "main": "dist/descartes.min.js",
+  "moduleType": [],
+  "keywords": [
+    "css",
+    "less",
+    "javascript",
+    "descartes"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,3 +1,4 @@
+/*! Plato v0.0.1 | (c) Jonathan Chan @jonhmchan */
 class Plato {
 	constructor() {
 		this.wrapper = 1200

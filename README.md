@@ -25,13 +25,13 @@ This is an experimental library for writing CSS in JavaScript. The current versi
 
     ```javascript
 new Descartes({
-	"h1": {
-		"_listeners": [[window, 'click']],
-		"font-family": "Helvetica",
-		"font-size": function() {
-			return 16 + Math.round(Math.random() * 42);
+		"h1": {
+			"_listeners": [[window, 'click']],
+			"font-family": "Helvetica",
+			"font-size": function() {
+				return 16 + Math.round(Math.random() * 42);
+			}
 		}
-	}
 })
     ```
 
