@@ -321,8 +321,8 @@ var Descartes = function () {
 					return false;
 				}
 			}
-			// If no value, skip
 			if (value === null) return null;
+			if (value === undefined) return null;
 			var except = ['font-weight', 'opacity', 'z-index'];
 			if (Number(value) === value && except.indexOf(property) < 0) {
 				return value.toString() + "px";

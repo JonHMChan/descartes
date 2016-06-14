@@ -173,10 +173,10 @@ var Plato = function () {
 				"_listeners": [[window, "resize"]],
 				"box-sizing": "border-box",
 				"margin-left": function marginLeft() {
-					return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.fixedGutter;
+					return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
 				},
 				"margin-right": function marginRight() {
-					return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.fixedGutter;
+					return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
 				}
 			});
 		}
@@ -192,10 +192,10 @@ var Plato = function () {
 				},
 				"box-sizing": "border-box",
 				"margin-left": function marginLeft() {
-					return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.fixedGutter;
+					return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
 				},
 				"margin-right": function marginRight() {
-					return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.fixedGutter;
+					return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
 				}
 			});
 		}
@@ -231,7 +231,7 @@ var Plato = function () {
 					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
 				},
 				"margin-bottom": function marginBottom(_) {
-					return window.innerWidth >= _this3.layout.wrappers.mobile ? 0 : _this3.layout.fixedGutter;
+					return window.innerWidth >= _this3.layout.wrappers.mobile ? 0 : _this3.layout.grid.fixedGutter;
 				}
 			};
 		}
@@ -259,7 +259,7 @@ var Plato = function () {
 					return window.innerWidth >= _this4.layout.wrappers.mobile ? (calc(num, columns, gutter) + gutter).toString() + "%" : "100%";
 				},
 				"margin-bottom": function marginBottom(_) {
-					return window.innerWidth >= _this4.layout.wrappers.mobile ? 0 : _this4.layout.fixedGutter;
+					return window.innerWidth >= _this4.layout.wrappers.mobile ? 0 : _this4.layout.grid.fixedGutter;
 				}
 			};
 		}

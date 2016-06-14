@@ -129,8 +129,8 @@ class Plato {
 		return Object.assign(this.clearfix(), {
 			"_listeners": [[window, "resize"]],
 			"box-sizing": "border-box",
-			"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.fixedGutter },
-			"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.fixedGutter }
+			"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+			"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
 		})
 	}
 
@@ -141,8 +141,8 @@ class Plato {
 				return (window.innerWidth >= this.layout.wrappers.mobile) ? "table" : "block"
 			},
 			"box-sizing": "border-box",
-			"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.fixedGutter },
-			"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.fixedGutter }
+			"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+			"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
 		})
 	}
 
@@ -157,7 +157,7 @@ class Plato {
 			"box-sizing": "border-box",
 			"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? calc(num,columns,gutter).toString() + "%" : "100%" },
 			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") },
-			"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.fixedGutter }
+			"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
 		}
 	}
 
@@ -168,7 +168,7 @@ class Plato {
 			"display": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "table-cell" : "block" },
 			"box-sizing": "border-box",
 			"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? (calc(num,columns,gutter) + gutter).toString() + "%" : "100%" },
-			"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.fixedGutter }
+			"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
 		}
 	}
 }
