@@ -30,6 +30,60 @@ class Descartes {
 	}
 
 	/**
+	 * Merges a style tree with another tree
+	 * @param {object} tree - the style tree to be merged in
+	 * @param {object} target - the target style tree, sensibly defaults to this.tree
+	 * @return {bool} whether the selector contains a pseudo selector
+	*/
+	merge(tree, target = this.tree) {
+		if (typeof tree !== 'object') return target
+		if (Object.keys(tree).length === 0) return target
+		let result = Object.assign({}, target)
+		for (let key in tree) {
+			if (tree.hasOwnProperty(key)) {
+				let subtree = tree[key]
+				if (target.hasOwnProperty(key)) {
+					let targetSubtree = target[key]
+					let treeType = typeof subtree
+					if (treeType === typeof targetSubtree) {
+						switch (treeType) {
+							case 'object':
+								result[key] = this.merge(subtree, targetSubtree)
+								break
+							case 'string':
+								result[key] = subtree
+								break
+							case 'array':
+								result[key] = subtree.concat(targetSubtree)
+								break
+							default:
+								console.error("Merge failed. '" + key + "' in the style tree you are merging is an invalid type: " + treeType)
+						}
+					} else {
+						let targetType = typeof targetSubtree
+						if (this.isRule(key)) {
+							result[key] = subtree
+						} else if (key === this.mixins) {
+							if (treeType === 'string' && targetType === 'array') {
+								result[key] = targetSubtree.pop(subtree)
+							} else if (treeType === 'array' && targetType === 'string') {
+								result[key] = subtree.push(targetSubtree)
+							} else {
+								console.error("Merge failed. A mixin was attempted but the '" + key + "' property has invalid types for its values")
+							}
+						} else {
+							console.error("Merge failed. The '" + key + "' property of style trees you are merging don't match validly. `tree` has type '" + treeType + "' and `target` has type + '" + targetType + "'")
+						}
+					}
+				} else {
+					result[key] = subtree
+				}
+			}
+		}
+		return result
+	}
+
+	/**
      * Based on the style tree passed to the engine, applies all styles
      * @return {object} the selector engine, generally jQuery, but Sizzle as a fall back
     */
