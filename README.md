@@ -1,7 +1,7 @@
 # [Descartes](https://descartes.io/)
 *by Jon Chan* [@jonhmchan](http://twitter.com/jonhmchan/)
 
-This is an experimental library for writing CSS in JavaScript. The current version is a beta and highly unstable, with changes happening on a daily basis. It is actively being developed with your help.
+This is an experimental library for writing CSS in JavaScript. The current version is a beta and highly unstable, with changes happening on a daily basis. This library is *not* recommended for production use. It is actively being developed with your help.
 
 ## Quickstart
 
