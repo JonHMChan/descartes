@@ -102,7 +102,7 @@ var d = new Descartes({
 				"transition": "all 0.5s ease",
 				"z-index": 9999,
 				"height": function height(_) {
-					if ($(window).width() < p.mobileBreak) return "auto";
+					if ($(window).width() < p.layout.wrappers.mobile) return "auto";
 					var pos = $(window).scrollTop();
 					if (pos > $(window).height() * 0.9 - 50 && pos > lastScroll) {
 						lastScroll = pos;
@@ -112,7 +112,7 @@ var d = new Descartes({
 					return 50;
 				},
 				"background": function background(_) {
-					if ($(window).width() < p.mobileBreak) {
+					if ($(window).width() < p.layout.wrappers.mobile) {
 						return "rgba(255,255,255,0.9)";
 					}
 					return p.rgba(255, 255, 255, p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 0, 0.95));
@@ -123,7 +123,7 @@ var d = new Descartes({
 				".options": {
 					"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
 					"display": function display(_) {
-						if ($(window).width() < p.mobileBreak && !$("nav").hasClass("show")) return "none";
+						if ($(window).width() < p.layout.wrappers.mobile && !$("nav").hasClass("show")) return "none";
 						return "block";
 					}
 				},
@@ -133,7 +133,7 @@ var d = new Descartes({
 					"display": "block",
 					"margin": "15px 0",
 					"color": function color(_) {
-						if ($(window).width() < p.mobileBreak) return "#333";
+						if ($(window).width() < p.layout.wrappers.mobile) return "#333";
 						var v = p.scale($(window).scrollTop(), $(window).height() / 2, $(window).height(), 255, 50);
 						return p.rgba(v, v, v, 1);
 					}
@@ -174,11 +174,11 @@ var d = new Descartes({
 						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"font-size": function fontSize() {
-							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 72, 120);
+							return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 72, 120);
 						},
 						"font-weight": 100,
 						"line-height": function lineHeight() {
-							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 60, 110);
+							return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 60, 110);
 						},
 						"margin-bottom": 0
 					},
@@ -187,7 +187,7 @@ var d = new Descartes({
 						"_mixins": heading,
 						"margin-bottom": 0,
 						"font-size": function fontSize() {
-							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 24, 36);
+							return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 24, 36);
 						}
 					},
 					".subtitle": {
@@ -195,7 +195,7 @@ var d = new Descartes({
 						"_mixins": heading,
 						"margin-bottom": 15,
 						"font-size": function fontSize() {
-							return p.scale($(window).width(), p.mobileBreak, p.wrapper, 16, 20);
+							return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 16, 20);
 						}
 					},
 					".shares": {
@@ -222,7 +222,7 @@ var d = new Descartes({
 			"section": {
 				"_listeners": [[window, "resize"]],
 				"padding": function padding() {
-					return window.innerWidth >= p.mobileBreak ? "50px 0" : "50px " + p.fixedGutter + "px";
+					return window.innerWidth >= p.layout.wrappers.mobile ? "50px 0" : "50px " + p.layout.grid.fixedGutter + "px";
 				},
 				"box-sizing": "border-box",
 				"&.plain": {
@@ -283,7 +283,7 @@ var d = new Descartes({
 							"img": {
 								"_listeners": [[window, 'resize']],
 								"display": function display() {
-									return $(window).width() >= p.mobileBreak ? "inline-block" : "none";
+									return $(window).width() >= p.layout.wrappers.mobile ? "inline-block" : "none";
 								},
 								"width": 25,
 								"padding-right": 25

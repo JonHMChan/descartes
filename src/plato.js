@@ -3,7 +3,7 @@ class Plato {
 	constructor() {
 		this.layout = {
 			wrappers: {
-				default: 1200
+				default: 1200,
 				mobile: 800
 			},
 			grid: {
@@ -149,7 +149,7 @@ class Plato {
 	// Column
 	// ----------
 	// Used in combination with `row()` to create a grid
-	col(num = 1, offset = 0, columns = this.grid.columns, gutter = this.layout.gutter) {
+	col(num = 1, offset = 0, columns = this.layout.grid.columns, gutter = this.layout.grid.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
 			"_listeners": [[window, "resize"]],
@@ -161,7 +161,7 @@ class Plato {
 		}
 	}
 
-	tableCol(num = 1, offset = 0, columns = this.grid.columns, gutter = this.layout.gutter) {
+	tableCol(num = 1, offset = 0, columns = this.layout.grid.columns, gutter = this.layout.grid.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
 			"_listeners": [[window, "resize"]],

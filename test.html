@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+    <head>
+        <script type="text/javascript" src="dist/descartes.js"></script>
+    </head>
+    <body>
+        <h1>I compute, therefore I am.</h1>
+        <script type="text/javascript">
+        	var target = {
+        		"html": {
+        			"background": "white",
+        			".class": {
+        				"margin": 0
+        			}
+        		}
+        	}
+        	var tree = {
+        		"html": {
+        			"margin": 0,
+        			".class": {
+        				"padding": 5
+        			}
+        		}
+        	}
+        	var d = new Descartes(target);
+        	console.log(tree, target, d.merge(tree))
+        </script>
+    </body>
+</html>
