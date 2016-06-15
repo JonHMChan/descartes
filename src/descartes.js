@@ -25,9 +25,12 @@ class Descartes {
 		this.findType = undefined
 		this.find = this.findLibrary()	
 
-		this.tree = tree
-		this.render()
-		if (stylesheet) this.showStyleSheet()
+		this.debug = false
+		if (this.validate(tree)) {
+			this.tree = tree
+			this.render()
+			if (stylesheet) this.showStyleSheet()
+		}
 	}
 
 	/**
@@ -36,69 +39,131 @@ class Descartes {
 	 * @param {bool} debug - whether to print errors into the console
 	 * return {bool} whether the style tree is valid
 	*/
-	validate(tree = this.tree, debug = false, tracer = null) {
+	validate(tree = this.tree, tracer = []) {
 		if (typeof tree !== 'object') {
-			if (debug) console.error("The style tree must be an object type")
+			if (this.debug) console.error("The style tree must be an object type")
 			return false
 		}
+		let newTracer = tracer
+		newTracer.push(undefined)
 		for (let key in tree) {
 			if (tree.hasOwnProperty(key)) {
 				let subtree = tree[key]
-				if (key === this.MIXINS) {
-					if (typeof subtree === 'object') {
-						
-					} else if (typeof subtree === 'array') {
-						
-					} else {
-						return false
-					}
-				} else if (key === this.LISTENERS) {
-					if (typeof subtree === 'array') {
-						const validateListenerValue = (l) => {
-							if (typeof l === 'array') {
-								if (typeof l[0] === 'string' && typeof l[1] === 'string') {
-									return true
-								}
-								console.log("_listener values must be of type [string, string]")
-								return false
-							} else {
-								console.log("_listener must be an array of strings or an array of array of strings")
-								return false
-							}
-							return true
-						}
-						if (subtree.length === 0) {
-							console.log("_listener array has no value")
-						} else if (subtree.length === 1) {
-							if (!validateListenerValue(subtree[0])) {
-								console.log("_listener collection")
-								return false
-							}
-						} else {
-							for (let listener of subtree) {
-								if (!validateListenerValue(listener)) {
-									return false
-								}
-							}
-						}
-					} else {
-						console.log("_listener must be an array of strings or an array of array of strings")
-						return false
-					}
-				} else {
-					if (tracer === null) {
-						if (typeof subtree === 'object') {
-
-						} else {
+				if (tracer[0] === undefined) {
+					if (typeof subtree === 'object' && !Array.isArray(subtree) && key !== this.MIXINS) {
+						if (!this.validate(subtree, [key])) {
 							return false
 						}
 					} else {
-
+						this._explode("Style tree has an invalid selector", tracer)
+						return false
+					}
+				} else {
+					newTracer[newTracer.length - 1] = key
+					if (key === this.MIXINS) {
+						if (!this._validateMixin(subtree, newTracer)) {
+							return false
+						} else {
+							newTracer = this._revertTrace(newTracer)
+						}
+					} else if (key === this.LISTENERS) {
+						if (!this._validateListener(subtree, newTracer)) {
+							return false
+						}
+					} else {
+						if (typeof subtree === 'undefined' || typeof subtree === 'null' || typeof subtree === 'NaN') {
+							this._explode("Property has an invalid value of " + typeof subtree, newTracer)
+							return false
+						}
+						if (typeof subtree === 'object' && !Array.isArray(subtree)) {
+							if (!this.validate(subtree, newTracer)) {
+								return false
+							}
+						}
 					}
 				}
 			}
 		}
+		newTracer = this._revertTrace(newTracer)
 		return true
+	}
+
+	_revertTrace(tracer) {
+		let result = []
+		for (let i = 0; i < tracer.length - 1; i++) {
+			result.push(tracer[i])
+		}
+		return result
+	}
+
+	_indexify(tracer, index) {
+		tracer[tracer.length - 1] = tracer[tracer.length - 1] + "[" + index + "]"
+		return tracer
+	}
+
+	_explode(m, tracer) {
+		if (this.debug) console.error(tracer.join(" > ") + " :: " + m)
+	}
+
+	_validateMixin(tree, tracer) {
+		try {
+			if (typeof tree === 'object' && !Array.isArray(tree)) {
+				return this.validate(tree, tracer)
+			} else if (Array.isArray(tree)) {
+				for (let index in tree) {
+					let treeValue = tree[index]
+					if (typeof treeValue !== 'object' || Array.isArray(treeValue)) {
+						this._explode("Mixin has an invalid type", this._indexify(tracer, index))
+						return false
+					}
+					if (!this._validateMixin(treeValue, tracer)) {
+						this._explode("Mixin has an invalid type", this._indexify(tracer, index))
+						return false
+					}
+				}
+			} else {
+				return false
+			}
+			return true
+		} catch (e) {
+			this._explode("Invalid mixin", tracer)
+			return false
+		}
+	}
+
+	_validateListener(tree, tracer) {
+		try {
+			if (Array.isArray(tree)) {
+				if (tree.length === 0) {
+					this._explode("Listener has no values", tracer)
+					return false
+				}
+				if (tree.length === 2) {
+					if ((typeof tree[0] === 'string' || typeof tree[0] === 'object') && typeof tree[1] === 'string') {
+						return true
+					}
+				}
+				for (let index in tree) {
+					let subtree = tree[index]
+					if (subtree.length === 2) {
+						if ((typeof subtree[0] !== 'string' && typeof subtree[0] !== 'object') || typeof subtree[1] !== 'string') {
+							this._explode("Listener collection has an invalid value", this._indexify(tracer, index))
+							return false
+						}
+					} else {
+						this._explode("Listener collection has a listener with incorrect number of values", this._indexify(tracer, index))
+						return false
+					}
+				}
+			} else {
+				this._explode("Listener is an invalid type", tracer)
+				return false
+			}
+			return true
+		} catch (e) {
+			this._explode("Invalid listener", tracer)
+			return false
+		}
 	}
 
 	/**
@@ -195,7 +260,6 @@ class Descartes {
 		for (let selector in tree) {
 			let rules = Object.assign({}, tree[selector])
 			let _listeners = rules[this.LISTENERS]
-			// Add the rules in here
 			for (let rule in rules) {
 				if (!this.isRule(rule)) {
 					let subtree = null
@@ -226,7 +290,7 @@ class Descartes {
 	 * @param {object} tree - the current unsanitized tree or subtree
 	 * @return {object} a new, validated style tree with no expanded mixins
 	*/
-	sanitize(tree = this.tree) {
+	sanitize(tree = Object.assign({}, this.tree)) {
 		if (typeof tree === 'object') {
 			let result = {}
 			for (let key in tree) {
