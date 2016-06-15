@@ -8,7 +8,6 @@ class Descartes {
 	 * @param {object} tree - Full style tree that represents styles for the whole page
 	*/
 	constructor(tree, stylesheet = false) {
-		this.tree = tree
 		this.mappings = {}
 		this.mappingsPriority = 0
 		this.listening = true
@@ -24,9 +23,82 @@ class Descartes {
 		this.pseudos = ['::after','::before','::first-letter','::first-line','::selection','::backdrop',':active',':any',':checked',':default',':dir',':disabled',':empty',':enabled',':first',':first-child',':first-of-type',':fullscreen',':focus',':hover',':indeterminate',':in-range',':invalid',':lang',':last-child',':last-of-type',':left',':link',':not',':nth-child',':nth-last-child',':nth-last-of-type',':nth-of-type',':only-child',':only-of-type',':optional',':out-of-range',':read-only',':read-write',':required',':right',':root',':scope',':target',':valid',':visited']
 
 		this.findType = undefined
-		this.find = this.findLibrary()		
+		this.find = this.findLibrary()	
+
+		this.tree = tree
 		this.render()
 		if (stylesheet) this.showStyleSheet()
+	}
+
+	/**
+	 * Validates a style tree
+	 * @param {object} tree - the style tree to be merged in
+	 * @param {bool} debug - whether to print errors into the console
+	 * return {bool} whether the style tree is valid
+	*/
+	validate(tree = this.tree, debug = false, tracer = null) {
+		if (typeof tree !== 'object') {
+			if (debug) console.error("The style tree must be an object type")
+			return false
+		}
+		for (let key in tree) {
+			if (tree.hasOwnProperty(key)) {
+				let subtree = tree[key]
+				if (key === this.MIXINS) {
+					if (typeof subtree === 'object') {
+						
+					} else if (typeof subtree === 'array') {
+						
+					} else {
+						return false
+					}
+				} else if (key === this.LISTENERS) {
+					if (typeof subtree === 'array') {
+						const validateListenerValue = (l) => {
+							if (typeof l === 'array') {
+								if (typeof l[0] === 'string' && typeof l[1] === 'string') {
+									return true
+								}
+								console.log("_listener values must be of type [string, string]")
+								return false
+							} else {
+								console.log("_listener must be an array of strings or an array of array of strings")
+								return false
+							}
+							return true
+						}
+						if (subtree.length === 0) {
+							console.log("_listener array has no value")
+						} else if (subtree.length === 1) {
+							if (!validateListenerValue(subtree[0])) {
+								console.log("_listener collection")
+								return false
+							}
+						} else {
+							for (let listener of subtree) {
+								if (!validateListenerValue(listener)) {
+									return false
+								}
+							}
+						}
+					} else {
+						console.log("_listener must be an array of strings or an array of array of strings")
+						return false
+					}
+				} else {
+					if (tracer === null) {
+						if (typeof subtree === 'object') {
+
+						} else {
+							return false
+						}
+					} else {
+
+					}
+				}
+			}
+		}
+		return true
 	}
 
 	/**

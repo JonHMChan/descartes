@@ -22,7 +22,6 @@ var Descartes = function () {
 
 		_classCallCheck(this, Descartes);
 
-		this.tree = tree;
 		this.mappings = {};
 		this.mappingsPriority = 0;
 		this.listening = true;
@@ -39,18 +38,111 @@ var Descartes = function () {
 
 		this.findType = undefined;
 		this.find = this.findLibrary();
+
+		this.tree = tree;
 		this.render();
 		if (stylesheet) this.showStyleSheet();
 	}
 
 	/**
-  * Merges a style tree with another tree
+  * Validates a style tree
   * @param {object} tree - the style tree to be merged in
-  * @param {object} target - the target style tree, sensibly defaults to this.tree
-  * @return {bool} whether the selector contains a pseudo selector
+  * @param {bool} debug - whether to print errors into the console
+  * return {bool} whether the style tree is valid
  */
 
 	_createClass(Descartes, [{
+		key: 'validate',
+		value: function validate() {
+			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];
+			var debug = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+			var tracer = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+			if ((typeof tree === 'undefined' ? 'undefined' : _typeof(tree)) !== 'object') {
+				if (debug) console.error("The style tree must be an object type");
+				return false;
+			}
+			for (var key in tree) {
+				if (tree.hasOwnProperty(key)) {
+					var subtree = tree[key];
+					if (key === this.MIXINS) {
+						if ((typeof subtree === 'undefined' ? 'undefined' : _typeof(subtree)) === 'object') {} else if (typeof subtree === 'array') {} else {
+							return false;
+						}
+					} else if (key === this.LISTENERS) {
+						if (typeof subtree === 'array') {
+							var validateListenerValue = function validateListenerValue(l) {
+								if (typeof l === 'array') {
+									if (typeof l[0] === 'string' && typeof l[1] === 'string') {
+										return true;
+									}
+									console.log("_listener values must be of type [string, string]");
+									return false;
+								} else {
+									console.log("_listener must be an array of strings or an array of array of strings");
+									return false;
+								}
+								return true;
+							};
+							if (subtree.length === 0) {
+								console.log("_listener array has no value");
+							} else if (subtree.length === 1) {
+								if (!validateListenerValue(subtree[0])) {
+									console.log("_listener collection");
+									return false;
+								}
+							} else {
+								var _iteratorNormalCompletion = true;
+								var _didIteratorError = false;
+								var _iteratorError = undefined;
+
+								try {
+									for (var _iterator = subtree[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+										var listener = _step.value;
+
+										if (!validateListenerValue(listener)) {
+											return false;
+										}
+									}
+								} catch (err) {
+									_didIteratorError = true;
+									_iteratorError = err;
+								} finally {
+									try {
+										if (!_iteratorNormalCompletion && _iterator.return) {
+											_iterator.return();
+										}
+									} finally {
+										if (_didIteratorError) {
+											throw _iteratorError;
+										}
+									}
+								}
+							}
+						} else {
+							console.log("_listener must be an array of strings or an array of array of strings");
+							return false;
+						}
+					} else {
+						if (tracer === null) {
+							if ((typeof subtree === 'undefined' ? 'undefined' : _typeof(subtree)) === 'object') {} else {
+								return false;
+							}
+						} else {}
+					}
+				}
+			}
+			return true;
+		}
+
+		/**
+   * Merges a style tree with another tree
+   * @param {object} tree - the style tree to be merged in
+   * @param {object} target - the target style tree, sensibly defaults to this.tree
+   * @return {bool} whether the selector contains a pseudo selector
+  */
+
+	}, {
 		key: 'merge',
 		value: function merge(tree) {
 			var target = arguments.length <= 1 || arguments[1] === undefined ? this.tree : arguments[1];
