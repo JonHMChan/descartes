@@ -39,7 +39,7 @@ var Descartes = function () {
 		this.findType = undefined;
 		this.find = this.findLibrary();
 
-		this.debug = false;
+		this.debug = true;
 		if (this._validate(tree)) {
 			this.tree = tree;
 			this.render();
@@ -51,195 +51,104 @@ var Descartes = function () {
 		key: '_validate',
 		value: function _validate() {
 			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];
-			var parentSelector = arguments.length <= 1 || arguments[1] === undefined ? "" : arguments[1];
+
+			var _tracer = arguments.length <= 1 || arguments[1] === undefined ? "." : arguments[1];
+
+			var _selector = arguments.length <= 2 || arguments[2] === undefined ? "." : arguments[2];
 
 			for (var selector in tree) {
 				if (tree.hasOwnProperty(selector)) {
 					var subtree = tree[selector];
-					if ((typeof subtree === 'undefined' ? 'undefined' : _typeof(subtree)) === 'object' && !Array.isArray(subtree)) {
-						this._validate(subtree, parentSelector + " > " + selector);
+					var tracer = _tracer + " > " + selector;
+					if (!this._validateRule(selector, subtree, tracer)) {
+						return false;
 					}
-				}
-			}
-		}
-	}, {
-		key: '_validater',
-		value: function _validater() {
-			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];
-			var parentSelector = arguments.length <= 1 || arguments[1] === undefined ? "" : arguments[1];
-			var tracer = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-			for (var selector in tree) {
-				console.log(selector);
-				if (tree.hasOwnProperty(selector)) {
-					var rules = Object.assign({}, tree[selector]);
-					for (var rule in rules) {
-						if (rules.hasOwnProperty(rule)) {
-							if (!this.isRule(rule)) {
-								var subtree = null;
-								if (parentSelector === "") parentSelector = selector;
-								var traceString = parentSelector + " > " + rule;
-								if (!this.isMeta(rule) && !this.isRule(rule)) {
-									// Rule is a selector
-									subtree = {};
-									subtree[traceString] = rules[rule];
-								}
-								delete rules[rule];
-								if (subtree !== null) {
-									this._validate(subtree, traceString, tracer);
-								}
-							}
-						}
-					}
-					tracer[selector] = rules;
-				}
-			}
-			// console.log(tracer)
-			return true;
-		}
-
-		/**
-   * Validates a style tree
-   * @param {object} tree - the style tree to be merged in
-   * @param {bool} debug - whether to print errors into the console
-   * return {bool} whether the style tree is valid
-  */
-
-	}, {
-		key: 'validate',
-		value: function validate() {
-			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];
-			var tracer = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-
-			if ((typeof tree === 'undefined' ? 'undefined' : _typeof(tree)) !== 'object') {
-				if (this.debug) console.error("The style tree must be an object type");
-				return false;
-			}
-			var newTracer = tracer;
-			newTracer.push(undefined);
-			for (var key in tree) {
-				if (tree.hasOwnProperty(key)) {
-					var subtree = tree[key];
-					if (tracer[0] === undefined) {
-						if ((typeof subtree === 'undefined' ? 'undefined' : _typeof(subtree)) === 'object' && !Array.isArray(subtree) && key !== this.MIXINS) {
-							if (!this.validate(subtree, [key])) {
-								return false;
-							}
-						} else {
-							this._explode("Style tree has an invalid selector", tracer);
+					if (this._isObject(subtree)) {
+						if (!this._validate(subtree, tracer, selector)) {
 							return false;
 						}
-					} else {
-						newTracer[newTracer.length - 1] = key;
-						if (key === this.MIXINS) {
-							if (!this._validateMixin(subtree, newTracer)) {
-								return false;
-							} else {
-								newTracer = this._revertTrace(newTracer);
-							}
-						} else if (key === this.LISTENERS) {
-							if (!this._validateListener(subtree, newTracer)) {
-								return false;
-							}
-						} else {
-							if (typeof subtree === 'undefined' || typeof subtree === 'null' || typeof subtree === 'NaN') {
-								this._explode("Property has an invalid value of " + (typeof subtree === 'undefined' ? 'undefined' : _typeof(subtree)), newTracer);
-								return false;
-							}
-							if ((typeof subtree === 'undefined' ? 'undefined' : _typeof(subtree)) === 'object' && !Array.isArray(subtree)) {
-								if (!this.validate(subtree, newTracer)) {
-									return false;
-								}
-							}
-						}
 					}
 				}
 			}
-			newTracer = this._revertTrace(newTracer);
 			return true;
 		}
 	}, {
-		key: '_revertTrace',
-		value: function _revertTrace(tracer) {
-			var result = [];
-			for (var i = 0; i < tracer.length - 1; i++) {
-				result.push(tracer[i]);
+		key: '_validateRule',
+		value: function _validateRule(property, value, tracer) {
+			if (property === this.MIXINS) {
+				return this._validateMixin(property, value, tracer);
+			} else if (property === this.LISTENERS) {
+				return this._validateListener(property, value, tracer);
 			}
-			return result;
-		}
-	}, {
-		key: '_indexify',
-		value: function _indexify(tracer, index) {
-			tracer[tracer.length - 1] = tracer[tracer.length - 1] + "[" + index + "]";
-			return tracer;
-		}
-	}, {
-		key: '_explode',
-		value: function _explode(m, tracer) {
-			if (this.debug) console.error(tracer.join(" > ") + " :: " + m);
+			return true;
 		}
 	}, {
 		key: '_validateMixin',
-		value: function _validateMixin(tree, tracer) {
-			try {
-				if ((typeof tree === 'undefined' ? 'undefined' : _typeof(tree)) === 'object' && !Array.isArray(tree)) {
-					return this.validate(tree, tracer);
-				} else if (Array.isArray(tree)) {
-					for (var index in tree) {
-						var treeValue = tree[index];
-						if ((typeof treeValue === 'undefined' ? 'undefined' : _typeof(treeValue)) !== 'object' || Array.isArray(treeValue)) {
-							this._explode("Mixin has an invalid type", this._indexify(tracer, index));
-							return false;
-						}
-						if (!this._validateMixin(treeValue, tracer)) {
-							this._explode("Mixin has an invalid type", this._indexify(tracer, index));
-							return false;
-						}
+		value: function _validateMixin(property, value, tracer) {
+			if (this._isObject(value)) {
+				return true;
+			} else if (Array.isArray(value)) {
+				for (var index in value) {
+					if (!this._isObject(value[index])) {
+						this._explode("Mixin value has an invalid type", tracer, index);
+						return false;
 					}
-				} else {
+				}
+				return true;
+			} else {
+				this._explode("Mixin has an invalid type", tracer);
+				return false;
+			}
+			return true;
+		}
+	}, {
+		key: '_validateListener',
+		value: function _validateListener(property, value, tracer) {
+			if (!Array.isArray(value)) {
+				return false;
+			} else {
+				if (this._validateListenerValue(value, tracer)) {
+					return true;
+				}
+				for (var index in value) {
+					var listener = value[index];
+					this._validateListenerValue(listener, tracer, index);
+				}
+			}
+			return true;
+		}
+	}, {
+		key: '_validateListenerValue',
+		value: function _validateListenerValue(listener, tracer) {
+			var index = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+			if (listener.length === 2) {
+				if (!this._isObject(listener[0]) && typeof listener !== "string") {
+					this._explode("Listener must have a proper selector", tracer, index);
+				}
+				if (listener[1] !== "string") {
+					this._explode("Listener must have an event binding", tracer, index);
 					return false;
 				}
 				return true;
-			} catch (e) {
-				this._explode("Invalid mixin", tracer);
+			} else {
+				this._explode("Listener has invalid values", tracer, index);
 				return false;
 			}
 		}
 	}, {
-		key: '_validateListener',
-		value: function _validateListener(tree, tracer) {
-			try {
-				if (Array.isArray(tree)) {
-					if (tree.length === 0) {
-						this._explode("Listener has no values", tracer);
-						return false;
-					}
-					if (tree.length === 2) {
-						if ((typeof tree[0] === 'string' || _typeof(tree[0]) === 'object') && typeof tree[1] === 'string') {
-							return true;
-						}
-					}
-					for (var index in tree) {
-						var subtree = tree[index];
-						if (subtree.length === 2) {
-							if (typeof subtree[0] !== 'string' && _typeof(subtree[0]) !== 'object' || typeof subtree[1] !== 'string') {
-								this._explode("Listener collection has an invalid value", this._indexify(tracer, index));
-								return false;
-							}
-						} else {
-							this._explode("Listener collection has a listener with incorrect number of values", this._indexify(tracer, index));
-							return false;
-						}
-					}
-				} else {
-					this._explode("Listener is an invalid type", tracer);
-					return false;
-				}
-				return true;
-			} catch (e) {
-				this._explode("Invalid listener", tracer);
-				return false;
-			}
+		key: '_isObject',
+		value: function _isObject(value) {
+			return (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && !Array.isArray(value);
+		}
+	}, {
+		key: '_explode',
+		value: function _explode(message, tracer) {
+			var index = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+			if (!this.debug) return;
+			if (index !== null) tracer += "[" + index + "]";
+			console.error(tracer + " :: " + message);
 		}
 
 		/**

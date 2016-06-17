@@ -25,7 +25,7 @@ class Descartes {
 		this.findType = undefined
 		this.find = this.findLibrary()	
 
-		this.debug = false
+		this.debug = true
 		if (this._validate(tree)) {
 			this.tree = tree
 			this.render()
@@ -33,15 +33,90 @@ class Descartes {
 		}
 	}
 
-	_validate(tree = this.tree, parentSelector = "") {
+	_validate(tree = this.tree, _tracer = ".", _selector = ".") {
 		for (let selector in tree) {
 			if (tree.hasOwnProperty(selector)) {
 				let subtree = tree[selector]
-				if (typeof subtree === 'object' && !Array.isArray(subtree)) {
-					this._validate(subtree, parentSelector + " > " + selector)
+				let tracer = _tracer + " > " + selector
+				if (!this._validateRule(selector, subtree, tracer)) {
+					return false
+				}
+				if (this._isObject(subtree)) {
+					if (!this._validate(subtree, tracer, selector)) {
+						return false
+					}
 				}
 			}
 		}
+		return true
+	}
+
+	_validateRule(property, value, tracer) {
+		if (property === this.MIXINS) {
+			return this._validateMixin(property, value, tracer)
+		} else if (property === this.LISTENERS) {
+			return this._validateListener(property, value, tracer)
+		}
+		return true
+	}
+
+	_validateMixin(property, value, tracer) {
+		if (this._isObject(value)) {
+				return true
+		} else if (Array.isArray(value)) {
+			for (let index in value) {
+				if (!this._isObject(value[index])) {
+					this._explode("Mixin value has an invalid type", tracer, index)
+					return false
+				}
+			}
+			return true
+		} else {
+			this._explode("Mixin has an invalid type", tracer)
+			return false
+		}
+		return true
+	}
+
+	_validateListener(property, value, tracer) {
+		if (!Array.isArray(value)) {
+			return false
+		} else {
+			if (this._validateListenerValue(value, tracer)) {
+				return true
+			}
+			for (let index in value) {
+				let listener = value[index]
+				this._validateListenerValue(listener, tracer, index)
+			}
+		}
+		return true
+	}
+
+	_validateListenerValue(listener, tracer, index = null) {
+		if (listener.length === 2) {
+			if (!this._isObject(listener[0]) && typeof listener !== "string") {
+				this._explode("Listener must have a proper selector", tracer, index)
+			}
+			if (listener[1] !== "string") {
+				this._explode("Listener must have an event binding", tracer, index)
+				return false
+			}
+			return true
+		} else {
+			this._explode("Listener has invalid values", tracer, index)
+			return false
+		}
+	}
+
+	_isObject(value) {
+		return typeof value === 'object' && !Array.isArray(value)
+	}
+
+	_explode(message, tracer, index = null) {
+		if (!this.debug) return
+		if (index !== null) tracer += "[" + index + "]"
+		console.error(tracer + " :: " + message)
 	}
 
 	/**
