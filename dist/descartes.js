@@ -40,21 +40,72 @@ var Descartes = function () {
 		this.find = this.findLibrary();
 
 		this.debug = false;
-		if (this.validate(tree)) {
+		if (this._validate(tree)) {
 			this.tree = tree;
 			this.render();
 			if (stylesheet) this.showStyleSheet();
 		}
 	}
 
-	/**
-  * Validates a style tree
-  * @param {object} tree - the style tree to be merged in
-  * @param {bool} debug - whether to print errors into the console
-  * return {bool} whether the style tree is valid
- */
-
 	_createClass(Descartes, [{
+		key: '_validate',
+		value: function _validate() {
+			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];
+			var parentSelector = arguments.length <= 1 || arguments[1] === undefined ? "" : arguments[1];
+
+			for (var selector in tree) {
+				if (tree.hasOwnProperty(selector)) {
+					var subtree = tree[selector];
+					if ((typeof subtree === 'undefined' ? 'undefined' : _typeof(subtree)) === 'object' && !Array.isArray(subtree)) {
+						this._validate(subtree, parentSelector + " > " + selector);
+					}
+				}
+			}
+		}
+	}, {
+		key: '_validater',
+		value: function _validater() {
+			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];
+			var parentSelector = arguments.length <= 1 || arguments[1] === undefined ? "" : arguments[1];
+			var tracer = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+			for (var selector in tree) {
+				console.log(selector);
+				if (tree.hasOwnProperty(selector)) {
+					var rules = Object.assign({}, tree[selector]);
+					for (var rule in rules) {
+						if (rules.hasOwnProperty(rule)) {
+							if (!this.isRule(rule)) {
+								var subtree = null;
+								if (parentSelector === "") parentSelector = selector;
+								var traceString = parentSelector + " > " + rule;
+								if (!this.isMeta(rule) && !this.isRule(rule)) {
+									// Rule is a selector
+									subtree = {};
+									subtree[traceString] = rules[rule];
+								}
+								delete rules[rule];
+								if (subtree !== null) {
+									this._validate(subtree, traceString, tracer);
+								}
+							}
+						}
+					}
+					tracer[selector] = rules;
+				}
+			}
+			// console.log(tracer)
+			return true;
+		}
+
+		/**
+   * Validates a style tree
+   * @param {object} tree - the style tree to be merged in
+   * @param {bool} debug - whether to print errors into the console
+   * return {bool} whether the style tree is valid
+  */
+
+	}, {
 		key: 'validate',
 		value: function validate() {
 			var tree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];

@@ -26,143 +26,21 @@ class Descartes {
 		this.find = this.findLibrary()	
 
 		this.debug = false
-		if (this.validate(tree)) {
+		if (this._validate(tree)) {
 			this.tree = tree
 			this.render()
 			if (stylesheet) this.showStyleSheet()
 		}
 	}
 
-	/**
-	 * Validates a style tree
-	 * @param {object} tree - the style tree to be merged in
-	 * @param {bool} debug - whether to print errors into the console
-	 * return {bool} whether the style tree is valid
-	*/
-	validate(tree = this.tree, tracer = []) {
-		if (typeof tree !== 'object') {
-			if (this.debug) console.error("The style tree must be an object type")
-			return false
-		}
-		let newTracer = tracer
-		newTracer.push(undefined)
-		for (let key in tree) {
-			if (tree.hasOwnProperty(key)) {
-				let subtree = tree[key]
-				if (tracer[0] === undefined) {
-					if (typeof subtree === 'object' && !Array.isArray(subtree) && key !== this.MIXINS) {
-						if (!this.validate(subtree, [key])) {
-							return false
-						}
-					} else {
-						this._explode("Style tree has an invalid selector", tracer)
-						return false
-					}
-				} else {
-					newTracer[newTracer.length - 1] = key
-					if (key === this.MIXINS) {
-						if (!this._validateMixin(subtree, newTracer)) {
-							return false
-						} else {
-							newTracer = this._revertTrace(newTracer)
-						}
-					} else if (key === this.LISTENERS) {
-						if (!this._validateListener(subtree, newTracer)) {
-							return false
-						}
-					} else {
-						if (typeof subtree === 'undefined' || typeof subtree === 'null' || typeof subtree === 'NaN') {
-							this._explode("Property has an invalid value of " + typeof subtree, newTracer)
-							return false
-						}
-						if (typeof subtree === 'object' && !Array.isArray(subtree)) {
-							if (!this.validate(subtree, newTracer)) {
-								return false
-							}
-						}
-					}
+	_validate(tree = this.tree, parentSelector = "") {
+		for (let selector in tree) {
+			if (tree.hasOwnProperty(selector)) {
+				let subtree = tree[selector]
+				if (typeof subtree === 'object' && !Array.isArray(subtree)) {
+					this._validate(subtree, parentSelector + " > " + selector)
 				}
 			}
-		}
-		newTracer = this._revertTrace(newTracer)
-		return true
-	}
-
-	_revertTrace(tracer) {
-		let result = []
-		for (let i = 0; i < tracer.length - 1; i++) {
-			result.push(tracer[i])
-		}
-		return result
-	}
-
-	_indexify(tracer, index) {
-		tracer[tracer.length - 1] = tracer[tracer.length - 1] + "[" + index + "]"
-		return tracer
-	}
-
-	_explode(m, tracer) {
-		if (this.debug) console.error(tracer.join(" > ") + " :: " + m)
-	}
-
-	_validateMixin(tree, tracer) {
-		try {
-			if (typeof tree === 'object' && !Array.isArray(tree)) {
-				return this.validate(tree, tracer)
-			} else if (Array.isArray(tree)) {
-				for (let index in tree) {
-					let treeValue = tree[index]
-					if (typeof treeValue !== 'object' || Array.isArray(treeValue)) {
-						this._explode("Mixin has an invalid type", this._indexify(tracer, index))
-						return false
-					}
-					if (!this._validateMixin(treeValue, tracer)) {
-						this._explode("Mixin has an invalid type", this._indexify(tracer, index))
-						return false
-					}
-				}
-			} else {
-				return false
-			}
-			return true
-		} catch (e) {
-			this._explode("Invalid mixin", tracer)
-			return false
-		}
-	}
-
-	_validateListener(tree, tracer) {
-		try {
-			if (Array.isArray(tree)) {
-				if (tree.length === 0) {
-					this._explode("Listener has no values", tracer)
-					return false
-				}
-				if (tree.length === 2) {
-					if ((typeof tree[0] === 'string' || typeof tree[0] === 'object') && typeof tree[1] === 'string') {
-						return true
-					}
-				}
-				for (let index in tree) {
-					let subtree = tree[index]
-					if (subtree.length === 2) {
-						if ((typeof subtree[0] !== 'string' && typeof subtree[0] !== 'object') || typeof subtree[1] !== 'string') {
-							this._explode("Listener collection has an invalid value", this._indexify(tracer, index))
-							return false
-						}
-					} else {
-						this._explode("Listener collection has a listener with incorrect number of values", this._indexify(tracer, index))
-						return false
-					}
-				}
-			} else {
-				this._explode("Listener is an invalid type", tracer)
-				return false
-			}
-			return true
-		} catch (e) {
-			this._explode("Invalid listener", tracer)
-			return false
 		}
 	}
 
