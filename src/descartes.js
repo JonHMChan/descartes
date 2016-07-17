@@ -82,29 +82,29 @@ class Descartes {
 		if (!Array.isArray(value)) {
 			return false
 		} else {
-			if (this._validateListenerValue(value, tracer)) {
+			if (this._validateListenerValue(value, tracer, false)) {
 				return true
 			}
 			for (let index in value) {
 				let listener = value[index]
-				this._validateListenerValue(listener, tracer, index)
+				this._validateListenerValue(listener, tracer, true, index)
 			}
 		}
 		return true
 	}
 
-	_validateListenerValue(listener, tracer, index = null) {
+	_validateListenerValue(listener, tracer, explode = false, index = null) {
 		if (listener.length === 2) {
-			if (!this._isObject(listener[0]) && typeof listener !== "string") {
-				this._explode("Listener must have a proper selector", tracer, index)
+			if (!this._isObject(listener[0]) && typeof listener[0] !== "string") {
+				if (explode) this._explode("Listener must have a proper selector", tracer, index)
 			}
-			if (listener[1] !== "string") {
-				this._explode("Listener must have an event binding", tracer, index)
+			if (typeof listener[1] !== "string") {
+				if (explode) this._explode("Listener must have an event binding", tracer, index)
 				return false
 			}
 			return true
 		} else {
-			this._explode("Listener has invalid values", tracer, index)
+			if (explode) this._explode("Listener has invalid values", tracer, index)
 			return false
 		}
 	}
@@ -371,11 +371,16 @@ class Descartes {
 	*/
 	applyPsuedo(selector, ruleset) {
 		if (this.hasPsuedo(selector)) {
-			let sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
+			let sheetContents = selector + " {" + this.createStyleString(ruleset) + ' }';
 			if (this.findType === 'jquery') {
+				let sheet = '<style type="text/css" class="_pseudo">' + sheetContents + '</style>';
 				$(sheet).appendTo("body")
 				return
 			} else if (this.findType === 'sizzle') {
+				let sheet = document.createElement('style')
+				sheet.type = 'text/css'
+				sheet.class = '_psuedo'
+				sheet.innerHTML = sheetContents
 				document.body.appendChild(sheet)
 				return
 			}
@@ -405,6 +410,8 @@ class Descartes {
 						})
 					})
 				} else {
+					if (l[0] === "window") l[0] = window
+					if (l[0] === "document") l[0] = document
 					l[0].addEventListener(l[1], () => {
 						if (_this.listening) {
 							this.applyRuleset(selector, rules)

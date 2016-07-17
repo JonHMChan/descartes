@@ -107,12 +107,12 @@ var Descartes = function () {
 			if (!Array.isArray(value)) {
 				return false;
 			} else {
-				if (this._validateListenerValue(value, tracer)) {
+				if (this._validateListenerValue(value, tracer, false)) {
 					return true;
 				}
 				for (var index in value) {
 					var listener = value[index];
-					this._validateListenerValue(listener, tracer, index);
+					this._validateListenerValue(listener, tracer, true, index);
 				}
 			}
 			return true;
@@ -120,19 +120,20 @@ var Descartes = function () {
 	}, {
 		key: '_validateListenerValue',
 		value: function _validateListenerValue(listener, tracer) {
-			var index = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+			var explode = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+			var index = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
 
 			if (listener.length === 2) {
-				if (!this._isObject(listener[0]) && typeof listener !== "string") {
-					this._explode("Listener must have a proper selector", tracer, index);
+				if (!this._isObject(listener[0]) && typeof listener[0] !== "string") {
+					if (explode) this._explode("Listener must have a proper selector", tracer, index);
 				}
-				if (listener[1] !== "string") {
-					this._explode("Listener must have an event binding", tracer, index);
+				if (typeof listener[1] !== "string") {
+					if (explode) this._explode("Listener must have an event binding", tracer, index);
 					return false;
 				}
 				return true;
 			} else {
-				this._explode("Listener has invalid values", tracer, index);
+				if (explode) this._explode("Listener has invalid values", tracer, index);
 				return false;
 			}
 		}
@@ -451,11 +452,16 @@ var Descartes = function () {
 		key: 'applyPsuedo',
 		value: function applyPsuedo(selector, ruleset) {
 			if (this.hasPsuedo(selector)) {
-				var sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
+				var sheetContents = selector + " {" + this.createStyleString(ruleset) + ' }';
 				if (this.findType === 'jquery') {
+					var sheet = '<style type="text/css" class="_pseudo">' + sheetContents + '</style>';
 					$(sheet).appendTo("body");
 					return;
 				} else if (this.findType === 'sizzle') {
+					var sheet = document.createElement('style');
+					sheet.type = 'text/css';
+					sheet.class = '_psuedo';
+					sheet.innerHTML = sheetContents;
 					document.body.appendChild(sheet);
 					return;
 				}
@@ -491,6 +497,8 @@ var Descartes = function () {
 							});
 						});
 					} else {
+						if (l[0] === "window") l[0] = window;
+						if (l[0] === "document") l[0] = document;
 						l[0].addEventListener(l[1], function () {
 							if (_this.listening) {
 								_this4.applyRuleset(selector, rules);
