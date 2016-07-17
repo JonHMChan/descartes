@@ -105,7 +105,7 @@ const d = new Descartes({
 				"transition": "all 0.5s ease",
 				"z-index": 9999,
 				"height": (_) => {
-					if ($(window).width() < p.mobileBreak) return "auto"
+					if ($(window).width() < p.layout.wrappers.mobile) return "auto"
 					const pos = $(window).scrollTop()
 					if (pos > (($(window).height()*0.9)-50) && pos > lastScroll) {
 						lastScroll = pos
@@ -115,7 +115,7 @@ const d = new Descartes({
 					return 50
 				},
 				"background": (_) => {
-					if ($(window).width() < p.mobileBreak) {
+					if ($(window).width() < p.layout.wrappers.mobile) {
 						return "rgba(255,255,255,0.9)"
 					}
 					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.95) )
@@ -126,7 +126,7 @@ const d = new Descartes({
 				".options": {
 					"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
 					"display": (_) => {
-						if ($(window).width() < p.mobileBreak && !$("nav").hasClass("show")) return "none"
+						if ($(window).width() < p.layout.wrappers.mobile && !$("nav").hasClass("show")) return "none"
 						return "block" 
 					}
 				},
@@ -136,7 +136,7 @@ const d = new Descartes({
 					"display": "block",
 					"margin": "15px 0",
 					"color": (_) => {
-						if ($(window).width() < p.mobileBreak) return "#333"
+						if ($(window).width() < p.layout.wrappers.mobile) return "#333"
 						let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
 						return p.rgba(v,v,v,1)
 					}
@@ -174,22 +174,22 @@ const d = new Descartes({
 					"h1": {
 						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
-						"font-size": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 72, 120) }, 
+						"font-size": () => { return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 72, 120) }, 
 						"font-weight": 100,
-						"line-height": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 60, 110) },
+						"line-height": () => { return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 60, 110) },
 						"margin-bottom": 0
 					},
 					"h2": {
 						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"margin-bottom": 0,
-						"font-size": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 24, 36) }
+						"font-size": () => { return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 24, 36) }
 					},
 					".subtitle": {
 						"_listeners": [[window, "resize"]],
 						"_mixins": heading,
 						"margin-bottom": 15,
-						"font-size": () => { return p.scale($(window).width(), p.mobileBreak, p.wrapper, 16, 20) },
+						"font-size": () => { return p.scale($(window).width(), p.layout.wrappers.mobile, p.layout.wrappers.default, 16, 20) },
 					},
 					".shares": {
 						"_listeners": [[window, "resize"]],
@@ -214,7 +214,7 @@ const d = new Descartes({
 			},
 			"section": {
 				"_listeners": [[window, "resize"]],
-				"padding": () => { return (window.innerWidth >= p.mobileBreak) ? "50px 0" : "50px "+p.fixedGutter+"px" },
+				"padding": () => { return (window.innerWidth >= p.layout.wrappers.mobile) ? "50px 0" : "50px "+p.layout.grid.fixedGutter+"px" },
 				"box-sizing": "border-box",
 				"&.plain": {
 					"background": "none",
@@ -273,7 +273,7 @@ const d = new Descartes({
 							},
 							"img": {
 								"_listeners": [[window, 'resize']],
-								"display": () => { return ($(window).width() >= p.mobileBreak) ? "inline-block" : "none" },
+								"display": () => { return ($(window).width() >= p.layout.wrappers.mobile) ? "inline-block" : "none" },
 								"width": 25,
 								"padding-right": 25
 							}
