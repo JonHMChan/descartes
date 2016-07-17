@@ -1,22 +1,27 @@
 <!doctype html>
 <html>
     <head>
+        <script type="text/javascript" src="dist/plato.js"></script>
         <script type="text/javascript" src="dist/descartes.js"></script>
     </head>
     <body>
         <h1>I compute, therefore I am.</h1>
+        <div class="row">
+            <div class="col4">
+                One
+            </div>
+            <div class="col4">
+                Two
+            </div>
+            <div class="col4">
+                Three
+            </div>
+        </div>
+
         <script type="text/javascript">
-        	var target = {
-                "html": {
-                    "_listeners": ["", ""],
-                    "margin": 0,
-                    "&.class": {
-                        "_mixins": [2],
-                        "border": 0
-                    }
-                }
-        	};
-        	var d = new Descartes(target);
+            var p = new Plato();
+            console.log(p.base());
+        	var d = new Descartes(p.base());
         </script>
     </body>
 </html>
