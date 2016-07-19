@@ -1,7 +1,7 @@
 describe('Core', function() {
-    var d = Descartes({})
+    var d = new Descartes({})
 
     it('Empty style tree should contain no mapping', function() {
-        expect(d.mapping).toBe({});
+        expect(d.mappings).toEqual({});
     });
 });
