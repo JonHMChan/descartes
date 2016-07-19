@@ -170,13 +170,14 @@ var Plato = function () {
 			var _this = this;
 
 			return Object.assign(this.clearfix(), {
-				"_listeners": [[window, "resize"]],
 				"box-sizing": "border-box",
-				"margin-left": function marginLeft() {
-					return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
-				},
-				"margin-right": function marginRight() {
-					return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
+				"$(window).resize": {
+					"margin-left": function marginLeft() {
+						return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
+					},
+					"margin-right": function marginRight() {
+						return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
+					}
 				}
 			});
 		}
@@ -186,16 +187,17 @@ var Plato = function () {
 			var _this2 = this;
 
 			return Object.assign(this.clearfix(), {
-				"_listeners": [[window, "resize"]],
-				"display": function display() {
-					return window.innerWidth >= _this2.layout.wrappers.mobile ? "table" : "block";
-				},
 				"box-sizing": "border-box",
-				"margin-left": function marginLeft() {
-					return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
-				},
-				"margin-right": function marginRight() {
-					return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
+				"$(window).resize": {
+					"margin-left": function marginLeft() {
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
+					},
+					"margin-right": function marginRight() {
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
+					},
+					"display": function display() {
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? "table" : "block";
+					}
 				}
 			});
 		}
@@ -219,19 +221,20 @@ var Plato = function () {
 				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
 			};
 			return {
-				"_listeners": [[window, "resize"]],
-				"float": function float() {
-					return window.innerWidth >= _this3.layout.wrappers.mobile ? "left" : "none";
-				},
 				"box-sizing": "border-box",
-				"width": function width() {
-					return window.innerWidth >= _this3.layout.wrappers.mobile ? calc(num, columns, gutter).toString() + "%" : "100%";
-				},
-				"margin-right": function marginRight(_) {
-					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
-				},
-				"margin-bottom": function marginBottom(_) {
-					return window.innerWidth >= _this3.layout.wrappers.mobile ? 0 : _this3.layout.grid.fixedGutter;
+				"$(window).resize": {
+					"width": function width() {
+						return window.innerWidth >= _this3.layout.wrappers.mobile ? calc(num, columns, gutter).toString() + "%" : "100%";
+					},
+					"margin-right": function marginRight(_) {
+						return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+					},
+					"margin-bottom": function marginBottom(_) {
+						return window.innerWidth >= _this3.layout.wrappers.mobile ? 0 : _this3.layout.grid.fixedGutter;
+					},
+					"float": function float() {
+						return window.innerWidth >= _this3.layout.wrappers.mobile ? "left" : "none";
+					}
 				}
 			};
 		}
@@ -250,16 +253,17 @@ var Plato = function () {
 				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
 			};
 			return {
-				"_listeners": [[window, "resize"]],
-				"display": function display() {
-					return window.innerWidth >= _this4.layout.wrappers.mobile ? "table-cell" : "block";
-				},
 				"box-sizing": "border-box",
-				"width": function width() {
-					return window.innerWidth >= _this4.layout.wrappers.mobile ? (calc(num, columns, gutter) + gutter).toString() + "%" : "100%";
-				},
-				"margin-bottom": function marginBottom(_) {
-					return window.innerWidth >= _this4.layout.wrappers.mobile ? 0 : _this4.layout.grid.fixedGutter;
+				"$(window).resize": {
+					"display": function display() {
+						return window.innerWidth >= _this4.layout.wrappers.mobile ? "table-cell" : "block";
+					},
+					"width": function width() {
+						return window.innerWidth >= _this4.layout.wrappers.mobile ? (calc(num, columns, gutter) + gutter).toString() + "%" : "100%";
+					},
+					"margin-bottom": function marginBottom(_) {
+						return window.innerWidth >= _this4.layout.wrappers.mobile ? 0 : _this4.layout.grid.fixedGutter;
+					}
 				}
 			};
 		}

@@ -127,22 +127,24 @@ class Plato {
 	// Used as part of the grid, applies resets and clearfixes
 	row() {
 		return Object.assign(this.clearfix(), {
-			"_listeners": [[window, "resize"]],
 			"box-sizing": "border-box",
-			"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
-			"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
+			"$(window).resize": {
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+			}
 		})
 	}
 
 	tableRow() {
 		return Object.assign(this.clearfix(), {
-			"_listeners": [[window, "resize"]],
-			"display": () => {
-				return (window.innerWidth >= this.layout.wrappers.mobile) ? "table" : "block"
-			},
 			"box-sizing": "border-box",
-			"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
-			"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
+			"$(window).resize": {
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+				"display": () => {
+					return (window.innerWidth >= this.layout.wrappers.mobile) ? "table" : "block"
+				}
+			}
 		})
 	}
 
@@ -152,23 +154,25 @@ class Plato {
 	col(num = 1, offset = 0, columns = this.layout.grid.columns, gutter = this.layout.grid.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
-			"_listeners": [[window, "resize"]],
-			"float": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "left" : "none" },
 			"box-sizing": "border-box",
-			"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? calc(num,columns,gutter).toString() + "%" : "100%" },
-			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") },
-			"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
+			"$(window).resize": {
+				"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? calc(num,columns,gutter).toString() + "%" : "100%" },
+				"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") },
+				"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+				"float": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "left" : "none" }
+			}
 		}
 	}
 
 	tableCol(num = 1, offset = 0, columns = this.layout.grid.columns, gutter = this.layout.grid.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
-			"_listeners": [[window, "resize"]],
-			"display": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "table-cell" : "block" },
 			"box-sizing": "border-box",
-			"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? (calc(num,columns,gutter) + gutter).toString() + "%" : "100%" },
-			"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
+			"$(window).resize": {
+				"display": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "table-cell" : "block" },
+				"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? (calc(num,columns,gutter) + gutter).toString() + "%" : "100%" },
+				"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
+			}
 		}
 	}
 }
