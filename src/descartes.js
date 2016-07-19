@@ -15,8 +15,12 @@ class Descartes {
 		this.SELECTOR = 'selector'
 		this.PROPERTY = 'property'
 		this.META = 'meta'
-		this.MIXINS = '_mixins'
-		this.LISTENERS = '_listeners'
+		this.MIXIN = 'mixin'
+		this.LISTENER = 'listener'
+
+		this.MIXINS_KEYWORD = '_mixins'
+		this.LISTENERS_KEYWORD = '_listeners'
+		this.LISTENER_PREFIX = '$'
 		
 		this.prefixes = ['-webkit-', '-moz-', '-o-', '-ms-']
 		this.properties = ['align-content','align-items','align-self','all','animation','animation-delay','animation-direction','animation-duration','animation-fill-mode','animation-iteration-count','animation-name','animation-play-state','animation-timing-function','backface-visibility','background','background-attachment','background-blend-mode','background-clip','background-color','background-image','background-origin','background-position','background-repeat','background-size','border','border-bottom','border-bottom-color','border-bottom-left-radius','border-bottom-right-radius','border-bottom-style','border-bottom-width','border-collapse','border-color','border-image','border-image-outset','border-image-repeat','border-image-slice','border-image-source','border-image-width','border-left','border-left-color','border-left-style','border-left-width','border-radius','border-right','border-right-color','border-right-style','border-right-width','border-spacing','border-style','border-top','border-top-color','border-top-left-radius','border-top-right-radius','border-top-style','border-top-width','border-width','bottom','box-shadow','box-sizing','caption-side','clear','clip','color','column-count','column-fill','column-gap','column-rule','column-rule-color','column-rule-style','column-rule-width','column-span','column-width','columns','content','counter-increment','counter-reset','cursor','direction','display','empty-cells','filter','flex','flex-basis','flex-direction','flex-flow','flex-grow','flex-shrink','flex-wrap','float','font','@font-face','font-family','font-size','font-size-adjust','font-stretch','font-style','font-variant','font-weight','hanging-punctuation','height','justify-content','@keyframes','left','letter-spacing','line-height','list-style','list-style-image','list-style-position','list-style-type','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','@media','min-height','min-width','nav-down','nav-index','nav-left','nav-right','nav-up','opacity','order','outline','outline-color','outline-offset','outline-style','outline-width','overflow','overflow-x','overflow-y','padding','padding-bottom','padding-left','padding-right','padding-top','page-break-after','page-break-before','page-break-inside','perspective','perspective-origin','position','quotes','resize','right','tab-size','table-layout','text-align','text-align-last','text-decoration','text-decoration-color','text-decoration-line','text-decoration-style','text-indent','text-justify','text-overflow','text-shadow','text-transform','top','transform','transform-origin','transform-style','transition','transition-delay','transition-duration','transition-property','transition-timing-function','unicode-bidi','vertical-align','visibility','white-space','width','word-break','word-spacing','word-wrap','z-index']
@@ -52,9 +56,9 @@ class Descartes {
 	}
 
 	_validateRule(property, value, tracer) {
-		if (property === this.MIXINS) {
+		if (property === this.MIXINS_KEYWORD) {
 			return this._validateMixin(property, value, tracer)
-		} else if (property === this.LISTENERS) {
+		} else if (property === this.LISTENERS_KEYWORD) {
 			return this._validateListener(property, value, tracer)
 		}
 		return true
@@ -151,7 +155,7 @@ class Descartes {
 						}
 					} else {
 						let targetType = typeof targetSubtree
-						if (this.isRule(key)) {
+						if (this.isProperty(key)) {
 							result[key] = subtree
 						} else if (key === this.mixins) {
 							if (treeType === 'string' && targetType === 'array') {
@@ -211,27 +215,37 @@ class Descartes {
 	*/
 	flatten(tree = this.sanitize(tree), parentSelector = "", priority = this.mappingsPriority) {
 		for (let selector in tree) {
+			if (Array.isArray(tree[selector]) || typeof tree[selector] != 'object') continue
 			let rules = Object.assign({}, tree[selector])
-			let _listeners = rules[this.LISTENERS]
+			let listeners = []
 			for (let rule in rules) {
-				if (!this.isRule(rule)) {
-					let subtree = null
-					if (parentSelector === "") parentSelector = selector
-					let nestedSelector = this.nestSelector(rule, parentSelector)
-					if (!this.isMeta(rule) && !this.isRule(rule)) {
-						subtree = {}
-						subtree[nestedSelector] = rules[rule]
+				if (!this.isProperty(rule)) {
+					if (this.isListener(rule)) {
+						let listener = this.parseListener(rule)
+						listeners.push({
+							selector: listener[0],
+							event: listener[1],
+							rules: rules[rule]
+						})
+					} else {
+						let subtree = null
+						if (parentSelector === "") parentSelector = selector
+						let nestedSelector = this.nestSelector(rule, parentSelector)
+						if (!this.isMixin(rule) && !this.isProperty(rule)) {
+							subtree = {}
+							subtree[nestedSelector] = rules[rule]
+						}
+						if (subtree !== null) {
+							this.flatten(subtree, nestedSelector, priority + 1)
+						}
 					}
 					delete rules[rule]
-					if (subtree !== null) {
-						this.flatten(subtree, nestedSelector, priority + 1)
-					}
 				}
 			}
 			this.mappings[selector] = {
 				rules,
-				_listeners,
-				priority
+				priority,
+				listeners
 			}
 			if (this.mappingsPriority < priority) this.mappingsPriority = priority
 		}
@@ -243,7 +257,9 @@ class Descartes {
 	 * @param {object} tree - the current unsanitized tree or subtree
 	 * @return {object} a new, validated style tree with no expanded mixins
 	*/
-	sanitize(tree = Object.assign({}, this.tree)) {
+	sanitize(rawTree = this.tree) {
+		if (Array.isArray(rawTree)) return null
+		let tree = Object.assign({}, rawTree)
 		if (typeof tree === 'object') {
 			let result = {}
 			for (let key in tree) {
@@ -252,15 +268,11 @@ class Descartes {
 				let keyObject = this.parseKey(key)
 				if (keyObject.type === this.SELECTOR) {
 					result[keyObject.key] = this.sanitize(value)
-				} else if (keyObject.type === this.PROPERTY) {
+				} else if (keyObject.type === this.PROPERTY || keyObject.type === this.LISTENER) {
 					result[keyObject.key] = value
-				} else if (keyObject.type === this.META) {
-					if (keyObject.key === this.MIXINS) {
-						let mixedRules = this.parseMixins(tree, key)
-						result = mixedRules
-					} else if (keyObject.key === this.LISTENERS) {
-						result[keyObject.key] = value
-					}
+				} else if (keyObject.type === this.MIXIN) {
+					let mixedRules = this.parseMixins(tree, key)
+					result = mixedRules
 				}
 			}
 			return result
@@ -275,7 +287,7 @@ class Descartes {
 	 * @return {object} the resulting ruleset with the calculated mixins
 	*/
 	parseMixins(ruleset, selector) {
-		let mixins = ruleset[this.MIXINS]
+		let mixins = ruleset[this.MIXINS_KEYWORD]
 
 		if (!Array.isArray(mixins)) {
 			mixins = [mixins]
@@ -291,7 +303,7 @@ class Descartes {
 				throw("'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
 			}
 		}
-		delete ruleset[this.MIXINS]
+		delete ruleset[this.MIXINS_KEYWORD]
 		return ruleset
 	}
 
@@ -396,28 +408,23 @@ class Descartes {
 		let _this = this
 		for (let selector in this.mappings) {
 			let mapping = this.mappings[selector]
-			let listeners = mapping[this.LISTENERS]
-			if (typeof listeners === 'undefined') continue
-			let rules = mapping['rules']
+			let listeners = mapping.listeners
+			let defaultRules = mapping.rules
+			if (listeners.length === 0) continue
 			listeners.map(l => {
-				if (typeof l[0] === 'string') {
-					this.find(l[0]).map(x => {
-						x.addEventListener(l[1], () => {
-							if (_this.listening) {
-								this.applyRuleset(selector, rules)
-								this.paint()
-							}
-						})
-					})
-				} else {
-					if (l[0] === "window") l[0] = window
-					if (l[0] === "document") l[0] = document
-					l[0].addEventListener(l[1], () => {
-						if (_this.listening) {
-							this.applyRuleset(selector, rules)
-							this.paint()
-						}
-					})
+				if (l.selector === "window") l.selector = window
+				if (l.selector === "document") l.selector = document
+				let _ = () => {
+					if (_this.listening) {
+						this.applyRuleset(selector, l.rules)
+						this.paint()
+					}
+				}
+				l.selector.addEventListener(l.event, _)
+				for (let property in l.rules) {
+					if (defaultRules[property] === undefined) {
+						_()
+					}
 				}
 			})
 		}
@@ -497,12 +504,18 @@ class Descartes {
 	 * @return {object} an object with the original key and its type
 	*/
 	parseKey(key) {
-		let isMeta = this.isMeta(key)
-		let isRule = this.isRule(key)
-		return {
-			key,
-			type: isMeta ? this.META : isRule ? this.PROPERTY : this.SELECTOR
+		let obj = {
+			key: key,
+			type : this.SELECTOR
 		}
+		if (this.isMixin(key)) {
+			obj.type = this.MIXIN
+		} else if (this.isListener(key)) {
+			obj.type = this.LISTENER
+		} else if (this.isProperty(key)) {
+			obj.type = this.PROPERTY
+		}
+		return obj
 	}
 
 	/**
@@ -510,14 +523,27 @@ class Descartes {
 	 * @return {bool} whether the key is a Descartes meta rule
 	*/
 	isMeta(key) {
-		const metas = [this.MIXINS, this.LISTENERS]
-		return metas.indexOf(key) > -1
+		return this.isMixin(key) || this.isListener(key)
+	}
+
+	/** Checks if the key is specifying a mixin
+	 * @return {bool} whether the key matches the mixins keyword
+	*/
+	isMixin(key) {
+		return key === this.MIXINS_KEYWORD
+	}
+
+	/** Checks if the key is a listener
+	 * @return {bool} whether the key is a listener with a prefix and event
+	*/
+	isListener(key) {
+		return this.parseListener(key).length === 2
 	}
 
 	/** Checks if the key is a valid CSS property
 	 * @return {bool} whether the key is a valid CSS property
 	*/
-	isRule(key) {
+	isProperty(key) {
 		return this.properties.indexOf(key) > -1
 	}
 
@@ -526,6 +552,12 @@ class Descartes {
 	*/
 	isSuffix(key) {
 		return key.substr(0, 1) === '&'
+	}
+
+	parseListener(key) {
+		const pattern = new RegExp('\\' + this.LISTENER_PREFIX + '\\((.+?)\\)+\.(.+?)$')
+		var result = key.match(pattern)
+		return (result !== null && result[0] === result.input && result.length === 3) ? [result[1], result[2]] : []
 	}
 
 	/**

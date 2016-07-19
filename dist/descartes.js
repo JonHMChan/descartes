@@ -29,8 +29,12 @@ var Descartes = function () {
 		this.SELECTOR = 'selector';
 		this.PROPERTY = 'property';
 		this.META = 'meta';
-		this.MIXINS = '_mixins';
-		this.LISTENERS = '_listeners';
+		this.MIXIN = 'mixin';
+		this.LISTENER = 'listener';
+
+		this.MIXINS_KEYWORD = '_mixins';
+		this.LISTENERS_KEYWORD = '_listeners';
+		this.LISTENER_PREFIX = '$';
 
 		this.prefixes = ['-webkit-', '-moz-', '-o-', '-ms-'];
 		this.properties = ['align-content', 'align-items', 'align-self', 'all', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'backface-visibility', 'background', 'background-attachment', 'background-blend-mode', 'background-clip', 'background-color', 'background-image', 'background-origin', 'background-position', 'background-repeat', 'background-size', 'border', 'border-bottom', 'border-bottom-color', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-bottom-style', 'border-bottom-width', 'border-collapse', 'border-color', 'border-image', 'border-image-outset', 'border-image-repeat', 'border-image-slice', 'border-image-source', 'border-image-width', 'border-left', 'border-left-color', 'border-left-style', 'border-left-width', 'border-radius', 'border-right', 'border-right-color', 'border-right-style', 'border-right-width', 'border-spacing', 'border-style', 'border-top', 'border-top-color', 'border-top-left-radius', 'border-top-right-radius', 'border-top-style', 'border-top-width', 'border-width', 'bottom', 'box-shadow', 'box-sizing', 'caption-side', 'clear', 'clip', 'color', 'column-count', 'column-fill', 'column-gap', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'content', 'counter-increment', 'counter-reset', 'cursor', 'direction', 'display', 'empty-cells', 'filter', 'flex', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'float', 'font', '@font-face', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'hanging-punctuation', 'height', 'justify-content', '@keyframes', 'left', 'letter-spacing', 'line-height', 'list-style', 'list-style-image', 'list-style-position', 'list-style-type', 'margin', 'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'max-height', 'max-width', '@media', 'min-height', 'min-width', 'nav-down', 'nav-index', 'nav-left', 'nav-right', 'nav-up', 'opacity', 'order', 'outline', 'outline-color', 'outline-offset', 'outline-style', 'outline-width', 'overflow', 'overflow-x', 'overflow-y', 'padding', 'padding-bottom', 'padding-left', 'padding-right', 'padding-top', 'page-break-after', 'page-break-before', 'page-break-inside', 'perspective', 'perspective-origin', 'position', 'quotes', 'resize', 'right', 'tab-size', 'table-layout', 'text-align', 'text-align-last', 'text-decoration', 'text-decoration-color', 'text-decoration-line', 'text-decoration-style', 'text-indent', 'text-justify', 'text-overflow', 'text-shadow', 'text-transform', 'top', 'transform', 'transform-origin', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'unicode-bidi', 'vertical-align', 'visibility', 'white-space', 'width', 'word-break', 'word-spacing', 'word-wrap', 'z-index'];
@@ -75,9 +79,9 @@ var Descartes = function () {
 	}, {
 		key: '_validateRule',
 		value: function _validateRule(property, value, tracer) {
-			if (property === this.MIXINS) {
+			if (property === this.MIXINS_KEYWORD) {
 				return this._validateMixin(property, value, tracer);
-			} else if (property === this.LISTENERS) {
+			} else if (property === this.LISTENERS_KEYWORD) {
 				return this._validateListener(property, value, tracer);
 			}
 			return true;
@@ -189,7 +193,7 @@ var Descartes = function () {
 							}
 						} else {
 							var targetType = typeof targetSubtree === 'undefined' ? 'undefined' : _typeof(targetSubtree);
-							if (this.isRule(key)) {
+							if (this.isProperty(key)) {
 								result[key] = subtree;
 							} else if (key === this.mixins) {
 								if (treeType === 'string' && targetType === 'array') {
@@ -262,27 +266,37 @@ var Descartes = function () {
 			var priority = arguments.length <= 2 || arguments[2] === undefined ? this.mappingsPriority : arguments[2];
 
 			for (var selector in tree) {
+				if (Array.isArray(tree[selector]) || _typeof(tree[selector]) != 'object') continue;
 				var rules = Object.assign({}, tree[selector]);
-				var _listeners = rules[this.LISTENERS];
+				var listeners = [];
 				for (var rule in rules) {
-					if (!this.isRule(rule)) {
-						var subtree = null;
-						if (parentSelector === "") parentSelector = selector;
-						var nestedSelector = this.nestSelector(rule, parentSelector);
-						if (!this.isMeta(rule) && !this.isRule(rule)) {
-							subtree = {};
-							subtree[nestedSelector] = rules[rule];
+					if (!this.isProperty(rule)) {
+						if (this.isListener(rule)) {
+							var listener = this.parseListener(rule);
+							listeners.push({
+								selector: listener[0],
+								event: listener[1],
+								rules: rules[rule]
+							});
+						} else {
+							var subtree = null;
+							if (parentSelector === "") parentSelector = selector;
+							var nestedSelector = this.nestSelector(rule, parentSelector);
+							if (!this.isMixin(rule) && !this.isProperty(rule)) {
+								subtree = {};
+								subtree[nestedSelector] = rules[rule];
+							}
+							if (subtree !== null) {
+								this.flatten(subtree, nestedSelector, priority + 1);
+							}
 						}
 						delete rules[rule];
-						if (subtree !== null) {
-							this.flatten(subtree, nestedSelector, priority + 1);
-						}
 					}
 				}
 				this.mappings[selector] = {
 					rules: rules,
-					_listeners: _listeners,
-					priority: priority
+					priority: priority,
+					listeners: listeners
 				};
 				if (this.mappingsPriority < priority) this.mappingsPriority = priority;
 			}
@@ -298,8 +312,10 @@ var Descartes = function () {
 	}, {
 		key: 'sanitize',
 		value: function sanitize() {
-			var tree = arguments.length <= 0 || arguments[0] === undefined ? Object.assign({}, this.tree) : arguments[0];
+			var rawTree = arguments.length <= 0 || arguments[0] === undefined ? this.tree : arguments[0];
 
+			if (Array.isArray(rawTree)) return null;
+			var tree = Object.assign({}, rawTree);
 			if ((typeof tree === 'undefined' ? 'undefined' : _typeof(tree)) === 'object') {
 				var result = {};
 				for (var key in tree) {
@@ -308,15 +324,11 @@ var Descartes = function () {
 					var keyObject = this.parseKey(key);
 					if (keyObject.type === this.SELECTOR) {
 						result[keyObject.key] = this.sanitize(value);
-					} else if (keyObject.type === this.PROPERTY) {
+					} else if (keyObject.type === this.PROPERTY || keyObject.type === this.LISTENER) {
 						result[keyObject.key] = value;
-					} else if (keyObject.type === this.META) {
-						if (keyObject.key === this.MIXINS) {
-							var mixedRules = this.parseMixins(tree, key);
-							result = mixedRules;
-						} else if (keyObject.key === this.LISTENERS) {
-							result[keyObject.key] = value;
-						}
+					} else if (keyObject.type === this.MIXIN) {
+						var mixedRules = this.parseMixins(tree, key);
+						result = mixedRules;
 					}
 				}
 				return result;
@@ -334,7 +346,7 @@ var Descartes = function () {
 	}, {
 		key: 'parseMixins',
 		value: function parseMixins(ruleset, selector) {
-			var mixins = ruleset[this.MIXINS];
+			var mixins = ruleset[this.MIXINS_KEYWORD];
 
 			if (!Array.isArray(mixins)) {
 				mixins = [mixins];
@@ -350,7 +362,7 @@ var Descartes = function () {
 					throw "'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.";
 				}
 			}
-			delete ruleset[this.MIXINS];
+			delete ruleset[this.MIXINS_KEYWORD];
 			return ruleset;
 		}
 
@@ -483,28 +495,23 @@ var Descartes = function () {
 
 			var _loop = function _loop(selector) {
 				var mapping = _this4.mappings[selector];
-				var listeners = mapping[_this4.LISTENERS];
-				if (typeof listeners === 'undefined') return 'continue';
-				var rules = mapping['rules'];
+				var listeners = mapping.listeners;
+				var defaultRules = mapping.rules;
+				if (listeners.length === 0) return 'continue';
 				listeners.map(function (l) {
-					if (typeof l[0] === 'string') {
-						_this4.find(l[0]).map(function (x) {
-							x.addEventListener(l[1], function () {
-								if (_this.listening) {
-									_this4.applyRuleset(selector, rules);
-									_this4.paint();
-								}
-							});
-						});
-					} else {
-						if (l[0] === "window") l[0] = window;
-						if (l[0] === "document") l[0] = document;
-						l[0].addEventListener(l[1], function () {
-							if (_this.listening) {
-								_this4.applyRuleset(selector, rules);
-								_this4.paint();
-							}
-						});
+					if (l.selector === "window") l.selector = window;
+					if (l.selector === "document") l.selector = document;
+					var _ = function _() {
+						if (_this.listening) {
+							_this4.applyRuleset(selector, l.rules);
+							_this4.paint();
+						}
+					};
+					l.selector.addEventListener(l.event, _);
+					for (var property in l.rules) {
+						if (defaultRules[property] === undefined) {
+							_();
+						}
 					}
 				});
 			};
@@ -612,12 +619,18 @@ var Descartes = function () {
 	}, {
 		key: 'parseKey',
 		value: function parseKey(key) {
-			var isMeta = this.isMeta(key);
-			var isRule = this.isRule(key);
-			return {
+			var obj = {
 				key: key,
-				type: isMeta ? this.META : isRule ? this.PROPERTY : this.SELECTOR
+				type: this.SELECTOR
 			};
+			if (this.isMixin(key)) {
+				obj.type = this.MIXIN;
+			} else if (this.isListener(key)) {
+				obj.type = this.LISTENER;
+			} else if (this.isProperty(key)) {
+				obj.type = this.PROPERTY;
+			}
+			return obj;
 		}
 
 		/**
@@ -628,8 +641,27 @@ var Descartes = function () {
 	}, {
 		key: 'isMeta',
 		value: function isMeta(key) {
-			var metas = [this.MIXINS, this.LISTENERS];
-			return metas.indexOf(key) > -1;
+			return this.isMixin(key) || this.isListener(key);
+		}
+
+		/** Checks if the key is specifying a mixin
+   * @return {bool} whether the key matches the mixins keyword
+  */
+
+	}, {
+		key: 'isMixin',
+		value: function isMixin(key) {
+			return key === this.MIXINS_KEYWORD;
+		}
+
+		/** Checks if the key is a listener
+   * @return {bool} whether the key is a listener with a prefix and event
+  */
+
+	}, {
+		key: 'isListener',
+		value: function isListener(key) {
+			return this.parseListener(key).length === 2;
 		}
 
 		/** Checks if the key is a valid CSS property
@@ -637,8 +669,8 @@ var Descartes = function () {
   */
 
 	}, {
-		key: 'isRule',
-		value: function isRule(key) {
+		key: 'isProperty',
+		value: function isProperty(key) {
 			return this.properties.indexOf(key) > -1;
 		}
 
@@ -650,6 +682,13 @@ var Descartes = function () {
 		key: 'isSuffix',
 		value: function isSuffix(key) {
 			return key.substr(0, 1) === '&';
+		}
+	}, {
+		key: 'parseListener',
+		value: function parseListener(key) {
+			var pattern = new RegExp('\\' + this.LISTENER_PREFIX + '\\((.+?)\\)+\.(.+?)$');
+			var result = key.match(pattern);
+			return result !== null && result[0] === result.input && result.length === 3 ? [result[1], result[2]] : [];
 		}
 
 		/**
