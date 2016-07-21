@@ -24,12 +24,9 @@
         	var d = new Descartes(p.base());
             var newTree = {
                 "html": {
-                    "@": {
-                        "fontSize": (_) => {
-                            return "150px"
-                        }
-                    },
-                    "body": {
+                    "@fontSize": 150,
+                    "font-size": 15,
+                    "$(window).click": {
                         "font-size": "@fontSize"
                     }
                 }
