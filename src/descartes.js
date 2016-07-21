@@ -126,6 +126,15 @@ class Descartes {
 	}
 
 	/**
+	 * Adds another style tree to the existing tree and renders
+	 * @param {object} tree - the style tree to be added
+	*/
+	add(tree) {
+		this.tree = this.merge(tree)
+		this.render()
+	}
+
+	/**
 	 * Merges a style tree with another tree
 	 * @param {object} tree - the style tree to be merged in
 	 * @param {object} target - the target style tree, sensibly defaults to this.tree
