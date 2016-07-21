@@ -96,7 +96,21 @@ const d = new Descartes({
 				"color": "currentColor"
 			},
 			"nav": {
-				"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
+				"@": {
+					"box-shadow": (_) => {
+						return "0 0 15px " + p.rgba(100,100,100, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.2) )
+					},
+					"height": (_) => {
+						if ($(window).width() < p.layout.wrappers.mobile) return "auto"
+						const pos = $(window).scrollTop()
+						if (pos > (($(window).height()*0.9)-50) && pos > lastScroll) {
+							lastScroll = pos
+							return 0
+						}
+						lastScroll = pos
+						return 50
+					}
+				},
 				"text-align": "center",
 				"position": "fixed",
 				"width": "100%",
@@ -104,48 +118,40 @@ const d = new Descartes({
 				"box-sizing": "border-box",
 				"transition": "all 0.5s ease",
 				"z-index": 9999,
-				"height": (_) => {
-					if ($(window).width() < p.layout.wrappers.mobile) return "auto"
-					const pos = $(window).scrollTop()
-					if (pos > (($(window).height()*0.9)-50) && pos > lastScroll) {
-						lastScroll = pos
-						return 0
+				"$(window).scroll": {
+					"height": "@height",
+					"box-shadow": "@box-shadow",
+					"background": (_) => {
+						if ($(window).width() < p.layout.wrappers.mobile) {
+							return "rgba(255,255,255,0.9)"
+						}
+						return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.95) )
 					}
-					lastScroll = pos
-					return 50
-				},
-				"background": (_) => {
-					if ($(window).width() < p.layout.wrappers.mobile) {
-						return "rgba(255,255,255,0.9)"
-					}
-					return p.rgba(255,255,255, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.95) )
-				},
-				"box-shadow": (_) => {
-					return "0 0 15px " + p.rgba(100,100,100, p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(), 0, 0.2) )
 				},
 				".options": {
-					"_listeners": [[window, "scroll"], [window, "resize"], [window, 'click'], [window, 'touchstart']],
-					"display": (_) => {
-						if ($(window).width() < p.layout.wrappers.mobile && !$("nav").hasClass("show")) return "none"
-						return "block" 
+					"$(window).resize": {
+						"display": (_) => {
+							if ($(window).width() < p.layout.wrappers.mobile && !$("nav").hasClass("show")) return "none"
+							return "block" 
+						}
 					}
 				},
 				"a": {
-					"_listeners": [[window, "scroll"], [window, "resize"]],
 					"text-decoration": "none",
 					"display": "block",
 					"margin": "15px 0",
-					"color": (_) => {
-						if ($(window).width() < p.layout.wrappers.mobile) return "#333"
-						let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
-						return p.rgba(v,v,v,1)
+					"$(window).scroll": {
+						"color": (_) => {
+							if ($(window).width() < p.layout.wrappers.mobile) return "#333"
+							let v = p.scale($(window).scrollTop(), $(window).height()/2, $(window).height(),255,50)
+							return p.rgba(v,v,v,1)
+						}
 					}
 				}
 			},
 			".button": {
 				"_mixins": _button,
 				"&.primary": {
-					"_listeners": [[window, "click"]],
 					"background": "rgba(255,255,255, 0.25)"
 				}
 			},

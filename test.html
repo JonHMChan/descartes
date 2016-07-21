@@ -21,8 +21,20 @@
         <script type="text/javascript" src="dist/plato.js"></script>
         <script type="text/javascript">
             var p = new Plato();
-            console.log(p.base());
         	var d = new Descartes(p.base());
+            var newTree = {
+                "html": {
+                    "@": {
+                        "fontSize": (_) => {
+                            return "150px"
+                        }
+                    },
+                    "body": {
+                        "font-size": "@fontSize"
+                    }
+                }
+            }
+            d.add(newTree)
         </script>
     </body>
 </html>
