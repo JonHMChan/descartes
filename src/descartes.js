@@ -269,13 +269,16 @@ class Descartes {
 		if (typeof tree === 'object') {
 			let result = {}
 			for (let key in tree) {
+				if (key.substring(0,1) === this.SCOPE_KEYWORD) {
+					scope[key] = tree[key]
+				}
+			}
+			for (let key in tree) {
 				let value = tree[key]
 				if (value === null) continue
 				let keyObject = this.parseKey(key)
-				if (keyObject.type === this.SCOPE) {
-					scope = Object.assign(scope, value)
-				} else if (keyObject.type === this.SELECTOR || keyObject.type === this.LISTENER) {
-					result[keyObject.key] = this.sanitize(value, scope)
+				if (keyObject.type === this.SELECTOR || keyObject.type === this.LISTENER) {
+					result[keyObject.key] = this.sanitize(value, keyObject.type === this.LISTENER ? scope : {})
 				} else if (keyObject.type === this.PROPERTY) {
 					result[keyObject.key] = this.parseScope(value, scope)
 				} else if (keyObject.type === this.MIXIN) {
@@ -296,9 +299,8 @@ class Descartes {
 	parseScope(value, scope) {
 		if (typeof value !== 'string') return value
 		if (value.substring(0, 1) === this.SCOPE_KEYWORD) {
-			var key = value.substring(1)
-			if (scope.hasOwnProperty(key)) {
-				return scope[key]
+			if (scope.hasOwnProperty(value)) {
+				return scope[value]
 			}
 		}
 		return value
@@ -444,7 +446,7 @@ class Descartes {
 						this.paint()
 					}
 				}
-				l.selector.addEventListener(l.event, _)
+				this.find(l.selector).map(e => e.addEventListener(l.event, _))
 				for (let property in l.rules) {
 					if (defaultRules[property] === undefined) {
 						_()
@@ -556,7 +558,7 @@ class Descartes {
 	 * @return {bool} whether the key matches the mixins keyword
 	*/
 	isScope(key) {
-		return key === this.SCOPE_KEYWORD
+		return key.substring(0,1) === this.SCOPE_KEYWORD
 	}
 
 	/** Checks if the key is specifying a mixin
