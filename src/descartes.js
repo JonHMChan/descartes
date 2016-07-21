@@ -17,10 +17,12 @@ class Descartes {
 		this.META = 'meta'
 		this.MIXIN = 'mixin'
 		this.LISTENER = 'listener'
+		this.SCOPE = 'scope'
 
 		this.MIXINS_KEYWORD = '_mixins'
 		this.LISTENERS_KEYWORD = '_listeners'
 		this.LISTENER_PREFIX = '$'
+		this.SCOPE_KEYWORD = "@"
 		
 		this.prefixes = ['-webkit-', '-moz-', '-o-', '-ms-']
 		this.properties = ['align-content','align-items','align-self','all','animation','animation-delay','animation-direction','animation-duration','animation-fill-mode','animation-iteration-count','animation-name','animation-play-state','animation-timing-function','backface-visibility','background','background-attachment','background-blend-mode','background-clip','background-color','background-image','background-origin','background-position','background-repeat','background-size','border','border-bottom','border-bottom-color','border-bottom-left-radius','border-bottom-right-radius','border-bottom-style','border-bottom-width','border-collapse','border-color','border-image','border-image-outset','border-image-repeat','border-image-slice','border-image-source','border-image-width','border-left','border-left-color','border-left-style','border-left-width','border-radius','border-right','border-right-color','border-right-style','border-right-width','border-spacing','border-style','border-top','border-top-color','border-top-left-radius','border-top-right-radius','border-top-style','border-top-width','border-width','bottom','box-shadow','box-sizing','caption-side','clear','clip','color','column-count','column-fill','column-gap','column-rule','column-rule-color','column-rule-style','column-rule-width','column-span','column-width','columns','content','counter-increment','counter-reset','cursor','direction','display','empty-cells','filter','flex','flex-basis','flex-direction','flex-flow','flex-grow','flex-shrink','flex-wrap','float','font','@font-face','font-family','font-size','font-size-adjust','font-stretch','font-style','font-variant','font-weight','hanging-punctuation','height','justify-content','@keyframes','left','letter-spacing','line-height','list-style','list-style-image','list-style-position','list-style-type','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','@media','min-height','min-width','nav-down','nav-index','nav-left','nav-right','nav-up','opacity','order','outline','outline-color','outline-offset','outline-style','outline-width','overflow','overflow-x','overflow-y','padding','padding-bottom','padding-left','padding-right','padding-top','page-break-after','page-break-before','page-break-inside','perspective','perspective-origin','position','quotes','resize','right','tab-size','table-layout','text-align','text-align-last','text-decoration','text-decoration-color','text-decoration-line','text-decoration-style','text-indent','text-justify','text-overflow','text-shadow','text-transform','top','transform','transform-origin','transform-style','transition','transition-delay','transition-duration','transition-property','transition-timing-function','unicode-bidi','vertical-align','visibility','white-space','width','word-break','word-spacing','word-wrap','z-index']
@@ -127,7 +129,7 @@ class Descartes {
 	 * Merges a style tree with another tree
 	 * @param {object} tree - the style tree to be merged in
 	 * @param {object} target - the target style tree, sensibly defaults to this.tree
-	 * @return {bool} whether the selector contains a pseudo selector
+	 * @return {object} the resulting merged tree
 	*/
 	merge(tree, target = this.tree) {
 		if (typeof tree !== 'object') return target
@@ -218,9 +220,12 @@ class Descartes {
 			if (Array.isArray(tree[selector]) || typeof tree[selector] != 'object') continue
 			let rules = Object.assign({}, tree[selector])
 			let listeners = []
+			let scope = {}
 			for (let rule in rules) {
 				if (!this.isProperty(rule)) {
-					if (this.isListener(rule)) {
+					if (this.isScope(rule)) {
+						scope = rules[rule]
+					} else if (this.isListener(rule)) {
 						let listener = this.parseListener(rule)
 						listeners.push({
 							selector: listener[0],
@@ -245,7 +250,8 @@ class Descartes {
 			this.mappings[selector] = {
 				rules,
 				priority,
-				listeners
+				listeners,
+				scope
 			}
 			if (this.mappingsPriority < priority) this.mappingsPriority = priority
 		}
@@ -257,7 +263,7 @@ class Descartes {
 	 * @param {object} tree - the current unsanitized tree or subtree
 	 * @return {object} a new, validated style tree with no expanded mixins
 	*/
-	sanitize(rawTree = this.tree) {
+	sanitize(rawTree = this.tree, scope = {}) {
 		if (Array.isArray(rawTree)) return null
 		let tree = Object.assign({}, rawTree)
 		if (typeof tree === 'object') {
@@ -266,10 +272,12 @@ class Descartes {
 				let value = tree[key]
 				if (value === null) continue
 				let keyObject = this.parseKey(key)
-				if (keyObject.type === this.SELECTOR) {
-					result[keyObject.key] = this.sanitize(value)
-				} else if (keyObject.type === this.PROPERTY || keyObject.type === this.LISTENER) {
-					result[keyObject.key] = value
+				if (keyObject.type === this.SCOPE) {
+					scope = Object.assign(scope, value)
+				} else if (keyObject.type === this.SELECTOR || keyObject.type === this.LISTENER) {
+					result[keyObject.key] = this.sanitize(value, scope)
+				} else if (keyObject.type === this.PROPERTY) {
+					result[keyObject.key] = this.parseScope(value, scope)
 				} else if (keyObject.type === this.MIXIN) {
 					let mixedRules = this.parseMixins(tree, key)
 					result = mixedRules
@@ -278,6 +286,22 @@ class Descartes {
 			return result
 		}
 		return null
+	}
+
+	/**
+	 * Replaces any properties referencing scopes during sanitization
+	 * @param {object} value - the property or listener value to be replaced
+	 * @return {object} the resulting value based on the scope
+	*/
+	parseScope(value, scope) {
+		if (typeof value !== 'string') return value
+		if (value.substring(0, 1) === this.SCOPE_KEYWORD) {
+			var key = value.substring(1)
+			if (scope.hasOwnProperty(key)) {
+				return scope[key]
+			}
+		}
+		return value
 	}
 
 	/**
@@ -510,6 +534,8 @@ class Descartes {
 		}
 		if (this.isMixin(key)) {
 			obj.type = this.MIXIN
+	    } else if (this.isScope(key)) {
+			obj.type = this.SCOPE
 		} else if (this.isListener(key)) {
 			obj.type = this.LISTENER
 		} else if (this.isProperty(key)) {
@@ -524,6 +550,13 @@ class Descartes {
 	*/
 	isMeta(key) {
 		return this.isMixin(key) || this.isListener(key)
+	}
+
+	/** Checks if the key is specifying a mixin
+	 * @return {bool} whether the key matches the mixins keyword
+	*/
+	isScope(key) {
+		return key === this.SCOPE_KEYWORD
 	}
 
 	/** Checks if the key is specifying a mixin
