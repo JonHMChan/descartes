@@ -129,8 +129,8 @@ class Plato {
 		return Object.assign(this.clearfix(), {
 			"box-sizing": "border-box",
 			"$(window).resize": {
-				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
-				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
 			}
 		})
 	}
@@ -139,8 +139,8 @@ class Plato {
 		return Object.assign(this.clearfix(), {
 			"box-sizing": "border-box",
 			"$(window).resize": {
-				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
-				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
 				"display": () => {
 					return (window.innerWidth >= this.layout.wrappers.mobile) ? "table" : "block"
 				}
