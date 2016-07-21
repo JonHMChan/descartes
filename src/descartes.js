@@ -1,4 +1,4 @@
-/*! Descartes v0.0.1 | (c) Jonathan Chan @jonhmchan */
+/*! Descartes v0.0.2 | (c) Jonathan Chan @jonhmchan */
 
 /** Class representing a full Descartes engine */
 class Descartes {
@@ -6,31 +6,192 @@ class Descartes {
 	/**
 	 * Initialize and fire Descartes engine
 	 * @param {object} tree - Full style tree that represents styles for the whole page
-	 */
-	constructor(tree) {
-		this.tree = tree
+	*/
+	constructor(tree, stylesheet = false) {
 		this.mappings = {}
 		this.mappingsPriority = 0
+		this.listening = true
 
-		this.selector = 'selector'
-		this.property = 'property'
-		this.meta = 'meta'
-		this.mixins = '_mixins'
-		this.listeners = '_listeners'
+		this.SELECTOR = 'selector'
+		this.PROPERTY = 'property'
+		this.META = 'meta'
+		this.MIXIN = 'mixin'
+		this.LISTENER = 'listener'
+		this.SCOPE = 'scope'
+
+		this.MIXINS_KEYWORD = '_mixins'
+		this.LISTENERS_KEYWORD = '_listeners'
+		this.LISTENER_PREFIX = '$'
+		this.SCOPE_KEYWORD = "@"
 		
 		this.prefixes = ['-webkit-', '-moz-', '-o-', '-ms-']
 		this.properties = ['align-content','align-items','align-self','all','animation','animation-delay','animation-direction','animation-duration','animation-fill-mode','animation-iteration-count','animation-name','animation-play-state','animation-timing-function','backface-visibility','background','background-attachment','background-blend-mode','background-clip','background-color','background-image','background-origin','background-position','background-repeat','background-size','border','border-bottom','border-bottom-color','border-bottom-left-radius','border-bottom-right-radius','border-bottom-style','border-bottom-width','border-collapse','border-color','border-image','border-image-outset','border-image-repeat','border-image-slice','border-image-source','border-image-width','border-left','border-left-color','border-left-style','border-left-width','border-radius','border-right','border-right-color','border-right-style','border-right-width','border-spacing','border-style','border-top','border-top-color','border-top-left-radius','border-top-right-radius','border-top-style','border-top-width','border-width','bottom','box-shadow','box-sizing','caption-side','clear','clip','color','column-count','column-fill','column-gap','column-rule','column-rule-color','column-rule-style','column-rule-width','column-span','column-width','columns','content','counter-increment','counter-reset','cursor','direction','display','empty-cells','filter','flex','flex-basis','flex-direction','flex-flow','flex-grow','flex-shrink','flex-wrap','float','font','@font-face','font-family','font-size','font-size-adjust','font-stretch','font-style','font-variant','font-weight','hanging-punctuation','height','justify-content','@keyframes','left','letter-spacing','line-height','list-style','list-style-image','list-style-position','list-style-type','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','@media','min-height','min-width','nav-down','nav-index','nav-left','nav-right','nav-up','opacity','order','outline','outline-color','outline-offset','outline-style','outline-width','overflow','overflow-x','overflow-y','padding','padding-bottom','padding-left','padding-right','padding-top','page-break-after','page-break-before','page-break-inside','perspective','perspective-origin','position','quotes','resize','right','tab-size','table-layout','text-align','text-align-last','text-decoration','text-decoration-color','text-decoration-line','text-decoration-style','text-indent','text-justify','text-overflow','text-shadow','text-transform','top','transform','transform-origin','transform-style','transition','transition-delay','transition-duration','transition-property','transition-timing-function','unicode-bidi','vertical-align','visibility','white-space','width','word-break','word-spacing','word-wrap','z-index']
 		this.pseudos = ['::after','::before','::first-letter','::first-line','::selection','::backdrop',':active',':any',':checked',':default',':dir',':disabled',':empty',':enabled',':first',':first-child',':first-of-type',':fullscreen',':focus',':hover',':indeterminate',':in-range',':invalid',':lang',':last-child',':last-of-type',':left',':link',':not',':nth-child',':nth-last-child',':nth-last-of-type',':nth-of-type',':only-child',':only-of-type',':optional',':out-of-range',':read-only',':read-write',':required',':right',':root',':scope',':target',':valid',':visited']
 
 		this.findType = undefined
-		this.find = this.findLibrary()		
+		this.find = this.findLibrary()	
+
+		this.debug = true
+		if (this._validate(tree)) {
+			this.tree = tree
+			this.render()
+			if (stylesheet) this.showStyleSheet()
+		}
+	}
+
+	_validate(tree = this.tree, _tracer = ".", _selector = ".") {
+		for (let selector in tree) {
+			if (tree.hasOwnProperty(selector)) {
+				let subtree = tree[selector]
+				let tracer = _tracer + " > " + selector
+				if (!this._validateRule(selector, subtree, tracer)) {
+					return false
+				}
+				if (this._isObject(subtree)) {
+					if (!this._validate(subtree, tracer, selector)) {
+						return false
+					}
+				}
+			}
+		}
+		return true
+	}
+
+	_validateRule(property, value, tracer) {
+		if (property === this.MIXINS_KEYWORD) {
+			return this._validateMixin(property, value, tracer)
+		} else if (property === this.LISTENERS_KEYWORD) {
+			return this._validateListener(property, value, tracer)
+		}
+		return true
+	}
+
+	_validateMixin(property, value, tracer) {
+		if (this._isObject(value)) {
+				return true
+		} else if (Array.isArray(value)) {
+			for (let index in value) {
+				if (!this._isObject(value[index])) {
+					this._explode("Mixin value has an invalid type", tracer, index)
+					return false
+				}
+			}
+			return true
+		} else {
+			this._explode("Mixin has an invalid type", tracer)
+			return false
+		}
+		return true
+	}
+
+	_validateListener(property, value, tracer) {
+		if (!Array.isArray(value)) {
+			return false
+		} else {
+			if (this._validateListenerValue(value, tracer, false)) {
+				return true
+			}
+			for (let index in value) {
+				let listener = value[index]
+				this._validateListenerValue(listener, tracer, true, index)
+			}
+		}
+		return true
+	}
+
+	_validateListenerValue(listener, tracer, explode = false, index = null) {
+		if (listener.length === 2) {
+			if (!this._isObject(listener[0]) && typeof listener[0] !== "string") {
+				if (explode) this._explode("Listener must have a proper selector", tracer, index)
+			}
+			if (typeof listener[1] !== "string") {
+				if (explode) this._explode("Listener must have an event binding", tracer, index)
+				return false
+			}
+			return true
+		} else {
+			if (explode) this._explode("Listener has invalid values", tracer, index)
+			return false
+		}
+	}
+
+	_isObject(value) {
+		return typeof value === 'object' && !Array.isArray(value)
+	}
+
+	_explode(message, tracer, index = null) {
+		if (!this.debug) return
+		if (index !== null) tracer += "[" + index + "]"
+		console.error(tracer + " :: " + message)
+	}
+
+	/**
+	 * Adds another style tree to the existing tree and renders
+	 * @param {object} tree - the style tree to be added
+	*/
+	add(tree) {
+		this.tree = this.merge(tree)
 		this.render()
 	}
 
 	/**
+	 * Merges a style tree with another tree
+	 * @param {object} tree - the style tree to be merged in
+	 * @param {object} target - the target style tree, sensibly defaults to this.tree
+	 * @return {object} the resulting merged tree
+	*/
+	merge(tree, target = this.tree) {
+		if (typeof tree !== 'object') return target
+		if (Object.keys(tree).length === 0) return target
+		let result = Object.assign({}, target)
+		for (let key in tree) {
+			if (tree.hasOwnProperty(key)) {
+				let subtree = tree[key]
+				if (target.hasOwnProperty(key)) {
+					let targetSubtree = target[key]
+					let treeType = typeof subtree
+					if (treeType === typeof targetSubtree) {
+						switch (treeType) {
+							case 'object':
+								result[key] = this.merge(subtree, targetSubtree)
+								break
+							case 'string':
+								result[key] = subtree
+								break
+							case 'array':
+								result[key] = subtree.concat(targetSubtree)
+								break
+							default:
+								console.error("Merge failed. '" + key + "' in the style tree you are merging is an invalid type: " + treeType)
+						}
+					} else {
+						let targetType = typeof targetSubtree
+						if (this.isProperty(key)) {
+							result[key] = subtree
+						} else if (key === this.mixins) {
+							if (treeType === 'string' && targetType === 'array') {
+								result[key] = targetSubtree.pop(subtree)
+							} else if (treeType === 'array' && targetType === 'string') {
+								result[key] = subtree.push(targetSubtree)
+							} else {
+								console.error("Merge failed. A mixin was attempted but the '" + key + "' property has invalid types for its values")
+							}
+						} else {
+							console.error("Merge failed. The '" + key + "' property of style trees you are merging don't match validly. `tree` has type '" + treeType + "' and `target` has type + '" + targetType + "'")
+						}
+					}
+				} else {
+					result[key] = subtree
+				}
+			}
+		}
+		return result
+	}
+
+	/**
      * Based on the style tree passed to the engine, applies all styles
-     * @return {function} the selector engine, generally jQuery, but Sizzle as a fall back
-     */
+     * @return {object} the selector engine, generally jQuery, but Sizzle as a fall back
+    */
 	findLibrary() {
 		if (typeof $ !== 'undefined') {
 			this.findType = 'jquery'
@@ -50,7 +211,7 @@ class Descartes {
 
 	/**
      * Based on the style tree passed to the engine, applies all styles
-     */
+    */
 	render() {
 		this.flatten()
 		this.cascade()
@@ -65,28 +226,41 @@ class Descartes {
 	*/
 	flatten(tree = this.sanitize(tree), parentSelector = "", priority = this.mappingsPriority) {
 		for (let selector in tree) {
+			if (Array.isArray(tree[selector]) || typeof tree[selector] != 'object') continue
 			let rules = Object.assign({}, tree[selector])
-			let _listeners = rules[this.listeners]
-			// Add the rules in here
+			let listeners = []
+			let scope = {}
 			for (let rule in rules) {
-				if (!this.isRule(rule)) {
-					let subtree = null
-					if (parentSelector === "") parentSelector = selector
-					let nestedSelector = this.nestSelector(rule, parentSelector)
-					if (!this.isMeta(rule) && !this.isRule(rule)) {
-						subtree = {}
-						subtree[nestedSelector] = rules[rule]
+				if (!this.isProperty(rule)) {
+					if (this.isScope(rule)) {
+						scope = rules[rule]
+					} else if (this.isListener(rule)) {
+						let listener = this.parseListener(rule)
+						listeners.push({
+							selector: listener[0],
+							event: listener[1],
+							rules: rules[rule]
+						})
+					} else {
+						let subtree = null
+						if (parentSelector === "") parentSelector = selector
+						let nestedSelector = this.nestSelector(rule, parentSelector)
+						if (!this.isMixin(rule) && !this.isProperty(rule)) {
+							subtree = {}
+							subtree[nestedSelector] = rules[rule]
+						}
+						if (subtree !== null) {
+							this.flatten(subtree, nestedSelector, priority + 1)
+						}
 					}
 					delete rules[rule]
-					if (subtree !== null) {
-						this.flatten(subtree, nestedSelector, priority + 1)
-					}
 				}
 			}
 			this.mappings[selector] = {
 				rules,
-				_listeners,
-				priority
+				priority,
+				listeners,
+				scope
 			}
 			if (this.mappingsPriority < priority) this.mappingsPriority = priority
 		}
@@ -98,29 +272,47 @@ class Descartes {
 	 * @param {object} tree - the current unsanitized tree or subtree
 	 * @return {object} a new, validated style tree with no expanded mixins
 	*/
-	sanitize(tree = this.tree) {
+	sanitize(rawTree = this.tree, scope = {}) {
+		if (Array.isArray(rawTree)) return null
+		let tree = Object.assign({}, rawTree)
 		if (typeof tree === 'object') {
 			let result = {}
+			for (let key in tree) {
+				if (key.substring(0,1) === this.SCOPE_KEYWORD) {
+					scope[key] = tree[key]
+				}
+			}
 			for (let key in tree) {
 				let value = tree[key]
 				if (value === null) continue
 				let keyObject = this.parseKey(key)
-				if (keyObject.type === this.selector) {
-					result[keyObject.key] = this.sanitize(value)
-				} else if (keyObject.type === this.property) {
-					result[keyObject.key] = value
-				} else if (keyObject.type === this.meta) {
-					if (keyObject.key === this.mixins) {
-						let mixedRules = this.parseMixins(tree, key)
-						result = mixedRules
-					} else if (keyObject.key === this.listeners) {
-						result[keyObject.key] = value
-					}
+				if (keyObject.type === this.SELECTOR || keyObject.type === this.LISTENER) {
+					result[keyObject.key] = this.sanitize(value, keyObject.type === this.LISTENER ? scope : {})
+				} else if (keyObject.type === this.PROPERTY) {
+					result[keyObject.key] = this.parseScope(value, scope)
+				} else if (keyObject.type === this.MIXIN) {
+					let mixedRules = this.parseMixins(tree, key)
+					result = mixedRules
 				}
 			}
 			return result
 		}
 		return null
+	}
+
+	/**
+	 * Replaces any properties referencing scopes during sanitization
+	 * @param {object} value - the property or listener value to be replaced
+	 * @return {object} the resulting value based on the scope
+	*/
+	parseScope(value, scope) {
+		if (typeof value !== 'string') return value
+		if (value.substring(0, 1) === this.SCOPE_KEYWORD) {
+			if (scope.hasOwnProperty(value)) {
+				return scope[value]
+			}
+		}
+		return value
 	}
 
 	/**
@@ -130,7 +322,7 @@ class Descartes {
 	 * @return {object} the resulting ruleset with the calculated mixins
 	*/
 	parseMixins(ruleset, selector) {
-		let mixins = ruleset[this.mixins]
+		let mixins = ruleset[this.MIXINS_KEYWORD]
 
 		if (!Array.isArray(mixins)) {
 			mixins = [mixins]
@@ -146,7 +338,7 @@ class Descartes {
 				throw("'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
 			}
 		}
-		delete ruleset[this.mixins]
+		delete ruleset[this.MIXINS_KEYWORD]
 		return ruleset
 	}
 
@@ -194,15 +386,20 @@ class Descartes {
 	 * @param {string} property - the name of the property i.e. "border", "margin", etc.
 	 * @param {object} value - the unparsed value of the rule, a function, string, or number
 	 * @param {object} elem - the DOM element that the value function should use, if passed
-	 * @return {string} the valid CSS property value
+	 * @return {string, bool} the valid CSS property value, otherwise false
 	*/
 	computeRule(property, value, elem = null) {
 		// If the value is a function, evaluate the function to get the computed value
-		if (typeof value === 'function' && elem !== null) {
-			value = value(elem)
+		if (typeof value === 'function') {
+			try {
+				value = value(elem)
+			}
+			catch(e) {
+				return false
+			}
 		}
-		// If no value, skip
 		if (value === null) return null
+		if (value === undefined) return null
 		let except = ['font-weight', 'opacity', 'z-index']
 		if (Number(value) === value && except.indexOf(property) < 0) {
 			return value.toString() + "px"
@@ -221,11 +418,16 @@ class Descartes {
 	*/
 	applyPsuedo(selector, ruleset) {
 		if (this.hasPsuedo(selector)) {
-			let sheet = '<style type="text/css" class="_pseudo">' + selector + " {" + this.createStyleString(ruleset) + ' }</style>';
+			let sheetContents = selector + " {" + this.createStyleString(ruleset) + ' }';
 			if (this.findType === 'jquery') {
+				let sheet = '<style type="text/css" class="_pseudo">' + sheetContents + '</style>';
 				$(sheet).appendTo("body")
 				return
 			} else if (this.findType === 'sizzle') {
+				let sheet = document.createElement('style')
+				sheet.type = 'text/css'
+				sheet.class = '_psuedo'
+				sheet.innerHTML = sheetContents
 				document.body.appendChild(sheet)
 				return
 			}
@@ -238,24 +440,26 @@ class Descartes {
 	 * Binds event listeners for all selectors
 	*/
 	bindListeners() {
+		let _this = this
 		for (let selector in this.mappings) {
 			let mapping = this.mappings[selector]
-			let listeners = mapping[this.listeners]
-			if (typeof listeners === 'undefined') continue
-			let rules = mapping['rules']
+			let listeners = mapping.listeners
+			let defaultRules = mapping.rules
+			if (listeners.length === 0) continue
 			listeners.map(l => {
-				if (typeof l[0] === 'string') {
-					this.find(l[0]).map(x => {
-						x.addEventListener(l[1], () => {
-							this.applyRuleset(selector, rules)
-							this.paint()
-						})
-					})
-				} else {
-					l[0].addEventListener(l[1], () => {
-						this.applyRuleset(selector, rules)
+				if (l.selector === "window") l.selector = window
+				if (l.selector === "document") l.selector = document
+				let _ = () => {
+					if (_this.listening) {
+						this.applyRuleset(selector, l.rules)
 						this.paint()
-					})
+					}
+				}
+				this.find(l.selector).map(e => e.addEventListener(l.event, _))
+				for (let property in l.rules) {
+					if (defaultRules[property] === undefined) {
+						_()
+					}
 				}
 			})
 		}
@@ -274,16 +478,41 @@ class Descartes {
 	}
 
 	/**
+	 Replaces the current DOM with the stylesheet string
+	*/
+	showStyleSheet() {
+		this.stylesheet = true
+		this.listening = false
+		document.body.setAttribute('style', 'font-family: "Courier New", Courier, monospace; font-size: 14px;')
+		document.body.innerHTML = this.createStyleSheet()
+	}
+
+	/**
+	 * Generates a valid CSS stylesheet body based on the current mapping
+	 * @return {string} the final CSS ruleset string
+	*/
+	createStyleSheet() {
+		if (!this.mappings) return false;
+		let sheet = "";
+		for (let selector in this.mappings) {
+			let ruleset = this.mappings[selector].rules;
+			sheet += selector + " {" + this.createStyleString(ruleset) + "}<br/>"
+		}
+		return sheet
+	}
+
+	/**
 	 * Generate valid CSS ruleset as a string
 	 * @param {object} ruleset - a full ruleset to be converted
 	 * @param {object} elem - the DOM node to evaluate any functional values on
 	 * @return {string} the final CSS ruleset string
 	*/
-	createStyleString(ruleset, elem) {
+	createStyleString(ruleset, elem = null) {
 		let style = ""
 		for (let property in ruleset) {
-			let computedRule = this.computeRule(property, ruleset[property], elem)
-			style += property + ": " + computedRule + "; "
+			let value = ruleset[property];
+			let computedRule = this.computeRule(property, value, elem)
+			if (computedRule) style += property + ": " + computedRule + "; "
 		}
 		style = style.slice(0, -1);
 		return style
@@ -310,12 +539,20 @@ class Descartes {
 	 * @return {object} an object with the original key and its type
 	*/
 	parseKey(key) {
-		let isMeta = this.isMeta(key)
-		let isRule = this.isRule(key)
-		return {
-			key,
-			type: isMeta ? this.meta : isRule ? this.property : this.selector
+		let obj = {
+			key: key,
+			type : this.SELECTOR
 		}
+		if (this.isMixin(key)) {
+			obj.type = this.MIXIN
+	    } else if (this.isScope(key)) {
+			obj.type = this.SCOPE
+		} else if (this.isListener(key)) {
+			obj.type = this.LISTENER
+		} else if (this.isProperty(key)) {
+			obj.type = this.PROPERTY
+		}
+		return obj
 	}
 
 	/**
@@ -323,14 +560,34 @@ class Descartes {
 	 * @return {bool} whether the key is a Descartes meta rule
 	*/
 	isMeta(key) {
-		const metas = [this.mixins, this.listeners]
-		return metas.indexOf(key) > -1
+		return this.isMixin(key) || this.isListener(key)
+	}
+
+	/** Checks if the key is specifying a mixin
+	 * @return {bool} whether the key matches the mixins keyword
+	*/
+	isScope(key) {
+		return key.substring(0,1) === this.SCOPE_KEYWORD
+	}
+
+	/** Checks if the key is specifying a mixin
+	 * @return {bool} whether the key matches the mixins keyword
+	*/
+	isMixin(key) {
+		return key === this.MIXINS_KEYWORD
+	}
+
+	/** Checks if the key is a listener
+	 * @return {bool} whether the key is a listener with a prefix and event
+	*/
+	isListener(key) {
+		return this.parseListener(key).length === 2
 	}
 
 	/** Checks if the key is a valid CSS property
 	 * @return {bool} whether the key is a valid CSS property
 	*/
-	isRule(key) {
+	isProperty(key) {
 		return this.properties.indexOf(key) > -1
 	}
 
@@ -339,6 +596,12 @@ class Descartes {
 	*/
 	isSuffix(key) {
 		return key.substr(0, 1) === '&'
+	}
+
+	parseListener(key) {
+		const pattern = new RegExp('\\' + this.LISTENER_PREFIX + '\\((.+?)\\)+\.(.+?)$')
+		var result = key.match(pattern)
+		return (result !== null && result[0] === result.input && result.length === 3) ? [result[1], result[2]] : []
 	}
 
 	/**

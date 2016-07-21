@@ -10,21 +10,91 @@ var Plato = function () {
 	function Plato() {
 		_classCallCheck(this, Plato);
 
-		this.wrapper = 1200;
-		this.mobileBreak = 800;
-		this.columns = 12;
+		this.layout = {
+			wrappers: {
+				default: 1200,
+				mobile: 800
+			},
+			grid: {
+				columns: 12,
+				gutter: 1.6,
+				fixedGutter: 15
+			}
+		};
 
-		this.gutter = 1.6;
-		this.fixedGutter = 15;
+		this.typography = {
+			font: {
+				base: "Helvetica",
+				heading: "Helvetica"
+			},
+			size: {
+				base: "1em"
+			},
+			lineHeight: {
+				base: 1.5,
+				heading: 1.2
+			}
+		};
+
+		this.colors = {
+			background: {
+				primary: "#fff",
+				secondary: "#333"
+			}
+		};
 	}
 
-	/* Value functions */
-
-	// rgba()
-	// ----------
-	// Shorthand for rgba() colors
-
 	_createClass(Plato, [{
+		key: "base",
+		value: function base() {
+			var tree = {
+				"html": {
+					"box-sizing": "border-box",
+					"body": {
+						"font-family": this.typography.font.base,
+						"background": this.colors.background.primary,
+						".row": { _mixins: this.row() },
+						".col1": { _mixins: this.col(1) },
+						".col2": { _mixins: this.col(2) },
+						".col3": { _mixins: this.col(3) },
+						".col4": { _mixins: this.col(4) },
+						".col5": { _mixins: this.col(5) },
+						".col6": { _mixins: this.col(6) },
+						".col7": { _mixins: this.col(7) },
+						".col8": { _mixins: this.col(8) },
+						".col9": { _mixins: this.col(9) },
+						".col10": { _mixins: this.col(10) },
+						".col11": { _mixins: this.col(11) },
+						".col12": { _mixins: this.col(12) },
+						".table-row": { _mixins: this.tableRow() },
+						".table-col1": { _mixins: this.tableCol(1) },
+						".table-col2": { _mixins: this.tableCol(2) },
+						".table-col3": { _mixins: this.tableCol(3) },
+						".table-col4": { _mixins: this.tableCol(4) },
+						".table-col5": { _mixins: this.tableCol(5) },
+						".table-col6": { _mixins: this.tableCol(6) },
+						".table-col7": { _mixins: this.tableCol(7) },
+						".table-col8": { _mixins: this.tableCol(8) },
+						".table-col9": { _mixins: this.tableCol(9) },
+						".table-col10": { _mixins: this.tableCol(10) },
+						".table-col11": { _mixins: this.tableCol(11) },
+						".table-col12": { _mixins: this.tableCol(12) }
+					}
+				},
+				"*, *::before, *::after": {
+					"box-sizing": "border-box"
+				}
+			};
+			return tree;
+		}
+
+		/* Value functions */
+
+		// rgba()
+		// ----------
+		// Shorthand for rgba() colors
+
+	}, {
 		key: "rgba",
 		value: function rgba() {
 			var r = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
@@ -65,7 +135,7 @@ var Plato = function () {
 	}, {
 		key: "wrapper",
 		value: function wrapper() {
-			var width = arguments.length <= 0 || arguments[0] === undefined ? this.wrapper : arguments[0];
+			var width = arguments.length <= 0 || arguments[0] === undefined ? this.layout.wrappers : arguments[0];
 
 			return {
 				"max-width": width,
@@ -100,13 +170,14 @@ var Plato = function () {
 			var _this = this;
 
 			return Object.assign(this.clearfix(), {
-				"_listeners": [[window, "resize"]],
 				"box-sizing": "border-box",
-				"margin-left": function marginLeft() {
-					return window.innerWidth >= _this.mobileBreak ? 0 : _this.fixedGutter;
-				},
-				"margin-right": function marginRight() {
-					return window.innerWidth >= _this.mobileBreak ? 0 : _this.fixedGutter;
+				"$(window).resize": {
+					"margin-left": function marginLeft() {
+						return window.innerWidth >= _this.layout.wrappers.mobile ? null : _this.layout.grid.fixedGutter;
+					},
+					"margin-right": function marginRight() {
+						return window.innerWidth >= _this.layout.wrappers.mobile ? null : _this.layout.grid.fixedGutter;
+					}
 				}
 			});
 		}
@@ -116,16 +187,17 @@ var Plato = function () {
 			var _this2 = this;
 
 			return Object.assign(this.clearfix(), {
-				"_listeners": [[window, "resize"]],
-				"display": function display() {
-					return window.innerWidth >= _this2.mobileBreak ? "table" : "block";
-				},
 				"box-sizing": "border-box",
-				"margin-left": function marginLeft() {
-					return window.innerWidth >= _this2.mobileBreak ? 0 : _this2.fixedGutter;
-				},
-				"margin-right": function marginRight() {
-					return window.innerWidth >= _this2.mobileBreak ? 0 : _this2.fixedGutter;
+				"$(window).resize": {
+					"margin-left": function marginLeft() {
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? null : _this2.layout.grid.fixedGutter;
+					},
+					"margin-right": function marginRight() {
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? null : _this2.layout.grid.fixedGutter;
+					},
+					"display": function display() {
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? "table" : "block";
+					}
 				}
 			});
 		}
@@ -142,26 +214,27 @@ var Plato = function () {
 
 			var _this3 = this;
 
-			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.columns : arguments[2];
-			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.gutter : arguments[3];
+			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.layout.grid.columns : arguments[2];
+			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.layout.grid.gutter : arguments[3];
 
 			var calc = function calc(n, c, g) {
 				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
 			};
 			return {
-				"_listeners": [[window, "resize"]],
-				"float": function float() {
-					return window.innerWidth >= _this3.mobileBreak ? "left" : "none";
-				},
 				"box-sizing": "border-box",
-				"width": function width() {
-					return window.innerWidth >= _this3.mobileBreak ? calc(num, columns, gutter).toString() + "%" : "100%";
-				},
-				"margin-right": function marginRight(_) {
-					return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
-				},
-				"margin-bottom": function marginBottom(_) {
-					return window.innerWidth >= _this3.mobileBreak ? 0 : _this3.fixedGutter;
+				"$(window).resize": {
+					"width": function width() {
+						return window.innerWidth >= _this3.layout.wrappers.mobile ? calc(num, columns, gutter).toString() + "%" : "100%";
+					},
+					"margin-right": function marginRight(_) {
+						return _.nextElementSibling === null ? 0 : gutter.toString() + "%";
+					},
+					"margin-bottom": function marginBottom(_) {
+						return window.innerWidth >= _this3.layout.wrappers.mobile ? 0 : _this3.layout.grid.fixedGutter;
+					},
+					"float": function float() {
+						return window.innerWidth >= _this3.layout.wrappers.mobile ? "left" : "none";
+					}
 				}
 			};
 		}
@@ -173,23 +246,24 @@ var Plato = function () {
 
 			var _this4 = this;
 
-			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.columns : arguments[2];
-			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.gutter : arguments[3];
+			var columns = arguments.length <= 2 || arguments[2] === undefined ? this.layout.grid.columns : arguments[2];
+			var gutter = arguments.length <= 3 || arguments[3] === undefined ? this.layout.grid.gutter : arguments[3];
 
 			var calc = function calc(n, c, g) {
 				return n * ((100 - (c - 1) * g) / c) + (n - 1) * g;
 			};
 			return {
-				"_listeners": [[window, "resize"]],
-				"display": function display() {
-					return window.innerWidth >= _this4.mobileBreak ? "table-cell" : "block";
-				},
 				"box-sizing": "border-box",
-				"width": function width() {
-					return window.innerWidth >= _this4.mobileBreak ? (calc(num, columns, gutter) + gutter).toString() + "%" : "100%";
-				},
-				"margin-bottom": function marginBottom(_) {
-					return window.innerWidth >= _this4.mobileBreak ? 0 : _this4.fixedGutter;
+				"$(window).resize": {
+					"display": function display() {
+						return window.innerWidth >= _this4.layout.wrappers.mobile ? "table-cell" : "block";
+					},
+					"width": function width() {
+						return window.innerWidth >= _this4.layout.wrappers.mobile ? (calc(num, columns, gutter) + gutter).toString() + "%" : "100%";
+					},
+					"margin-bottom": function marginBottom(_) {
+						return window.innerWidth >= _this4.layout.wrappers.mobile ? 0 : _this4.layout.grid.fixedGutter;
+					}
 				}
 			};
 		}

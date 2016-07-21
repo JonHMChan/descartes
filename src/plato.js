@@ -1,12 +1,80 @@
 /*! Plato v0.0.1 | (c) Jonathan Chan @jonhmchan */
 class Plato {
 	constructor() {
-		this.wrapper = 1200
-		this.mobileBreak = 800
-		this.columns = 12
+		this.layout = {
+			wrappers: {
+				default: 1200,
+				mobile: 800
+			},
+			grid: {
+				columns: 12,
+				gutter: 1.6,
+				fixedGutter: 15
+			}
+		}
 
-		this.gutter = 1.6
-		this.fixedGutter = 15
+		this.typography = {
+			font: {
+				base: "Helvetica",
+				heading: "Helvetica"
+			},
+			size: {
+				base: "1em",
+			},
+			lineHeight: {
+				base: 1.5,
+				heading: 1.2
+			}
+		}
+
+		this.colors = {
+			background: {
+				primary: "#fff",
+				secondary: "#333"
+			}
+		}
+	}
+
+	base() {
+		let tree = {
+			"html": {
+				"box-sizing": "border-box",
+				"body": {
+					"font-family": this.typography.font.base,
+					"background": this.colors.background.primary,
+					".row": { _mixins: this.row() },
+					".col1": { _mixins: this.col(1) },
+					".col2": { _mixins: this.col(2) },
+					".col3": { _mixins: this.col(3) },
+					".col4": { _mixins: this.col(4) },
+					".col5": { _mixins: this.col(5) },
+					".col6": { _mixins: this.col(6) },
+					".col7": { _mixins: this.col(7) },
+					".col8": { _mixins: this.col(8) },
+					".col9": { _mixins: this.col(9) },
+					".col10": { _mixins: this.col(10) },
+					".col11": { _mixins: this.col(11) },
+					".col12": { _mixins: this.col(12) },
+					".table-row": { _mixins: this.tableRow() },
+					".table-col1": { _mixins: this.tableCol(1) },
+					".table-col2": { _mixins: this.tableCol(2) },
+					".table-col3": { _mixins: this.tableCol(3) },
+					".table-col4": { _mixins: this.tableCol(4) },
+					".table-col5": { _mixins: this.tableCol(5) },
+					".table-col6": { _mixins: this.tableCol(6) },
+					".table-col7": { _mixins: this.tableCol(7) },
+					".table-col8": { _mixins: this.tableCol(8) },
+					".table-col9": { _mixins: this.tableCol(9) },
+					".table-col10": { _mixins: this.tableCol(10) },
+					".table-col11": { _mixins: this.tableCol(11) },
+					".table-col12": { _mixins: this.tableCol(12) },
+				}
+			},
+			"*, *::before, *::after": {
+				"box-sizing": "border-box"
+			}
+		}
+		return tree
 	}
 
 	/* Value functions */
@@ -33,7 +101,7 @@ class Plato {
 	// Wrapper
 	// ----------
 	// Sets the maximum width of content and centers it within parent, default is set by object
-	wrapper(width = this.wrapper) {
+	wrapper(width = this.layout.wrappers) {
 		return {
 			"max-width": width,
 			"margin-left": "auto",
@@ -59,48 +127,52 @@ class Plato {
 	// Used as part of the grid, applies resets and clearfixes
 	row() {
 		return Object.assign(this.clearfix(), {
-			"_listeners": [[window, "resize"]],
 			"box-sizing": "border-box",
-			"margin-left": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter },
-			"margin-right": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
+			"$(window).resize": {
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+			}
 		})
 	}
 
 	tableRow() {
 		return Object.assign(this.clearfix(), {
-			"_listeners": [[window, "resize"]],
-			"display": () => {
-				return (window.innerWidth >= this.mobileBreak) ? "table" : "block"
-			},
 			"box-sizing": "border-box",
-			"margin-left": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter },
-			"margin-right": () => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
+			"$(window).resize": {
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+				"display": () => {
+					return (window.innerWidth >= this.layout.wrappers.mobile) ? "table" : "block"
+				}
+			}
 		})
 	}
 
 	// Column
 	// ----------
 	// Used in combination with `row()` to create a grid
-	col(num = 1, offset = 0, columns = this.columns, gutter = this.gutter) {
+	col(num = 1, offset = 0, columns = this.layout.grid.columns, gutter = this.layout.grid.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
-			"_listeners": [[window, "resize"]],
-			"float": () => { return (window.innerWidth >= this.mobileBreak) ? "left" : "none" },
 			"box-sizing": "border-box",
-			"width": () => { return (window.innerWidth >= this.mobileBreak) ? calc(num,columns,gutter).toString() + "%" : "100%" },
-			"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") },
-			"margin-bottom": (_) => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
+			"$(window).resize": {
+				"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? calc(num,columns,gutter).toString() + "%" : "100%" },
+				"margin-right": (_) => { return (_.nextElementSibling === null) ? 0 : (gutter.toString() + "%") },
+				"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter },
+				"float": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "left" : "none" }
+			}
 		}
 	}
 
-	tableCol(num = 1, offset = 0, columns = this.columns, gutter = this.gutter) {
+	tableCol(num = 1, offset = 0, columns = this.layout.grid.columns, gutter = this.layout.grid.gutter) {
 		const calc = (n, c, g) => { return ((n*((100-((c-1)*g))/c))+((n-1)*g)) }
 		return {
-			"_listeners": [[window, "resize"]],
-			"display": () => { return (window.innerWidth >= this.mobileBreak) ? "table-cell" : "block" },
 			"box-sizing": "border-box",
-			"width": () => { return (window.innerWidth >= this.mobileBreak) ? (calc(num,columns,gutter) + gutter).toString() + "%" : "100%" },
-			"margin-bottom": (_) => { return (window.innerWidth >= this.mobileBreak) ? 0 : this.fixedGutter }
+			"$(window).resize": {
+				"display": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "table-cell" : "block" },
+				"width": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? (calc(num,columns,gutter) + gutter).toString() + "%" : "100%" },
+				"margin-bottom": (_) => { return (window.innerWidth >= this.layout.wrappers.mobile) ? 0 : this.layout.grid.fixedGutter }
+			}
 		}
 	}
 }

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <script type="text/javascript" src="dist/descartes.js"></script>
+    </head>
+    <body>
+        <h1>I compute, therefore I am.</h1>
+        <div class="row">
+            <div class="col4">
+                One
+            </div>
+            <div class="col4">
+                Two
+            </div>
+            <div class="col4">
+                Three
+            </div>
+        </div>
+
+        <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="dist/plato.js"></script>
+        <script type="text/javascript">
+            var p = new Plato();
+        	var d = new Descartes(p.base());
+            var newTree = {
+                "html": {
+                    "@fontSize": 150,
+                    "font-size": 15,
+                    "$(window).click": {
+                        "font-size": "@fontSize"
+                    }
+                }
+            }
+            d.add(newTree)
+        </script>
+    </body>
+</html>
