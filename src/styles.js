@@ -311,9 +311,10 @@ const d = new Descartes({
 						}
 					},
 					".table-row": {
-						"_listeners": [[window, 'resize']],
 						"_mixins": [p.tableRow(), wrapper],
-						"min-height": () => { return window.innerHeight },
+						"$(window).resize": {
+							"min-height": () => { return window.innerHeight }
+						},
 						".table-col5": {
 							"_mixins": p.tableCol(5),
 							"vertical-align": "middle",
