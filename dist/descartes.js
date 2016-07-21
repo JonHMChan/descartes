@@ -6,7 +6,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/*! Descartes v0.0.2 | (c) Jonathan Chan @jonhmchan */
+/*! Descartes v0.0.3 | (c) Jonathan Chan @jonhmchan */
 
 /** Class representing a full Descartes engine */
 
