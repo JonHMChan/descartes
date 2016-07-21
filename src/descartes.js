@@ -1,4 +1,4 @@
-/*! Descartes v0.0.2 | (c) Jonathan Chan @jonhmchan */
+/*! Descartes v0.0.3 | (c) Jonathan Chan @jonhmchan */
 
 /** Class representing a full Descartes engine */
 class Descartes {

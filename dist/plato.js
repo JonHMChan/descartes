@@ -28,7 +28,8 @@ var Plato = function () {
 				heading: "Helvetica"
 			},
 			size: {
-				base: "1em"
+				unit: "em",
+				base: 1.0
 			},
 			lineHeight: {
 				base: 1.5,
@@ -49,10 +50,15 @@ var Plato = function () {
 		value: function base() {
 			var tree = {
 				"html": {
-					"box-sizing": "border-box",
+					"margin": 0,
+					"padding": 0,
+					"height": "100%",
+					"font-family": this.typography.font.base,
+					"background": this.colors.background.primary,
 					"body": {
-						"font-family": this.typography.font.base,
-						"background": this.colors.background.primary,
+						"margin": 0,
+						"padding": 0,
+						"height": "100%",
 						".row": { _mixins: this.row() },
 						".col1": { _mixins: this.col(1) },
 						".col2": { _mixins: this.col(2) },
@@ -135,7 +141,7 @@ var Plato = function () {
 	}, {
 		key: "wrapper",
 		value: function wrapper() {
-			var width = arguments.length <= 0 || arguments[0] === undefined ? this.layout.wrappers : arguments[0];
+			var width = arguments.length <= 0 || arguments[0] === undefined ? this.layout.wrappers.default : arguments[0];
 
 			return {
 				"max-width": width,
@@ -173,10 +179,10 @@ var Plato = function () {
 				"box-sizing": "border-box",
 				"$(window).resize": {
 					"margin-left": function marginLeft() {
-						return window.innerWidth >= _this.layout.wrappers.mobile ? null : _this.layout.grid.fixedGutter;
+						return window.innerWidth >= _this.layout.wrappers.mobile ? "auto" : _this.layout.grid.fixedGutter;
 					},
 					"margin-right": function marginRight() {
-						return window.innerWidth >= _this.layout.wrappers.mobile ? null : _this.layout.grid.fixedGutter;
+						return window.innerWidth >= _this.layout.wrappers.mobile ? "auto" : _this.layout.grid.fixedGutter;
 					}
 				}
 			});
@@ -190,10 +196,10 @@ var Plato = function () {
 				"box-sizing": "border-box",
 				"$(window).resize": {
 					"margin-left": function marginLeft() {
-						return window.innerWidth >= _this2.layout.wrappers.mobile ? null : _this2.layout.grid.fixedGutter;
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? "auto" : _this2.layout.grid.fixedGutter;
 					},
 					"margin-right": function marginRight() {
-						return window.innerWidth >= _this2.layout.wrappers.mobile ? null : _this2.layout.grid.fixedGutter;
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? "auto" : _this2.layout.grid.fixedGutter;
 					},
 					"display": function display() {
 						return window.innerWidth >= _this2.layout.wrappers.mobile ? "table" : "block";

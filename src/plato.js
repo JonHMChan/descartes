@@ -19,7 +19,8 @@ class Plato {
 				heading: "Helvetica"
 			},
 			size: {
-				base: "1em",
+				unit: "em",
+				base: 1.0,
 			},
 			lineHeight: {
 				base: 1.5,
@@ -38,10 +39,15 @@ class Plato {
 	base() {
 		let tree = {
 			"html": {
-				"box-sizing": "border-box",
+				"margin": 0,
+				"padding": 0,
+				"height": "100%",
+				"font-family": this.typography.font.base,
+				"background": this.colors.background.primary,
 				"body": {
-					"font-family": this.typography.font.base,
-					"background": this.colors.background.primary,
+					"margin": 0,
+					"padding": 0,
+					"height": "100%",
 					".row": { _mixins: this.row() },
 					".col1": { _mixins: this.col(1) },
 					".col2": { _mixins: this.col(2) },
@@ -101,7 +107,7 @@ class Plato {
 	// Wrapper
 	// ----------
 	// Sets the maximum width of content and centers it within parent, default is set by object
-	wrapper(width = this.layout.wrappers) {
+	wrapper(width = this.layout.wrappers.default) {
 		return {
 			"max-width": width,
 			"margin-left": "auto",
@@ -129,8 +135,8 @@ class Plato {
 		return Object.assign(this.clearfix(), {
 			"box-sizing": "border-box",
 			"$(window).resize": {
-				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
-				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "auto" : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "auto" : this.layout.grid.fixedGutter },
 			}
 		})
 	}
@@ -139,8 +145,8 @@ class Plato {
 		return Object.assign(this.clearfix(), {
 			"box-sizing": "border-box",
 			"$(window).resize": {
-				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
-				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? null : this.layout.grid.fixedGutter },
+				"margin-left": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "auto" : this.layout.grid.fixedGutter },
+				"margin-right": () => { return (window.innerWidth >= this.layout.wrappers.mobile) ? "auto" : this.layout.grid.fixedGutter },
 				"display": () => {
 					return (window.innerWidth >= this.layout.wrappers.mobile) ? "table" : "block"
 				}
