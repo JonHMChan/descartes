@@ -173,10 +173,10 @@ var Plato = function () {
 				"box-sizing": "border-box",
 				"$(window).resize": {
 					"margin-left": function marginLeft() {
-						return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
+						return window.innerWidth >= _this.layout.wrappers.mobile ? null : _this.layout.grid.fixedGutter;
 					},
 					"margin-right": function marginRight() {
-						return window.innerWidth >= _this.layout.wrappers.mobile ? 0 : _this.layout.grid.fixedGutter;
+						return window.innerWidth >= _this.layout.wrappers.mobile ? null : _this.layout.grid.fixedGutter;
 					}
 				}
 			});
@@ -190,10 +190,10 @@ var Plato = function () {
 				"box-sizing": "border-box",
 				"$(window).resize": {
 					"margin-left": function marginLeft() {
-						return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? null : _this2.layout.grid.fixedGutter;
 					},
 					"margin-right": function marginRight() {
-						return window.innerWidth >= _this2.layout.wrappers.mobile ? 0 : _this2.layout.grid.fixedGutter;
+						return window.innerWidth >= _this2.layout.wrappers.mobile ? null : _this2.layout.grid.fixedGutter;
 					},
 					"display": function display() {
 						return window.innerWidth >= _this2.layout.wrappers.mobile ? "table" : "block";

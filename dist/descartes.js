@@ -159,6 +159,18 @@ var Descartes = function () {
 		}
 
 		/**
+   * Adds another style tree to the existing tree and renders
+   * @param {object} tree - the style tree to be added
+  */
+
+	}, {
+		key: 'add',
+		value: function add(tree) {
+			this.tree = this.merge(tree);
+			this.render();
+		}
+
+		/**
    * Merges a style tree with another tree
    * @param {object} tree - the style tree to be merged in
    * @param {object} target - the target style tree, sensibly defaults to this.tree
@@ -326,13 +338,16 @@ var Descartes = function () {
 			if ((typeof tree === 'undefined' ? 'undefined' : _typeof(tree)) === 'object') {
 				var result = {};
 				for (var key in tree) {
+					if (key.substring(0, 1) === this.SCOPE_KEYWORD) {
+						scope[key] = tree[key];
+					}
+				}
+				for (var key in tree) {
 					var value = tree[key];
 					if (value === null) continue;
 					var keyObject = this.parseKey(key);
-					if (keyObject.type === this.SCOPE) {
-						scope = Object.assign(scope, value);
-					} else if (keyObject.type === this.SELECTOR || keyObject.type === this.LISTENER) {
-						result[keyObject.key] = this.sanitize(value, scope);
+					if (keyObject.type === this.SELECTOR || keyObject.type === this.LISTENER) {
+						result[keyObject.key] = this.sanitize(value, keyObject.type === this.LISTENER ? scope : {});
 					} else if (keyObject.type === this.PROPERTY) {
 						result[keyObject.key] = this.parseScope(value, scope);
 					} else if (keyObject.type === this.MIXIN) {
@@ -356,9 +371,8 @@ var Descartes = function () {
 		value: function parseScope(value, scope) {
 			if (typeof value !== 'string') return value;
 			if (value.substring(0, 1) === this.SCOPE_KEYWORD) {
-				var key = value.substring(1);
-				if (scope.hasOwnProperty(key)) {
-					return scope[key];
+				if (scope.hasOwnProperty(value)) {
+					return scope[value];
 				}
 			}
 			return value;
@@ -535,7 +549,9 @@ var Descartes = function () {
 							_this4.paint();
 						}
 					};
-					l.selector.addEventListener(l.event, _);
+					_this4.find(l.selector).map(function (e) {
+						return e.addEventListener(l.event, _);
+					});
 					for (var property in l.rules) {
 						if (defaultRules[property] === undefined) {
 							_();
@@ -681,7 +697,7 @@ var Descartes = function () {
 	}, {
 		key: 'isScope',
 		value: function isScope(key) {
-			return key === this.SCOPE_KEYWORD;
+			return key.substring(0, 1) === this.SCOPE_KEYWORD;
 		}
 
 		/** Checks if the key is specifying a mixin
