@@ -34,31 +34,341 @@
 	        </div>
 	      </div>
 	    </section>
-	    <section class="center">
+	    <section>
 	      <div class="table-row">
 	        <div class="table-col12">
-	          <h2>My name is Jon. I work on some cool stuff.</h2>
-	          <br/>
-	          <br/>
+	          <h2>Hello, world! I'm Jon.</h2>
+	          <br/><br/>
 	          <div class="row">
 	          	<div class="col6">
-	          		<p>Stack Overflow</p>
+	          		<img src="../img/so_logo.png" width="50" height="50">
+	          		<p><strong><a href="http://stackoverflow.com">Stack Overflow</a></strong><br/>Marketing Engineering Lead</p>
+	          		<br/>
+	          		<p>I run all engineering support for the Stack Overflow brand. Infrastructure, campaign production, and evangelism. I think a lot about growth and what people think about us.</p>
 	          	</div>
 	          	<div class="col6">
-	          		<p>Bento</p>
+	          		<img src="../img/bento_logo.png" width="63" height="50">
+	          		<p><strong><a href="http://bento.io">Bento</a></strong><br/>Founder</p>
+	          		<br/>
+	          		<p>My passion project building tools to help self-taught developers find the best places to learn to code. I think a lot about how people learn, especially beginners.</p>
 	          	</div>
 	          </div>
 	        </div>
 	      </div>
 	    </section>
-	    <section class="center">
+	    <section>
 	      <div class="table-row">
 	        <div class="table-col12">
-	          <p>Thanks!</p>
+	          <h2>What's on the menu?</h2>
+	          <br/><br/>
+	          <div class="row">
+	          	<div class="col4">
+	          		<h2>1</h2>
+	          		<p><strong>Motivation</strong></p>
+	          		<p>What is Descartes? Learn more about the inspiration for this experiment and why I built this library.</p>
+	          	</div>
+	          	<div class="col4">
+	          		<h2>2</h2>
+	          		<p><strong>Features</strong></p>
+	          		<p>A quick tour of all the things that Descartes can currently do, showing off some of its features.</p>
+	          	</div>
+	          </div>
+	          <br/>
+	          <div class="row">
+	          	<div class="col4">
+	          		<h2>3</h2>
+	          		<p><strong>How It Works</strong></p>
+	          		<p>This is how I actually built the project, and what the approaches were to solving some of techincal issues.</p>
+	          	</div>
+	          	<div class="col4">
+	          		<h2>4</h2>
+	          		<p><strong>What's Next</strong></p>
+	          		<p>This is still an experiment, and there's a lot to still try out. Find out what I'm still thinking about.</p>
+	          	</div>
+	          </div>
 	        </div>
 	      </div>
 	    </section>
-	    <p><a id="twitter" href="https://twitter.com/jonhmchan"><i class="fa fa-twitter"></i> @jonhmchan</a></p>
+
+
+
+	    <section class="center">
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h1>1</h1>
+	    			<h2>Motivation</h2>
+	    			<p>You've got to be joking right?</p>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section class="center">
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Of course! But maybe...</h2>
+	    			<div class="row">
+		    			<div class="col-md-2">&nbsp;</div>
+		    			<div class="col-md-6">
+			    			<p><a href="https://www.youtube.com/watch?v=KFwBH2fb2E0" target="_blank"><strong>Louis C.K. did a great routine</strong></a> that I always think about when I talk about Descartes. He talks about a class of thoughts he has that he doesn't believe - truly outlandish horrid things - but that he can't help but feel <em>might</em> make sense. It's a category of thoughts he calls "Of course! But maybe..."</p>
+							<br/>
+			    			<p>Of course, writing CSS in JavaScript is a terrible idea! Of course! But maybe...</p>
+		    			</div>
+	    			</div>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+			<div class="table-row">
+				<div class="table-col12">
+				  <h2>Are you a wizard?</h2>
+				  <br/>
+				  <div class="row">
+				  	<div class="col9">
+				  		<p>Of course, you should use CSS to do your styling whenever possible. If I want to simply vertically align something like a <code>div</code>, this makes absolutely <em>perfect sense</em>.</p>
+				  	</div>
+				  </div>
+				  <div class="row">
+			  			<div class="col6">
+<pre><code class="css">.verticalAlign {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}</code></pre>
+						</div>
+					</div>
+					<p>...right? Of course! Of course this makes sense!</p>
+				</div>
+			</div>
+	    </section>
+	    <section>
+			<div class="table-row">
+				<div class="table-col9">
+					<p><strong>But maybe...that's just stupidly unreadable</strong></p>
+			  		<p>Maybe writing CSS can feel like you're invoking magical spells. Maybe if I really wanted to make a <code>div</code> element vertically align, I should be able to do so with some basic math. Something sensible might use references to the DOM like this.</p>
+			  		<div class="row">
+			  			<div class="col10">
+<pre><code class="css">.verticalAlign {
+  margin-top: (parent.height - this.height) / 2 + "px";
+}</code></pre>
+						</div>
+					</div>
+					<p>But of course not! DOM access and JavaScript in CSS is crazy! Of course...</p>
+			  	</div>
+			</div>
+	    </section>
+	    <section>
+			<div class="table-row">
+				<div class="table-col12">
+				  <h2>Cascading Cluster Spasms</h2>
+				  <br/>
+				  <div class="row">
+				  	<div class="col9">
+				  		<p>You've also probably had some nightmares about how cascading works. Why is everything global? Why does specificity denote priority? If you had to write plain CSS lately, you know it gets really messy really quickly with all the namespacing and repitition.</p>
+				  	</div>
+				  </div>
+				  <div class="row">
+			  			<div class="col6">
+<pre><code class="css">html {
+  margin: 0;
+  padding: 0;
+}
+html body {
+  margin: 0;
+  padding: 0;
+}
+html body section {
+  max-width: 800px;
+}</code></pre>
+						</div>
+					</div>
+				</div>
+			</div>
+	    </section>
+	    <section>
+			<div class="table-row">
+				<div class="table-col9">
+		  			<p>But wait! We have things like LESS and SASS, you say. Nesting rules together lets you get rid of worrying about specificity and even gives you pretty things like variables and mixins. You can turn the CSS we had earlier and use a preprocessor instead.</p>
+				  	<div class="row">
+			  			<div class="col6">
+<pre><code class="sass">html {
+  margin: 0;
+  padding: 0;
+  body {
+    margin: 0;
+    padding: 0;
+    section {
+      max-width: 800px;
+    }
+  }
+}</code></pre>
+						</div>
+					</div>
+					<p>All you need to do is learn a new language and install the preprocessor and limit yourself to something like variables and some functions and stuff. Easy, right?</p>
+				</div>
+			</div>
+	    </section>
+	    <section>
+			<div class="table-row">
+				<div class="table-col9">
+					<p><strong>But maybe...we already have JavaScript?</strong>
+		  			<p>We <em>could</em> represent what you want in LESS or SASS in a JavaScript object literal and apply the styles yourself. You would also get all the nice built-in functionality of JavaScript with variables, loops, conditionals, functions, and you wouldn't need to use another technology pattern completely, maybe?</p>
+				  	<div class="row">
+				  		<div class="col6">
+<pre><code class="sass">// LESS or SASS
+
+html {
+  margin: 0;
+  padding: 0;
+  body {
+    margin: 0;
+    padding: 0;
+    section {
+      max-width: 800px;
+    }
+  }
+}</code></pre>
+						</div>
+			  			<div class="col6">
+<pre><code class="javascript">var styles = {
+  "html": {
+    "margin": 0,
+    "padding": 0,
+    "body": {
+      "margin": 0,
+      "padding": 0,
+      "section": {
+        "max-width": "800px"
+      }
+    }
+  }
+}</code></pre>
+						</div>
+					</div>
+					<p>Of course not! Separation of responsibilities! I wouldn't dream of doing that in production! Of course...</p>
+				</div>
+			</div>
+	    </section>
+		<section class="center">
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Maybe turned into an idea</h2>
+					<br/><br/>
+					<div class="row">
+						<div class="col4">
+							<p><strong>Thought Experiment</strong></p>
+							<p>I don't think this will necessarily blow up into a large project, but it's certainly something worth exploring as an exercise. Who knows?</p>
+						</div>
+						<div class="col4">
+							<p><strong>Responsibilities Breakdown</strong></p>
+							<p>Any sufficiently complex user interface starts to blur the separation of responsibilities between JavaScript and CSS. Parallax, for example.</p>
+						</div>
+						<div class="col4">
+							<p><strong>Recent Conversations</strong></p>
+							<p>There are a lot of people talking about what it might mean to <em>not</em> use CSS anymore. One of <a href="https://www.youtube.com/watch?v=iniwPUEbPUM" target="_blank"><strong>my favorite talks</strong></a> is by @fat who created Bootstrap.</p>
+						</div>
+					</div>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+				<div class="table-col5">
+					<strong>index.html</strong>
+<pre><code class="javascript">&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;script type="text/javascript" src="descartes.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
+  &lt;script type="text/javascript" src="styles.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+				</div>
+				<div class="table-col2">&nbsp;</div>
+				<div class="table-col5">
+			<strong>styles.js</strong>
+<pre><code class="javascript">var rand_angle = function() {
+  return Math.round(Math.random() * (180) - 90);
+};
+var rand_rgba = function() {
+  return "rgba("+[255,255,255].map(function(x) {
+    return Math.round(Math.random() * x);
+  }).join()+", 1)"
+};
+
+new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
+  "html": {
+    "body": { // Nest selectors just like in Sass and Less
+      "font-family": "Arial", // Set properties
+      "font-size": 10 + 6, // = 16, converts to px
+      "$(body).keyup": { // Bind events
+        "background": function() { // To certain properties
+          return 'linear-gradient('
+            + rand_angle().toString() + 'deg,'
+            + rand_rgba() + ','
+            + rand_rgba() + ')'
+        } // ...and use functions to generate property values!
+      }
+    }
+  }
+})
+</code></pre>
+	    	</div>
+	    </section>
+
+
+	    <section class="center">
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h1>2</h1>
+	    			<h2>Features</h2>
+	    			<p>What Descartes can do</p>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section class="center">
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h1>3</h1>
+	    			<h2>How It Works</h2>
+	    			<p>Going under the hood</p>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section class="center">
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h1>4</h1>
+	    			<h2>What's Next</h2>
+	    			<p>Things rockin' my noggin</p>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section class="center">
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h1>Thanks</h1>
+	    			<h2><i class="fa fa-twitter"></i> jonhmchan</h2>
+	    			<br/><br/>
+	    			<div class="row">
+	    				<div class="col4">
+	    					<p><strong>Still experimenting</strong></p>
+	    					<p>I'm really looking for feedback, even really crazy ones.</p>
+	    				</div>
+	    				<div class="col4">
+	    					<p><strong>Contribute on GitHub</strong></p>
+	    					<p>If this really interests you, take a look at the code.</p>
+	    				</div>
+	    				<div class="col4">
+	    					<p><strong>Follow me on Twitter</strong></p>
+	    					<p>I would love to keep the conversation going</p>
+	    				</div>
+	    			</div>
+	    		</div>
+	    	</div>
+	    </section>
+	    <p><a id="twitter" href="https://twitter.com/jonhmchan"><i class="fa fa-twitter"></i> jonhmchan</a></p>
 	</body>
 	<script type="text/javascript" src="../jquery-2.2.0.min.js"></script>
 	<script type="text/javascript" src="../dist/plato.js"></script>
