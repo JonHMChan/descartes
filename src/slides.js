@@ -49,9 +49,9 @@ d.add({
 				"font-weight": 100,
 				"text-shadow": "0 0 25px #666",
 				"margin": 0,
+				"line-height": 1,
 				"$(window).resize": {
-					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5}, 
-					"line-height": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 60, 110) * 1.5}
+					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5}
 				}
 			},
 			"h2": {
@@ -67,7 +67,7 @@ d.add({
 			},
 			"p": {
 				"font-weight": 100,
-				"text-shadow": "0 0 50px #666",
+				"text-shadow": "0 0 10px #666",
 				"margin": 0,
 			},
 			"a": {
