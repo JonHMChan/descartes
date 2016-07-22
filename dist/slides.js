@@ -46,8 +46,10 @@ d.add({
 		"body": {
 			"color": "#fff",
 			"font-family": "Source Sans Pro, Helvetica",
+			"font-size": 18,
 			"h1": {
 				"font-weight": 100,
+				"text-shadow": "0 0 25px #666",
 				"margin": 0,
 				"$(window).resize": {
 					"font-size": function fontSize() {
@@ -60,6 +62,7 @@ d.add({
 			},
 			"h2": {
 				"font-weight": 100,
+				"text-shadow": "0 0 25px #666",
 				"margin": 0,
 				"$(window).resize": {
 					"font-size": function fontSize() {
@@ -67,13 +70,26 @@ d.add({
 					}
 				}
 			},
+			"strong": {
+				"font-weight": 600
+			},
 			"p": {
 				"font-weight": 100,
-				"margin": 0,
-				"$(window).resize": {
-					"font-size": function fontSize() {
-						return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 24, 36);
-					}
+				"text-shadow": "0 0 50px #666",
+				"margin": 0
+			},
+			"a": {
+				"color": "#fff",
+				"text-decoration": "none"
+			},
+			"hr": {
+				"margin-bottom": 50,
+				"opacity": 0.5
+			},
+			"pre": {
+				"font-size": 16,
+				"code": {
+					"padding": 15
 				}
 			},
 			"#twitter": {
@@ -82,10 +98,11 @@ d.add({
 				"right": 25,
 				"color": "#fff",
 				"transition": "1.0s all ease",
-				"opacity": function opacity() {
-					return currentSlide > 0 ? 1.0 : 0;
-				},
-				"text-decoration": "none"
+				"$(body).keyup": { "opacity": function opacity() {
+						return currentSlide > 0 ? 1.0 : 0;
+					} },
+				"text-decoration": "none",
+				"z-index": 999
 			},
 			"section": {
 				"@gradient": function gradient(_) {
@@ -96,6 +113,9 @@ d.add({
 					"background": "@gradient",
 					"opacity": function opacity(_) {
 						return $(_).index() === currentSlide ? 1.0 : 0.0;
+					},
+					"z-index": function zIndex(_) {
+						return $(_).index() === currentSlide ? 100 : 0;
 					}
 				},
 				"transition": "1.0s all ease",
@@ -108,6 +128,7 @@ d.add({
 				},
 				".table-row": {
 					"_mixins": p.wrapper(900),
+					"width": "100%",
 					"$(window).resize": {
 						"min-height": function minHeight() {
 							return window.innerHeight;

@@ -44,8 +44,10 @@ d.add({
 		"body": {
 			"color": "#fff",
 			"font-family": "Source Sans Pro, Helvetica",
+			"font-size": 18,
 			"h1": {
 				"font-weight": 100,
+				"text-shadow": "0 0 25px #666",
 				"margin": 0,
 				"$(window).resize": {
 					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5}, 
@@ -54,16 +56,32 @@ d.add({
 			},
 			"h2": {
 				"font-weight": 100,
+				"text-shadow": "0 0 25px #666",
 				"margin": 0,
 				"$(window).resize": {
 					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 24, 36) * 1.5 }
 				}
 			},
+			"strong": {
+				"font-weight": 600
+			},
 			"p": {
 				"font-weight": 100,
+				"text-shadow": "0 0 50px #666",
 				"margin": 0,
-				"$(window).resize": {
-					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 24, 36) }
+			},
+			"a": {
+				"color": "#fff",
+				"text-decoration": "none"
+			},
+			"hr": {
+				"margin-bottom": 50,
+				"opacity": 0.5
+			},
+			"pre": {
+				"font-size": 16,
+				"code": {
+					"padding": 15
 				}
 			},
 			"#twitter": {
@@ -72,8 +90,9 @@ d.add({
 				"right": 25,
 				"color": "#fff",
 				"transition": "1.0s all ease",
-				"opacity": () => { return currentSlide > 0 ? 1.0 : 0 },
-				"text-decoration": "none"
+				"$(body).keyup": { "opacity": () => { return currentSlide > 0 ? 1.0 : 0 } },
+				"text-decoration": "none",
+				"z-index": 999
 			},
 			"section": {
 				"@gradient": function gradient(_) {
@@ -84,6 +103,9 @@ d.add({
 					"background": "@gradient",
 					"opacity": (_) => {
 						return $(_).index() === currentSlide ? 1.0 : 0.0
+					},
+					"z-index": (_) => {
+						return $(_).index() === currentSlide ? 100 : 0
 					}
 				},
 				"transition": "1.0s all ease",
@@ -96,6 +118,7 @@ d.add({
 				},
 				".table-row": {
 					"_mixins": p.wrapper(900),
+					"width": "100%",
 					"$(window).resize": {
 						"min-height": function minHeight() {
 							return window.innerHeight;
