@@ -17,24 +17,24 @@ var random_gradient = () => {
 }
 
 var p = new Plato();
-var d = new Descartes(p.base());
+Descartes.add(p.base())
 var currentSlide = 0
 var lastBg = null
 $("body").keydown(function(e) {
   if(e.keyCode == 37) { // left
   	if (currentSlide > 0) {
   		currentSlide--;
-  		d.paint()
+  		Descartes.paint()
   	}
   }
   else if(e.keyCode == 39) { // right
   	if (currentSlide < $("section").length - 1) {
 	    currentSlide++;
-	    d.paint()
+	    Descartes.paint()
 	}
   }
 });
-d.add({
+Descartes.add({
 	"html": {
 		"background": (_) => {
 			if (currentSlide === 0) return random_gradient()
@@ -49,9 +49,9 @@ d.add({
 				"font-weight": 100,
 				"text-shadow": "0 0 25px #666",
 				"margin": 0,
+				"line-height": 1,
 				"$(window).resize": {
-					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5}, 
-					"line-height": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 60, 110) * 1.5}
+					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5}
 				}
 			},
 			"h2": {
@@ -67,7 +67,7 @@ d.add({
 			},
 			"p": {
 				"font-weight": 100,
-				"text-shadow": "0 0 50px #666",
+				"text-shadow": "0 0 10px #666",
 				"margin": 0,
 			},
 			"a": {

@@ -18,7 +18,7 @@ var random_gradient = function random_gradient() {
 };
 
 var p = new Plato();
-var d = new Descartes(p.base());
+Descartes.add(p.base());
 var currentSlide = 0;
 var lastBg = null;
 $("body").keydown(function (e) {
@@ -26,17 +26,17 @@ $("body").keydown(function (e) {
 		// left
 		if (currentSlide > 0) {
 			currentSlide--;
-			d.paint();
+			Descartes.paint();
 		}
 	} else if (e.keyCode == 39) {
 		// right
 		if (currentSlide < $("section").length - 1) {
 			currentSlide++;
-			d.paint();
+			Descartes.paint();
 		}
 	}
 });
-d.add({
+Descartes.add({
 	"html": {
 		"background": function background(_) {
 			if (currentSlide === 0) return random_gradient();
@@ -51,12 +51,10 @@ d.add({
 				"font-weight": 100,
 				"text-shadow": "0 0 25px #666",
 				"margin": 0,
+				"line-height": 1,
 				"$(window).resize": {
 					"font-size": function fontSize() {
 						return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5;
-					},
-					"line-height": function lineHeight() {
-						return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 60, 110) * 1.5;
 					}
 				}
 			},
@@ -75,7 +73,7 @@ d.add({
 			},
 			"p": {
 				"font-weight": 100,
-				"text-shadow": "0 0 50px #666",
+				"text-shadow": "0 0 10px #666",
 				"margin": 0
 			},
 			"a": {
