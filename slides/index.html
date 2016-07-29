@@ -168,7 +168,7 @@
 	    <section>
 			<div class="table-row">
 				<div class="table-col12">
-				  <h2>Cascading Cluster Spasms</h2>
+				  <h2>Cascading S**t Show</h2>
 				  <br/>
 				  <div class="row">
 				  	<div class="col9">
@@ -309,7 +309,7 @@ var rand_rgba = function() {
   }).join()+", 1)"
 };
 
-new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
+Descartes.add({ // Just put descartes.js in the &lt;head&gt; tag
   "html": {
     "body": { // Nest selectors just like in Sass and Less
       "font-family": "Arial", // Set properties
@@ -345,13 +345,276 @@ new Descartes({ // Just put descartes.js in the &lt;head&gt; tag
 	    		<div class="table-col12">
 	    			<h2>Basic Application</h2>
 	    			<br/>
-	    			<p>At its core, Descartes lets you define styles as a JavaScript object to be applied to the DOM. There are several ways you can do this.</p>
+	    			<p>At its core, Descartes lets you define styles as a JavaScript object literal to be applied to the DOM. There are several ways you can do this, but for small projects, you can apply things pretty directly.</p>
 
-<pre><code class="javascript">
+<pre><code class="javascript">Descartes.add({ // Completely inline
+  "html": {
+    "margin": 0, // Sensible px conversion
+    "padding": 0,
+    "font-family": "Arial", // Dashed CSS properties
+    "body": { // Nesting
+    	"margin": 0,
+    	"padding": 0,
+    	"background": "#fff"
+    }
+  }
+})
 </code></pre>
 	    		</div>
 	    	</div>
 	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Construction</h2>
+	    			<br/>
+	    			<p>However, defining a huge object literal doesn't make sense when you have a lot of styles. Breaking your styles apart and constructing them before passing it into the engine makes a lot more sense.</p>
+
+<pre><code class="javascript">var styles = {} // Base style
+
+var html = { // html rules
+  "margin": 0,
+  "padding": 0,
+  "font-family": "Arial"
+}
+
+var body = { // body rules
+  "margin": 0,
+  "padding": 0,
+  "background": "#fff"
+}
+
+// Do construction
+html.body = body
+styles.html = html
+
+// Pass into the engine
+Descartes.add(styles)
+</code></pre>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Flexibility</h2>
+	    			<br/>
+	    			<p>Breaking your styles apart also gives you a lot more flexibility to do things like share styles and modify them for special cases. Take these slightly different styles for <code>p</code> that has its <code>font-size</code> property changed when nested inside of a <code>section</code></p>
+
+	    			<div class="row">
+	    				<div class="col6">
+<pre><code class="javascript">var styles = {
+  "body": {
+  	"margin": 0,
+  	"padding": 0,
+    "p": {
+      "margin-bottom": 15,
+      "font-size": 18
+    },
+    "section": {
+      "background": "#fff",
+      "p": { // Reused with small changes
+        "margin-bottom": 15,
+        "font-size": 16 // Modified
+      }
+    }
+  }
+}
+</code></pre>
+						</div>
+						<div class="col6">
+<pre><code class="javascript">var styles = {}
+
+var body = {
+  "margin": 0,
+  "padding": 0	
+}
+
+var section = {
+  "background": "#fff"
+}
+
+var p = {
+  "margin-bottom": 15,
+  "font-size": 18
+}
+
+styles.body = body
+styles.body.section = section
+styles.body.p = p
+p["font-size"] = 16
+styles.body.section = p // Modified
+</code></pre>
+						</div>
+					</div>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Values</h2>
+	    			<br/>
+	    			<p>Things get really interesting when you realize you have a lot more control over what values you can set using JavaScript. The first obvious thing you can do is do mathematical manipulations on number values.</p>
+
+<pre><code class="javascript">var styles = {
+  ".golden": { // Golden ratio rectangle
+    "height": 400,
+    "width": 400 * ((1 + Math.sqrt(5)) / 2) // 647.2135955
+  },
+  "p": {
+    "font-size": 16, // sensible px conversion
+    "line-height": 1.5 // no px conversion
+  }
+}
+
+// Pass into the engine
+Descartes.add(styles)
+</code></pre>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Functions</h2>
+	    			<br/>
+	    			<p>You can also use JavaScript to describe an entire ruleset for a selector. Take a closer look at the <code>.golden</code> class we had earlier that created a rectangle with golden ratio proportions. What if we wanted to create multiple rectangles of different sizes?</p>
+	    			<div class="row">
+	    				<div class="col6">
+<pre><code class="javascript">function golden(small) {
+  return small * ((1 + Math.sqrt(5)) / 2)
+}
+
+var styles = {
+  ".golden": { // Golden ratio rectangle
+    "height": 400,
+    "width": golden(400) // 647.2135955
+  },
+  ".golden2": {
+    "height": 600,
+    "width": golden(600) // 970.82039325
+  }
+}
+
+// Pass into the engine
+Descartes.add(styles)
+</code></pre>
+						</div>
+						<div class="col6">
+<pre><code class="javascript">function goldenRules(small) {
+  return {
+    "height": small,
+    "width": small*((1 + Math.sqrt(5)) / 2)
+  }
+}
+
+// Or just generate the rules directly
+var styles = {
+  ".golden": goldenRules(400),
+  ".golden2": goldenRules(600)
+}
+
+// Pass into the engine
+Descartes.add(styles)
+</code></pre>
+						</div>
+					</div>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>DOM Access</h2>
+	    			<br/>
+	    			<p>JavaScript also gives you DOM access so you can use the properties of elements to do some really interesting things. Here's a naive reimplementation of mobile responsiveness using <code>window.innerWidth</code>.</p>
+
+<pre><code class="javascript">var styles = {
+  ".wrapper": { // Responsive wrapper
+    "margin": "0 auto",
+    "width": (window.innerWidth > 800) ? 800 : "100%"
+  }
+}
+
+// Pass into the engine
+Descartes.add(styles)
+</code></pre>
+
+					<p>Now this will actually work for initial load, but it won't actually work when the window resizes. What's happening here is that <code class="javascript">(window.innerWidth > 800) ? 800 : "100%"</code> only evaluates when <code>Descartes.add()</code> is fired, generally, when the document is ready.</p>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Function Values</h2>
+	    			<br/>
+	    			<p>To give you more fine grain control, you can pass functions as values to any property you define in your styles. You simply return the value you ultimately want to use. The function gets fired on <code>Descartes.add()</code> but you can now re-evaluate the function multiple times during JavaScript execution. This would be the first step to giving you better control.</p>
+
+<pre><code class="javascript">var styles = {
+  ".wrapper": { // Responsive wrapper
+    "margin": "0 auto",
+    "width": function() { // Passing function literal
+      return (window.innerWidth > 800) ? 800 : "100%"
+    }
+  }
+}
+
+// Pass into the engine
+Descartes.add(styles)
+</code></pre>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Using Elements</h2>
+	    			<br/>
+	    			<p>As an aside, Descartes will also pass in the individual element that is being selected as the first argument to the function you define. So, you can define styles that depend on an element by element basis.</p>
+
+<pre><code class="javascript">var styles = {
+  ".verticalAlign": { // Responsive wrapper
+    "margin-top": function(elem) { // elem is the individual element
+      return (elem.parentElement.height - elem.height) / 2
+    }
+  }
+}
+
+// Pass into the engine
+Descartes.add(styles)
+</code></pre>
+	    		</div>
+	    	</div>
+	    </section>
+	    <section>
+	    	<div class="table-row">
+	    		<div class="table-col12">
+	    			<h2>Aliases</h2>
+	    			<br/>
+	    			<p>Now that you've defined a function value, how do you reference that particular function? Descartes has a concept of aliases that lets you define unique names accessible as properties in <code>Descartes.alias</code>. All you need to do is define an <code>alias</code> property for any selector and you can access any function value.</p>
+
+<pre><code class="javascript">var styles = {
+  ".wrapper": { // Responsive wrapper
+    "alias": "wrapper", // Must be unique
+    "margin": "0 auto",
+    "width": function() { // Descartes.alias.wrapper.width
+      return (window.innerWidth > 800) ? 800 : "100%"
+    }
+  }
+}
+
+// Pass into the engine
+Descartes.add(styles)
+
+$(window).resize(Descartes.alias.wrapper.width)
+</code></pre>
+	    		</div>
+	    	</div>
+	    </section>
+
+
 
 
 

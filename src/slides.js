@@ -33,6 +33,11 @@ $("body").keydown(function(e) {
 	    Descartes.paint()
 	}
   }
+  if(history.pushState) {
+    history.pushState(null, null, '#' + currentSlide);
+  } else {
+	location.hash = '#' + currentSlide;
+  }
 });
 Descartes.add({
 	"html": {
@@ -46,21 +51,21 @@ Descartes.add({
 			"font-family": "Source Sans Pro, Helvetica",
 			"font-size": 18,
 			"h1": {
+				"alias": "h1",
 				"font-weight": 100,
 				"text-shadow": "0 0 25px #666",
 				"margin": 0,
 				"line-height": 1,
-				"$(window).resize": {
-					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5}
-				}
+				"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 72, 120) * 1.5}
+				
 			},
 			"h2": {
+				"alias": "h2",
 				"font-weight": 100,
 				"text-shadow": "0 0 25px #666",
 				"margin": 0,
-				"$(window).resize": {
-					"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 24, 36) * 1.5 }
-				}
+				"font-size": () => { return p.scale(window.innerWidth, p.layout.wrappers.mobile, 3600, 24, 36) * 1.5 }
+				
 			},
 			"strong": {
 				"font-weight": 600
@@ -85,28 +90,25 @@ Descartes.add({
 				}
 			},
 			"#twitter": {
+				"alias": "twitter",
 				"position": "fixed",
 				"bottom": 25,
 				"right": 25,
 				"color": "#fff",
 				"transition": "1.0s all ease",
-				"$(body).keyup": { "opacity": () => { return currentSlide > 0 ? 1.0 : 0 } },
+				"opacity": () => { return currentSlide > 0 ? 1.0 : 0 },
 				"text-decoration": "none",
 				"z-index": 999
 			},
 			"section": {
-				"@gradient": function gradient(_) {
-					return $(_).index() === currentSlide ? random_gradient() : null;
-				},
+				"alias": "section",
 				"min-height": "100%",
-				"$(body).keyup": {
-					"background": "@gradient",
-					"opacity": (_) => {
-						return $(_).index() === currentSlide ? 1.0 : 0.0
-					},
-					"z-index": (_) => {
-						return $(_).index() === currentSlide ? 100 : 0
-					}
+				"background": (_) => { return $(_).index() === currentSlide ? random_gradient() : null; },
+				"opacity": (_) => {
+					return $(_).index() === currentSlide ? 1.0 : 0.0
+				},
+				"z-index": (_) => {
+					return $(_).index() === currentSlide ? 100 : 0
 				},
 				"transition": "1.0s all ease",
 				"position": "absolute",
@@ -117,12 +119,11 @@ Descartes.add({
 					"text-align": "center"
 				},
 				".table-row": {
+					"alias": "tableRow",
 					"_mixins": p.wrapper(900),
 					"width": "100%",
-					"$(window).resize": {
-						"min-height": function minHeight() {
-							return window.innerHeight;
-						}
+					"min-height": function minHeight() {
+						return window.innerHeight;
 					},
 					"> div": {
 						"vertical-align": "middle"
@@ -132,3 +133,27 @@ Descartes.add({
 		}
 	}
 });
+
+$(window).resize(function() {
+	Descartes.alias.h1["font-size"]()
+	Descartes.alias.h2["font-size"]()
+	Descartes.alias.tableRow["min-height"]()
+})
+$("body").keyup(function(e) {
+	Descartes.alias.section.background()
+	Descartes.alias.section.opacity()
+	Descartes.alias.section["z-index"]()
+	Descartes.alias.twitter.opacity()
+})
+$(document).ready(function() {
+	currentSlide = parseInt(window.location.hash.substr(1));
+	if (currentSlide !== NaN && currentSlide > 0) {
+		Descartes.alias.section.background()
+		Descartes.alias.section.opacity()
+		Descartes.alias.section["z-index"]()
+		Descartes.alias.twitter.opacity()
+		Descartes.paint()
+	} else {
+		currentSlide = 0
+	}
+})
