@@ -604,6 +604,7 @@ var DescartesEngine = function () {
 		this.mappings = {};
 		this.mappingsPriority = 0;
 		this.listening = true;
+		this.alias = {};
 
 		this.SELECTOR = 'selector';
 		this.PROPERTY = 'property';
@@ -611,11 +612,13 @@ var DescartesEngine = function () {
 		this.MIXIN = 'mixin';
 		this.LISTENER = 'listener';
 		this.SCOPE = 'scope';
+		this.ALIAS = 'alias';
 
 		this.MIXINS_KEYWORD = '_mixins';
 		this.LISTENERS_KEYWORD = '_listeners';
 		this.LISTENER_PREFIX = '$';
 		this.SCOPE_KEYWORD = "@";
+		this.ALIAS_KEYWORD = "alias";
 
 		this.prefixes = ['-webkit-', '-moz-', '-o-', '-ms-'];
 		this.properties = ['align-content', 'align-items', 'align-self', 'all', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'backface-visibility', 'background', 'background-attachment', 'background-blend-mode', 'background-clip', 'background-color', 'background-image', 'background-origin', 'background-position', 'background-repeat', 'background-size', 'border', 'border-bottom', 'border-bottom-color', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-bottom-style', 'border-bottom-width', 'border-collapse', 'border-color', 'border-image', 'border-image-outset', 'border-image-repeat', 'border-image-slice', 'border-image-source', 'border-image-width', 'border-left', 'border-left-color', 'border-left-style', 'border-left-width', 'border-radius', 'border-right', 'border-right-color', 'border-right-style', 'border-right-width', 'border-spacing', 'border-style', 'border-top', 'border-top-color', 'border-top-left-radius', 'border-top-right-radius', 'border-top-style', 'border-top-width', 'border-width', 'bottom', 'box-shadow', 'box-sizing', 'caption-side', 'clear', 'clip', 'color', 'column-count', 'column-fill', 'column-gap', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'content', 'counter-increment', 'counter-reset', 'cursor', 'direction', 'display', 'empty-cells', 'filter', 'flex', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'float', 'font', '@font-face', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'hanging-punctuation', 'height', 'justify-content', '@keyframes', 'left', 'letter-spacing', 'line-height', 'list-style', 'list-style-image', 'list-style-position', 'list-style-type', 'margin', 'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'max-height', 'max-width', '@media', 'min-height', 'min-width', 'nav-down', 'nav-index', 'nav-left', 'nav-right', 'nav-up', 'opacity', 'order', 'outline', 'outline-color', 'outline-offset', 'outline-style', 'outline-width', 'overflow', 'overflow-x', 'overflow-y', 'padding', 'padding-bottom', 'padding-left', 'padding-right', 'padding-top', 'page-break-after', 'page-break-before', 'page-break-inside', 'perspective', 'perspective-origin', 'position', 'quotes', 'resize', 'right', 'tab-size', 'table-layout', 'text-align', 'text-align-last', 'text-decoration', 'text-decoration-color', 'text-decoration-line', 'text-decoration-style', 'text-indent', 'text-justify', 'text-overflow', 'text-shadow', 'text-transform', 'top', 'transform', 'transform-origin', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'unicode-bidi', 'vertical-align', 'visibility', 'white-space', 'width', 'word-break', 'word-spacing', 'word-wrap', 'z-index'];
@@ -843,6 +846,7 @@ var DescartesEngine = function () {
 		key: "render",
 		value: function render() {
 			this.flatten();
+			this.bindAliases();
 			this.cascade();
 			this.paint();
 			this.bindListeners();
@@ -866,9 +870,12 @@ var DescartesEngine = function () {
 				var rules = Object.assign({}, tree[selector]);
 				var listeners = [];
 				var scope = {};
+				var alias = null;
 				for (var rule in rules) {
 					if (!this.isProperty(rule)) {
-						if (this.isScope(rule)) {
+						if (this.isAlias(rule)) {
+							alias = rules[rule];
+						} else if (this.isScope(rule)) {
 							scope = rules[rule];
 						} else if (this.isListener(rule)) {
 							var listener = this.parseListener(rule);
@@ -893,6 +900,7 @@ var DescartesEngine = function () {
 					}
 				}
 				this.mappings[selector] = {
+					alias: alias,
 					rules: rules,
 					priority: priority,
 					listeners: listeners,
@@ -935,6 +943,8 @@ var DescartesEngine = function () {
 					} else if (keyObject.type === this.MIXIN) {
 						var mixedRules = this.parseMixins(tree, key);
 						result = mixedRules;
+					} else if (keyObject.type === this.ALIAS) {
+						result[this.ALIAS_KEYWORD] = value;
 					}
 				}
 				return result;
@@ -991,24 +1001,64 @@ var DescartesEngine = function () {
 		}
 
 		/**
+   * Creates aliases for listener functions
+  */
+
+	}, {
+		key: "bindAliases",
+		value: function bindAliases() {
+			var _this2 = this;
+
+			var _loop = function _loop(selector) {
+				var mapping = _this2.mappings[selector];
+				var alias = mapping.alias;
+				if (_this2.alias.hasOwnProperty(alias)) {
+					console.error("An alias of the name '" + alias + "' already exists");
+				} else {
+					_this2.alias[alias] = {};
+					var listeners = {};
+					for (var property in mapping.rules) {
+						var value = mapping.rules[property];
+						if (typeof value === 'function') {
+							(function () {
+								var ruleset = {};
+								ruleset[property] = value;
+								listeners[property] = function () {
+									_this2.applyRuleset(selector, ruleset);
+									_this2.paint();
+									return true;
+								};
+							})();
+						}
+					}
+					_this2.alias[alias] = listeners;
+				}
+			};
+
+			for (var selector in this.mappings) {
+				_loop(selector);
+			}
+		}
+
+		/**
    * Prioritizes and cascades the style tree for the entire document
   */
 
 	}, {
 		key: "cascade",
 		value: function cascade() {
-			var _this2 = this;
+			var _this3 = this;
 
 			var prioritizedList = Array.apply(null, Array(this.mappingsPriority + 1)).map(function () {
 				return [];
 			});
 			for (var key in this.mappings) {
-				var mapping = this.mappings[key];
-				prioritizedList[mapping.priority].push([key, mapping.rules]);
+				var _mapping = this.mappings[key];
+				prioritizedList[_mapping.priority].push([key, _mapping.rules]);
 			}
 			prioritizedList.map(function (set) {
 				set.map(function (mapping) {
-					_this2.applyRuleset(mapping[0], mapping[1]);
+					_this3.applyRuleset(mapping[0], mapping[1]);
 				});
 			});
 		}
@@ -1022,7 +1072,7 @@ var DescartesEngine = function () {
 	}, {
 		key: "applyRuleset",
 		value: function applyRuleset() {
-			var _this3 = this;
+			var _this4 = this;
 
 			var selector = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
 			var ruleset = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
@@ -1037,7 +1087,7 @@ var DescartesEngine = function () {
 				style = style === null ? {} : JSON.parse(style);
 				var computed = {};
 				for (var property in ruleset) {
-					computed[property] = _this3.computeRule(property, ruleset[property], elem);
+					computed[property] = _this4.computeRule(property, ruleset[property], elem);
 				}
 				style = Object.assign(style, computed);
 				elem.setAttribute('data-descartes', JSON.stringify(style));
@@ -1113,12 +1163,12 @@ var DescartesEngine = function () {
 	}, {
 		key: "bindListeners",
 		value: function bindListeners() {
-			var _this4 = this;
+			var _this5 = this;
 
 			var _this = this;
 
-			var _loop = function _loop(selector) {
-				var mapping = _this4.mappings[selector];
+			var _loop2 = function _loop2(selector) {
+				var mapping = _this5.mappings[selector];
 				var listeners = mapping.listeners;
 				var defaultRules = mapping.rules;
 				if (listeners.length === 0) return "continue";
@@ -1127,11 +1177,11 @@ var DescartesEngine = function () {
 					if (l.selector === "document") l.selector = document;
 					var _ = function _() {
 						if (_this.listening) {
-							_this4.applyRuleset(selector, l.rules);
-							_this4.paint();
+							_this5.applyRuleset(selector, l.rules);
+							_this5.paint();
 						}
 					};
-					_this4.find(l.selector).map(function (e) {
+					_this5.find(l.selector).map(function (e) {
 						return e.addEventListener(l.event, _);
 					});
 					for (var property in l.rules) {
@@ -1143,9 +1193,9 @@ var DescartesEngine = function () {
 			};
 
 			for (var selector in this.mappings) {
-				var _ret = _loop(selector);
+				var _ret3 = _loop2(selector);
 
-				if (_ret === "continue") continue;
+				if (_ret3 === "continue") continue;
 			}
 		}
 
@@ -1156,13 +1206,13 @@ var DescartesEngine = function () {
 	}, {
 		key: "paint",
 		value: function paint() {
-			var _this5 = this;
+			var _this6 = this;
 
 			var all = this.find("*");
 			all.map(function (x) {
 				var style = x.getAttribute('data-descartes');
 				if (typeof style === 'undefined' || style === null) return;
-				x.setAttribute('style', _this5.createStyleString(JSON.parse(style), x));
+				x.setAttribute('style', _this6.createStyleString(JSON.parse(style), x));
 			});
 		}
 
@@ -1249,7 +1299,9 @@ var DescartesEngine = function () {
 				key: key,
 				type: this.SELECTOR
 			};
-			if (this.isMixin(key)) {
+			if (this.isAlias(key)) {
+				obj.type = this.ALIAS;
+			} else if (this.isMixin(key)) {
 				obj.type = this.MIXIN;
 			} else if (this.isScope(key)) {
 				obj.type = this.SCOPE;
@@ -1270,6 +1322,17 @@ var DescartesEngine = function () {
 		key: "isMeta",
 		value: function isMeta(key) {
 			return this.isMixin(key) || this.isListener(key);
+		}
+
+		/**
+   * Checks if a key is special Descartes meta rule i.e. mixins, event listeners
+   * @return {bool} whether the key is a Descartes meta rule
+  */
+
+	}, {
+		key: "isAlias",
+		value: function isAlias(key) {
+			return key === this.ALIAS_KEYWORD;
 		}
 
 		/** Checks if the key is specifying a mixin

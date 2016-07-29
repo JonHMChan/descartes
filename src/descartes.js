@@ -16,6 +16,7 @@ class DescartesEngine {
 		this.mappings = {}
 		this.mappingsPriority = 0
 		this.listening = true
+		this.alias = {}
 
 		this.SELECTOR = 'selector'
 		this.PROPERTY = 'property'
@@ -23,11 +24,13 @@ class DescartesEngine {
 		this.MIXIN = 'mixin'
 		this.LISTENER = 'listener'
 		this.SCOPE = 'scope'
+		this.ALIAS = 'alias'
 
 		this.MIXINS_KEYWORD = '_mixins'
 		this.LISTENERS_KEYWORD = '_listeners'
 		this.LISTENER_PREFIX = '$'
 		this.SCOPE_KEYWORD = "@"
+		this.ALIAS_KEYWORD = "alias"
 		
 		this.prefixes = ['-webkit-', '-moz-', '-o-', '-ms-']
 		this.properties = ['align-content','align-items','align-self','all','animation','animation-delay','animation-direction','animation-duration','animation-fill-mode','animation-iteration-count','animation-name','animation-play-state','animation-timing-function','backface-visibility','background','background-attachment','background-blend-mode','background-clip','background-color','background-image','background-origin','background-position','background-repeat','background-size','border','border-bottom','border-bottom-color','border-bottom-left-radius','border-bottom-right-radius','border-bottom-style','border-bottom-width','border-collapse','border-color','border-image','border-image-outset','border-image-repeat','border-image-slice','border-image-source','border-image-width','border-left','border-left-color','border-left-style','border-left-width','border-radius','border-right','border-right-color','border-right-style','border-right-width','border-spacing','border-style','border-top','border-top-color','border-top-left-radius','border-top-right-radius','border-top-style','border-top-width','border-width','bottom','box-shadow','box-sizing','caption-side','clear','clip','color','column-count','column-fill','column-gap','column-rule','column-rule-color','column-rule-style','column-rule-width','column-span','column-width','columns','content','counter-increment','counter-reset','cursor','direction','display','empty-cells','filter','flex','flex-basis','flex-direction','flex-flow','flex-grow','flex-shrink','flex-wrap','float','font','@font-face','font-family','font-size','font-size-adjust','font-stretch','font-style','font-variant','font-weight','hanging-punctuation','height','justify-content','@keyframes','left','letter-spacing','line-height','list-style','list-style-image','list-style-position','list-style-type','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','@media','min-height','min-width','nav-down','nav-index','nav-left','nav-right','nav-up','opacity','order','outline','outline-color','outline-offset','outline-style','outline-width','overflow','overflow-x','overflow-y','padding','padding-bottom','padding-left','padding-right','padding-top','page-break-after','page-break-before','page-break-inside','perspective','perspective-origin','position','quotes','resize','right','tab-size','table-layout','text-align','text-align-last','text-decoration','text-decoration-color','text-decoration-line','text-decoration-style','text-indent','text-justify','text-overflow','text-shadow','text-transform','top','transform','transform-origin','transform-style','transition','transition-delay','transition-duration','transition-property','transition-timing-function','unicode-bidi','vertical-align','visibility','white-space','width','word-break','word-spacing','word-wrap','z-index']
@@ -222,6 +225,7 @@ class DescartesEngine {
     */
 	render() {
 		this.flatten()
+		this.bindAliases()
 		this.cascade()
 		this.paint()
 		this.bindListeners()
@@ -238,9 +242,12 @@ class DescartesEngine {
 			let rules = Object.assign({}, tree[selector])
 			let listeners = []
 			let scope = {}
+			let alias = null
 			for (let rule in rules) {
 				if (!this.isProperty(rule)) {
-					if (this.isScope(rule)) {
+					if (this.isAlias(rule)) {
+						alias = rules[rule]
+					} else if (this.isScope(rule)) {
 						scope = rules[rule]
 					} else if (this.isListener(rule)) {
 						let listener = this.parseListener(rule)
@@ -265,6 +272,7 @@ class DescartesEngine {
 				}
 			}
 			this.mappings[selector] = {
+				alias,
 				rules,
 				priority,
 				listeners,
@@ -301,6 +309,8 @@ class DescartesEngine {
 				} else if (keyObject.type === this.MIXIN) {
 					let mixedRules = this.parseMixins(tree, key)
 					result = mixedRules
+				} else if (keyObject.type === this.ALIAS) {
+					result[this.ALIAS_KEYWORD] = value
 				}
 			}
 			return result
@@ -348,6 +358,35 @@ class DescartesEngine {
 		}
 		delete ruleset[this.MIXINS_KEYWORD]
 		return ruleset
+	}
+
+	/**
+	 * Creates aliases for listener functions
+	*/
+	bindAliases() {
+		for (let selector in this.mappings) {
+			let mapping = this.mappings[selector]
+			let alias = mapping.alias
+			if (this.alias.hasOwnProperty(alias)) {
+				console.error("An alias of the name '" + alias + "' already exists")
+			} else {
+				this.alias[alias] = {}
+				let listeners = {}
+				for (let property in mapping.rules) {
+					let value = mapping.rules[property]
+					if (typeof value === 'function') {
+						let ruleset = {}
+						ruleset[property] = value
+						listeners[property] = () => {
+							this.applyRuleset(selector, ruleset)
+							this.paint()
+							return true
+						}
+					}
+				}
+				this.alias[alias] = listeners
+			}
+		}
 	}
 
 	/**
@@ -551,7 +590,9 @@ class DescartesEngine {
 			key: key,
 			type : this.SELECTOR
 		}
-		if (this.isMixin(key)) {
+		if (this.isAlias(key)) {
+			obj.type = this.ALIAS
+		} else if (this.isMixin(key)) {
 			obj.type = this.MIXIN
 	    } else if (this.isScope(key)) {
 			obj.type = this.SCOPE
@@ -569,6 +610,14 @@ class DescartesEngine {
 	*/
 	isMeta(key) {
 		return this.isMixin(key) || this.isListener(key)
+	}
+
+	/**
+	 * Checks if a key is special Descartes meta rule i.e. mixins, event listeners
+	 * @return {bool} whether the key is a Descartes meta rule
+	*/
+	isAlias(key) {
+		return key === this.ALIAS_KEYWORD
 	}
 
 	/** Checks if the key is specifying a mixin
