@@ -367,7 +367,7 @@ class DescartesEngine {
 		for (let selector in this.mappings) {
 			let mapping = this.mappings[selector]
 			let alias = mapping.alias
-			if (this.alias.hasOwnProperty(alias)) {
+			if (this.alias.hasOwnProperty(alias) && alias !== null) {
 				console.error("An alias of the name '" + alias + "' already exists")
 			} else {
 				this.alias[alias] = {}

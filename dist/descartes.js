@@ -1012,7 +1012,7 @@ var DescartesEngine = function () {
 			var _loop = function _loop(selector) {
 				var mapping = _this2.mappings[selector];
 				var alias = mapping.alias;
-				if (_this2.alias.hasOwnProperty(alias)) {
+				if (_this2.alias.hasOwnProperty(alias) && alias !== null) {
 					console.error("An alias of the name '" + alias + "' already exists");
 				} else {
 					_this2.alias[alias] = {};
