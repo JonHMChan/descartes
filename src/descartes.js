@@ -21,12 +21,10 @@ class DescartesEngine {
 		this.SELECTOR = 'selector'
 		this.PROPERTY = 'property'
 		this.META = 'meta'
-		this.MIXIN = 'mixin'
 		this.LISTENER = 'listener'
 		this.SCOPE = 'scope'
 		this.ALIAS = 'alias'
 
-		this.MIXINS_KEYWORD = '_mixins'
 		this.LISTENERS_KEYWORD = '_listeners'
 		this.LISTENER_PREFIX = '$'
 		this.SCOPE_KEYWORD = "@"
@@ -69,28 +67,8 @@ class DescartesEngine {
 	}
 
 	_validateRule(property, value, tracer) {
-		if (property === this.MIXINS_KEYWORD) {
-			return this._validateMixin(property, value, tracer)
-		} else if (property === this.LISTENERS_KEYWORD) {
+		if (property === this.LISTENERS_KEYWORD) {
 			return this._validateListener(property, value, tracer)
-		}
-		return true
-	}
-
-	_validateMixin(property, value, tracer) {
-		if (this._isObject(value)) {
-				return true
-		} else if (Array.isArray(value)) {
-			for (let index in value) {
-				if (!this._isObject(value[index])) {
-					this._explode("Mixin value has an invalid type", tracer, index)
-					return false
-				}
-			}
-			return true
-		} else {
-			this._explode("Mixin has an invalid type", tracer)
-			return false
 		}
 		return true
 	}
@@ -145,6 +123,11 @@ class DescartesEngine {
 		this.render()
 	}
 
+	extend(target, source) {
+		let result = Object.assign({}, target)
+		return Object.assign(result, source)
+	}
+
 	/**
 	 * Merges a style tree with another tree
 	 * @param {object} tree - the style tree to be merged in
@@ -179,14 +162,6 @@ class DescartesEngine {
 						let targetType = typeof targetSubtree
 						if (this.isProperty(key)) {
 							result[key] = subtree
-						} else if (key === this.mixins) {
-							if (treeType === 'string' && targetType === 'array') {
-								result[key] = targetSubtree.pop(subtree)
-							} else if (treeType === 'array' && targetType === 'string') {
-								result[key] = subtree.push(targetSubtree)
-							} else {
-								console.error("Merge failed. A mixin was attempted but the '" + key + "' property has invalid types for its values")
-							}
 						} else {
 							console.error("Merge failed. The '" + key + "' property of style trees you are merging don't match validly. `tree` has type '" + treeType + "' and `target` has type + '" + targetType + "'")
 						}
@@ -260,7 +235,7 @@ class DescartesEngine {
 						let subtree = null
 						if (parentSelector === "") parentSelector = selector
 						let nestedSelector = this.nestSelector(rule, parentSelector)
-						if (!this.isMixin(rule) && !this.isProperty(rule)) {
+						if (!this.isProperty(rule)) {
 							subtree = {}
 							subtree[nestedSelector] = rules[rule]
 						}
@@ -306,9 +281,6 @@ class DescartesEngine {
 					result[keyObject.key] = this.sanitize(value, keyObject.type === this.LISTENER ? scope : {})
 				} else if (keyObject.type === this.PROPERTY) {
 					result[keyObject.key] = this.parseScope(value, scope)
-				} else if (keyObject.type === this.MIXIN) {
-					let mixedRules = this.parseMixins(tree, key)
-					result = mixedRules
 				} else if (keyObject.type === this.ALIAS) {
 					result[this.ALIAS_KEYWORD] = value
 				}
@@ -331,33 +303,6 @@ class DescartesEngine {
 			}
 		}
 		return value
-	}
-
-	/**
-	 * Calculates and expands mixins on a particular ruleset
-	 * @param {object} ruleset - the ruleset for the current selector
-	 * @param {string} selector - the relevant selector string
-	 * @return {object} the resulting ruleset with the calculated mixins
-	*/
-	parseMixins(ruleset, selector) {
-		let mixins = ruleset[this.MIXINS_KEYWORD]
-
-		if (!Array.isArray(mixins)) {
-			mixins = [mixins]
-		}
-
-		for (let index in mixins) {
-			let mixin = mixins[index]
-			if (mixin !== null && typeof mixin === 'object') {
-				for (let rule in mixin) {
-					if (!ruleset.hasOwnProperty(rule) || ruleset[rule] === null) ruleset[rule] = mixin[rule]
-				}
-			} else {
-				throw("'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.")
-			}
-		}
-		delete ruleset[this.MIXINS_KEYWORD]
-		return ruleset
 	}
 
 	/**
@@ -592,9 +537,7 @@ class DescartesEngine {
 		}
 		if (this.isAlias(key)) {
 			obj.type = this.ALIAS
-		} else if (this.isMixin(key)) {
-			obj.type = this.MIXIN
-	    } else if (this.isScope(key)) {
+		} else if (this.isScope(key)) {
 			obj.type = this.SCOPE
 		} else if (this.isListener(key)) {
 			obj.type = this.LISTENER
@@ -609,7 +552,7 @@ class DescartesEngine {
 	 * @return {bool} whether the key is a Descartes meta rule
 	*/
 	isMeta(key) {
-		return this.isMixin(key) || this.isListener(key)
+		return this.isListener(key)
 	}
 
 	/**
@@ -625,13 +568,6 @@ class DescartesEngine {
 	*/
 	isScope(key) {
 		return key.substring(0,1) === this.SCOPE_KEYWORD
-	}
-
-	/** Checks if the key is specifying a mixin
-	 * @return {bool} whether the key matches the mixins keyword
-	*/
-	isMixin(key) {
-		return key === this.MIXINS_KEYWORD
 	}
 
 	/** Checks if the key is a listener

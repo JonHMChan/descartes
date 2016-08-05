@@ -609,12 +609,10 @@ var DescartesEngine = function () {
 		this.SELECTOR = 'selector';
 		this.PROPERTY = 'property';
 		this.META = 'meta';
-		this.MIXIN = 'mixin';
 		this.LISTENER = 'listener';
 		this.SCOPE = 'scope';
 		this.ALIAS = 'alias';
 
-		this.MIXINS_KEYWORD = '_mixins';
 		this.LISTENERS_KEYWORD = '_listeners';
 		this.LISTENER_PREFIX = '$';
 		this.SCOPE_KEYWORD = "@";
@@ -666,29 +664,8 @@ var DescartesEngine = function () {
 	}, {
 		key: "_validateRule",
 		value: function _validateRule(property, value, tracer) {
-			if (property === this.MIXINS_KEYWORD) {
-				return this._validateMixin(property, value, tracer);
-			} else if (property === this.LISTENERS_KEYWORD) {
+			if (property === this.LISTENERS_KEYWORD) {
 				return this._validateListener(property, value, tracer);
-			}
-			return true;
-		}
-	}, {
-		key: "_validateMixin",
-		value: function _validateMixin(property, value, tracer) {
-			if (this._isObject(value)) {
-				return true;
-			} else if (Array.isArray(value)) {
-				for (var index in value) {
-					if (!this._isObject(value[index])) {
-						this._explode("Mixin value has an invalid type", tracer, index);
-						return false;
-					}
-				}
-				return true;
-			} else {
-				this._explode("Mixin has an invalid type", tracer);
-				return false;
 			}
 			return true;
 		}
@@ -754,6 +731,12 @@ var DescartesEngine = function () {
 			this.styles = this.merge(tree);
 			this.render();
 		}
+	}, {
+		key: "extend",
+		value: function extend(target, source) {
+			var result = Object.assign({}, target);
+			return Object.assign(result, source);
+		}
 
 		/**
    * Merges a style tree with another tree
@@ -794,14 +777,6 @@ var DescartesEngine = function () {
 							var targetType = typeof targetSubtree === "undefined" ? "undefined" : _typeof(targetSubtree);
 							if (this.isProperty(key)) {
 								result[key] = subtree;
-							} else if (key === this.mixins) {
-								if (treeType === 'string' && targetType === 'array') {
-									result[key] = targetSubtree.pop(subtree);
-								} else if (treeType === 'array' && targetType === 'string') {
-									result[key] = subtree.push(targetSubtree);
-								} else {
-									console.error("Merge failed. A mixin was attempted but the '" + key + "' property has invalid types for its values");
-								}
 							} else {
 								console.error("Merge failed. The '" + key + "' property of style trees you are merging don't match validly. `tree` has type '" + treeType + "' and `target` has type + '" + targetType + "'");
 							}
@@ -888,7 +863,7 @@ var DescartesEngine = function () {
 							var subtree = null;
 							if (parentSelector === "") parentSelector = selector;
 							var nestedSelector = this.nestSelector(rule, parentSelector);
-							if (!this.isMixin(rule) && !this.isProperty(rule)) {
+							if (!this.isProperty(rule)) {
 								subtree = {};
 								subtree[nestedSelector] = rules[rule];
 							}
@@ -940,9 +915,6 @@ var DescartesEngine = function () {
 						result[keyObject.key] = this.sanitize(value, keyObject.type === this.LISTENER ? scope : {});
 					} else if (keyObject.type === this.PROPERTY) {
 						result[keyObject.key] = this.parseScope(value, scope);
-					} else if (keyObject.type === this.MIXIN) {
-						var mixedRules = this.parseMixins(tree, key);
-						result = mixedRules;
 					} else if (keyObject.type === this.ALIAS) {
 						result[this.ALIAS_KEYWORD] = value;
 					}
@@ -968,36 +940,6 @@ var DescartesEngine = function () {
 				}
 			}
 			return value;
-		}
-
-		/**
-   * Calculates and expands mixins on a particular ruleset
-   * @param {object} ruleset - the ruleset for the current selector
-   * @param {string} selector - the relevant selector string
-   * @return {object} the resulting ruleset with the calculated mixins
-  */
-
-	}, {
-		key: "parseMixins",
-		value: function parseMixins(ruleset, selector) {
-			var mixins = ruleset[this.MIXINS_KEYWORD];
-
-			if (!Array.isArray(mixins)) {
-				mixins = [mixins];
-			}
-
-			for (var index in mixins) {
-				var mixin = mixins[index];
-				if (mixin !== null && (typeof mixin === "undefined" ? "undefined" : _typeof(mixin)) === 'object') {
-					for (var rule in mixin) {
-						if (!ruleset.hasOwnProperty(rule) || ruleset[rule] === null) ruleset[rule] = mixin[rule];
-					}
-				} else {
-					throw "'" + selector + "' has ruleset with an invalid _mixins value. _mixins can only be an object literal or array of object literals.";
-				}
-			}
-			delete ruleset[this.MIXINS_KEYWORD];
-			return ruleset;
 		}
 
 		/**
@@ -1301,8 +1243,6 @@ var DescartesEngine = function () {
 			};
 			if (this.isAlias(key)) {
 				obj.type = this.ALIAS;
-			} else if (this.isMixin(key)) {
-				obj.type = this.MIXIN;
 			} else if (this.isScope(key)) {
 				obj.type = this.SCOPE;
 			} else if (this.isListener(key)) {
@@ -1321,7 +1261,7 @@ var DescartesEngine = function () {
 	}, {
 		key: "isMeta",
 		value: function isMeta(key) {
-			return this.isMixin(key) || this.isListener(key);
+			return this.isListener(key);
 		}
 
 		/**
@@ -1343,16 +1283,6 @@ var DescartesEngine = function () {
 		key: "isScope",
 		value: function isScope(key) {
 			return key.substring(0, 1) === this.SCOPE_KEYWORD;
-		}
-
-		/** Checks if the key is specifying a mixin
-   * @return {bool} whether the key matches the mixins keyword
-  */
-
-	}, {
-		key: "isMixin",
-		value: function isMixin(key) {
-			return key === this.MIXINS_KEYWORD;
 		}
 
 		/** Checks if the key is a listener
