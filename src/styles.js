@@ -43,14 +43,16 @@ const start = Date.now()
 var lastScroll = $(window).scrollTop()
 const d = new Descartes({
 	"html": {
-		"_mixins": m,
+		"margin": 0,
+		"padding": 0,
 		"font-family": "Source Sans Pro, Helvetica",
 		"color": "#333",
 		"font-size": 16,
 		"font-weight": 300,
 		"height": "100%",
 		"body": {
-			"_mixins": m,
+			"margin": 0,
+			"padding": 0,
 			"_listeners": [[window, "click"], ["#bgChange", "touchstart"]],
 			"height": "100%",
 			"@background": () => {
@@ -68,32 +70,6 @@ const d = new Descartes({
 					"font-family": "Anonymous Pro"
 				}
 			},
-			".row": { _mixins: p.row() },
-			".col1": { _mixins: p.col(1) },
-			".col2": { _mixins: p.col(2) },
-			".col3": { _mixins: p.col(3) },
-			".col4": { _mixins: p.col(4) },
-			".col5": { _mixins: p.col(5) },
-			".col6": { _mixins: p.col(6) },
-			".col7": { _mixins: p.col(7) },
-			".col8": { _mixins: p.col(8) },
-			".col9": { _mixins: p.col(9) },
-			".col10": { _mixins: p.col(10) },
-			".col11": { _mixins: p.col(11) },
-			".col12": { _mixins: p.col(12) },
-			".table-row": { _mixins: p.tableRow() },
-			".table-col1": { _mixins: p.tableCol(1) },
-			".table-col2": { _mixins: p.tableCol(2) },
-			".table-col3": { _mixins: p.tableCol(3) },
-			".table-col4": { _mixins: p.tableCol(4) },
-			".table-col5": { _mixins: p.tableCol(5) },
-			".table-col6": { _mixins: p.tableCol(6) },
-			".table-col7": { _mixins: p.tableCol(7) },
-			".table-col8": { _mixins: p.tableCol(8) },
-			".table-col9": { _mixins: p.tableCol(9) },
-			".table-col10": { _mixins: p.tableCol(10) },
-			".table-col11": { _mixins: p.tableCol(11) },
-			".table-col12": { _mixins: p.tableCol(12) },
 			"a": {
 				"color": "currentColor"
 			},
@@ -156,13 +132,33 @@ const d = new Descartes({
 				}
 			},
 			".button": {
-				"_mixins": _button,
+				"background": "none",
+				"border-width": "1px",
+				"border-style": "solid",
+				"border-color": "currentColor",
+				"padding": "10px 15px",
+				"text-decoration": "none",
+				"font-size": 12,
+				"letter-spacing": 1,
+				"text-transform": "uppercase",
+				"font-weight": "normal",
+				"cursor": "pointer",
 				"&.primary": {
 					"background": "rgba(255,255,255, 0.25)"
 				}
 			},
 			"button": {
-				"_mixins": _button
+				"background": "none",
+				"border-width": "1px",
+				"border-style": "solid",
+				"border-color": "currentColor",
+				"padding": "10px 15px",
+				"text-decoration": "none",
+				"font-size": 12,
+				"letter-spacing": 1,
+				"text-transform": "uppercase",
+				"font-weight": "normal",
+				"cursor": "pointer"
 			},
 			"img.roundImage": {
 				"border-radius": function(_) { return _.width/2; },
