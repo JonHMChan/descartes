@@ -6,13 +6,13 @@
     <body>
         <h1>I compute, therefore I am.</h1>
         <div class="row">
-            <div class="col4">
+            <div class="col6">
                 One
             </div>
-            <div class="col4">
+            <div class="col3">
                 Two
             </div>
-            <div class="col4">
+            <div class="col3">
                 Three
             </div>
         </div>
@@ -20,17 +20,26 @@
         <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
         <script type="text/javascript" src="dist/plato.js"></script>
         <script type="text/javascript">
+            var p = new Plato();
+            Descartes.add(p.base())
+            /*
             var newTree = {
                 "html": {
                     "alias": "foobar",
                     "font-size": 15,
-                    "background": () => { return "rgba(0,0,0," + Math.random() + ")" }
+                    "color": "blue",
+                    "background": () => { return "rgba(0,0,0," + Math.random() + ")" },
+                    "h1": {
+                        "font-family": "Arial",
+                        "font-size": 300
+                    }
                 }
             }
             Descartes.add(newTree)
             $(window).click(function() {
                 Descartes.alias.foobar.background()
             })
+            */
         </script>
     </body>
 </html>

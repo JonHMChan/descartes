@@ -599,7 +599,7 @@ Descartes.add(styles)
   ".wrapper": { // Responsive wrapper
     "margin": "0 auto",
     "width": function() {
-      (window.innerWidth > 800) ? 800 : "100%"
+      return (window.innerWidth > 800) ? 800 : "100%"
     }
   }
 }
@@ -624,7 +624,7 @@ Descartes.add(styles)
     "alias": "wrapper", // Descartes.alias.wrapper is created
     "margin": "0 auto",
     "width": function() { // Descartes.alias.wrapper.width()
-      (window.innerWidth > 800) ? 800 : "100%"
+      return (window.innerWidth > 800) ? 800 : "100%"
     }
   }
 }
