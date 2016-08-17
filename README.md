@@ -25,16 +25,16 @@ This is an experimental library for writing CSS in JavaScript. The current versi
 
     ```javascript
 Descartes.add({
-	"body": {
-		"color": "#555",
-		"font-family": "Arial",
-		"h1": {
-			"font-family": "Helvetica",
-			"font-size": function() {
-				return 16 + Math.round(Math.random() * 42);
+		"body": {
+			"color": "#555",
+			"font-family": "Arial",
+			"h1": {
+				"font-family": "Helvetica",
+				"font-size": function() {
+					return 16 + Math.round(Math.random() * 42);
+				}
 			}
 		}
-	}
 })
     ```
 
