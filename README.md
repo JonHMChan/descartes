@@ -24,14 +24,17 @@ This is an experimental library for writing CSS in JavaScript. The current versi
 3. Create a `styles.js` where you will write your styles. Try the following:
 
     ```javascript
-new Descartes({
+Descartes.add({
+	"body": {
+		"color": "#555",
+		"font-family": "Arial",
 		"h1": {
-			"_listeners": [[window, 'click']],
 			"font-family": "Helvetica",
 			"font-size": function() {
 				return 16 + Math.round(Math.random() * 42);
 			}
 		}
+	}
 })
     ```
 
