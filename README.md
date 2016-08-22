@@ -39,3 +39,8 @@ Descartes.add({
     ```
 
 4. Save and open up your HTML file in a browser. Clicking anywhere on the window should randomize the size of your heading.
+
+
+## Overview
+
+For a full overview of features, take a look at the presentation I typically give at https://descartes.io/slides (just your right and left arrow keys to go through the slides).
