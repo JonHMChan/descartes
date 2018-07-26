@@ -24,7 +24,7 @@ This is an experimental library for writing CSS in JavaScript. The current versi
 3. Create a `styles.js` where you will write your styles. Try the following:
 
     ```javascript
-Descartes.add({
+	Descartes.add({
 		"body": {
 			"color": "#555",
 			"font-family": "Arial",
@@ -35,7 +35,7 @@ Descartes.add({
 				}
 			}
 		}
-})
+	})
     ```
 
 4. Save and open up your HTML file in a browser. Clicking anywhere on the window should randomize the size of your heading.
